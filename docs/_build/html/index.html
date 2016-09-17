@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to TUBA! &mdash; TUBA 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TUBA 1.1 documentation" href="#" />
+    <link rel="next" title="Installation" href="Installation.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="#"><h1 style="font-size: 3em;">TUBA Piping Tool</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Installation.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Installation.html"
+                        title="next chapter">Installation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-tuba">
+<h1>Welcome to TUBA!<a class="headerlink" href="#welcome-to-tuba" title="Permalink to this headline">¶</a></h1>
+<p>TUBA is a Python module orginally created by Pascal KREZEL. It allows to create and simulate piping- and rod geometries in Salome-Meca.</p>
+<p>With a simple to use set of commands even complex piping-geometries can be generated and different load cases can be simulated.
+TUBA prepares the scripts for SalomeMeca, CodeAster and ParaVis which then have to be loaded into Salome-Meca where the actual simulation is effected.</p>
+<p>Even without further knowledge of SalomeMeca, TUBA allows to quickly and easily create piping-geometries and effect the targeted calculation and analysis.</p>
+<p>The following documentation explains the installation process, how to set up a first TUBA script and then how to run the actual simulation in Salome-Meca.</p>
+<p>Afterwards, the complete set of commands is introduced.</p>
+<p>The development section is intended for people who wish to understand the underlying Python code and idealy want to contribute to this opensource project.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#prerequistance">Prerequistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#anaconda">Anaconda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#salome-meca">Salome-Meca</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#download-tuba-from-github">Download TUBA from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#set-bash-command">Set Bash command</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="HowtoStart.html">How to start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="HowtoStart.html#writing-the-command-script">Writing the command script</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="HowtoStart.html#decomposing-step-by-step">Decomposing step by step:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="HowtoStart.html#run-the-simulation-in-salome">Run the simulation in Salome:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HowtoStart.html#analyis-the-results-in-paravis">Analyis the results in ParaVis:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Commands.html">Available TUBA commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#module-tuba.define_geometry">Geometry  Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#module-tuba.define_properties">Global Properties  Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#local-properties-commands">Local Properties  Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Commands.html#module-tuba.define_macros">Macro Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Developper Section</a></li>
+</ul>
+</div>
+<p>Indices and tables</p>
+<hr class="docutils" />
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Installation.html" title="Installation"
+             >next</a> |</li>
+        <li><a href="#">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Wagenfeld.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+    </div>
+  </body>
+</html>

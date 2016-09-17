@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tuba.define_properties &mdash; TUBA 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="TUBA 1.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="../../index.html"><h1 style="font-size: 3em;">TUBA Piping Tool</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tuba.define_properties</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Tue Apr  5 01:20:46 2016</span>
+
+<span class="sd">@author: frenell</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">external.euclid</span> <span class="kn">as</span> <span class="nn">eu</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">tuba_vars_and_funcs</span> <span class="kn">as</span> <span class="nn">tub</span>
+
+<span class="c1">#==============================================================================</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1">## Point Properties</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1">#==============================================================================</span>
+        
+<span class="c1">#Command to define degree of freedom of a point- &#39;x&#39; represents freedom, 0 no freedom and a value an imposed deformation</span>
+<div class="viewcode-block" id="Block"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Block">[docs]</a><span class="k">def</span> <span class="nf">Block</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">rx</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">ry</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">rz</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;The Block function blocks the degree of freedoms of the last created point. Per default all components are set to &#39;x&#39; </span>
+<span class="sd">        which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, </span>
+<span class="sd">        whereas a value != to 0 implies a deflection/torsion of the point.</span>
+<span class="sd">        There are several ways how to use it:\n</span>
+<span class="sd">        Block single compontents by naming --&gt; B(x=0,rz=0)&#39;&#39;&#39;</span>
+    <span class="n">ddl</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl</span><span class="o">=</span><span class="n">ddl</span>
+    <span class="k">print</span> <span class="p">(</span><span class="n">ddl</span><span class="p">)</span></div>
+ 
+
+<div class="viewcode-block" id="Spring"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Spring">[docs]</a><span class="k">def</span> <span class="nf">Spring</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;appends a stiffness matrix to the current tubapoint.</span>
+<span class="sd">    </span>
+<span class="sd">        Multiple stiffness matrixes can be summed up.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stiffness</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">stiffness</span><span class="o">=</span><span class="n">stiffness</span></div>
+    
+<div class="viewcode-block" id="Force"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Force">[docs]</a><span class="k">def</span> <span class="nf">Force</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;appends a force-vector to the current tubapoint</span>
+<span class="sd">            </span>
+<span class="sd">       Multiple force vectors can be summed up. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  
+    <span class="n">force</span><span class="o">=</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">force</span><span class="p">)</span>    </div>
+
+<div class="viewcode-block" id="Moment"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Moment">[docs]</a><span class="k">def</span> <span class="nf">Moment</span><span class="p">(</span><span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;appends a moment to the current tubapoint</span>
+<span class="sd">            </span>
+<span class="sd">       Multiple moments can be summed up. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">moment</span> <span class="o">=</span> <span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">)</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_TubaPoint</span><span class="o">.</span><span class="n">moment</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moment</span><span class="p">)</span></div>
+
+<span class="c1">#==============================================================================</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1">## Line Properties</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1">#==============================================================================</span>
+<div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Model">[docs]</a><span class="k">def</span> <span class="nf">Model</span> <span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Append a FEM-Model to the defined Vector-Object. The following models are </span>
+<span class="sd">    available at the moment:</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;TUBE&quot; \n        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;RECTANGULAR&quot;  \n</span>
+
+<span class="sd">    &quot;BEAM&quot; \n</span>
+<span class="sd">        </span>
+<span class="sd">    The following models will be added in the future:</span>
+
+<span class="sd">    &quot;TUYAU&quot; \n</span>
+<span class="sd">    &quot;CABLE&quot; \n</span>
+<span class="sd">    &quot;3D?&quot;\n</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="n">model</span></div>
+        
+<div class="viewcode-block" id="Temperature"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Temperature">[docs]</a><span class="k">def</span> <span class="nf">Temperature</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">T_ref</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>    
+    <span class="sd">&#39;&#39;&#39;Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.</span>
+<span class="sd">      </span>
+<span class="sd">       At T=T_ref the thermal dilation is set to 0. So if you want to pretension a piping part so that at f.ex. T=300°C </span>
+<span class="sd">       the thermal dilation is zero, T_ref has to be set to 300°C&#39;&#39;&#39;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_temperature</span><span class="o">=</span><span class="n">T</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_ref_temperature</span><span class="o">=</span><span class="n">T_ref</span>    </div>
+    
+<span class="k">def</span> <span class="nf">SectionTube</span><span class="p">(</span><span class="n">outer_radius</span><span class="p">,</span><span class="n">wall_thickness</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
+<span class="sd">       Additional cross-sections will be added later on&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">outer_radius</span><span class="p">)</span><span class="o">==</span><span class="nb">str</span><span class="p">:</span>
+          <span class="n">a</span><span class="o">=</span><span class="s2">&quot;NPS&quot;</span> 
+          <span class="n">b</span><span class="o">=</span><span class="s2">&quot;DN&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">outer_radius</span><span class="p">,</span> <span class="n">wall_thickness</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">SectionRectangular</span><span class="p">(</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">thickness_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">thickness_z</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
+<span class="sd">       Additional cross-sections will be added later on&quot;&quot;&quot;</span>   
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="p">,</span><span class="n">thickness_y</span><span class="p">,</span><span class="n">thickness_z</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Pressure"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Pressure">[docs]</a><span class="k">def</span> <span class="nf">Pressure</span><span class="p">(</span><span class="n">pressure</span><span class="p">):</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_pressure</span><span class="o">=</span><span class="n">pressure</span></div>
+
+<div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Material">[docs]</a><span class="k">def</span> <span class="nf">Material</span><span class="p">(</span><span class="n">material</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Appends the choosen material to the following vector elements. The material </span>
+<span class="sd">    properties can be defined in library_material.py \n</span>
+<span class="sd">    The material properties can be defines constant or as a function of temperature.    </span>
+<span class="sd">    </span>
+<span class="sd">    At the moment, the following materials are accessible: \n</span>
+<span class="sd">    &quot;SS304&quot;   - f(Temperature)\n</span>
+<span class="sd">    &quot;SS316&quot;   - f(Temperature)\n</span>
+<span class="sd">    &quot;CSA53&quot;   - f(Temperature)\n</span>
+<span class="sd">    \n</span>
+<span class="sd">    &quot;Ax1&quot;  - constant \n</span>
+<span class="sd">    &quot;A42&quot;  - constant\n</span>
+<span class="sd">    &quot;IMS&quot;  - constant\n</span>
+<span class="sd">    &quot;RIGIDE&quot;  - constant\n</span>
+<span class="sd">    &quot;ACIER&quot;  - constant    \n</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_material</span><span class="o">=</span><span class="n">material</span></div>
+    
+<div class="viewcode-block" id="LinearForce"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.LinearForce">[docs]</a><span class="k">def</span> <span class="nf">LinearForce</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;appends a linear force-vector to the last created vector.</span>
+<span class="sd">       [N/mm]</span>
+<span class="sd">            </span>
+<span class="sd">       Multiple force vectors can be summed up. </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">force</span><span class="o">=</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">dict_tubavectors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">linear_force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">force</span><span class="p">)</span>    </div>
+
+<div class="viewcode-block" id="RhoFluid"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.RhoFluid">[docs]</a><span class="k">def</span> <span class="nf">RhoFluid</span><span class="p">():</span>
+    <span class="k">pass</span>    </div>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">home</a>|&nbsp;</li>
+        <li><a href="../../search.html">search</a>|&nbsp;</li>
+
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Wagenfeld.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+    </div>
+  </body>
+</html>

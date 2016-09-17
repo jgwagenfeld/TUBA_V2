@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Developper Section &mdash; TUBA 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TUBA 1.1 documentation" href="index.html" />
+    <link rel="prev" title="Available TUBA commands" href="Commands.html" /> 
+  </head>
+  <body role="document">
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><h1 style="font-size: 3em;">TUBA Piping Tool</h1></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Commands.html" title="Available TUBA commands"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Commands.html"
+                        title="previous chapter">Available TUBA commands</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/development.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="developper-section">
+<h1>Developper Section<a class="headerlink" href="#developper-section" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="tuba.define_geometry.TubaPoint">
+<em class="property">class </em><code class="descclassname">tuba.define_geometry.</code><code class="descname">TubaPoint</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name=''</em>, <em>nocount=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Containes all information present at a POINT in the piping/rod network</p>
+<p>It is important to  note that each tubapoint inside a piping is always an
+attribute of two vectors, one time as start_tubapoint, one time as end_tubapoint.</p>
+<p>Furthermore each tubapoint can only be endpoint for a single vector but
+startpoint for as many vectors as wished.</p>
+<dl class="method">
+<dt id="tuba.define_geometry.TubaPoint.get_last_vector">
+<code class="descname">get_last_vector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint.get_last_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint.get_last_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if the given tubapoint is a icident_end_tubapoint and as well start_tubapoint of a vector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tuba.define_geometry.TubaPoint.is_element_end">
+<code class="descname">is_element_end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint.is_element_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint.is_element_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if the given tubapoint is a end_tubapoint and as well start_tubapoint of a vector.
+If false, this means that it&#8217;s the end of the piping</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tuba.define_geometry.TubaPoint.is_element_start">
+<code class="descname">is_element_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint.is_element_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint.is_element_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if the given tubapoint is a start_tubapoint and as well end_tubapoint of a vector.
+If false, this means that it&#8217;s the beginning of the piping</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tuba.define_geometry.TubaPoint.is_incident_end">
+<code class="descname">is_incident_end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint.is_incident_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint.is_incident_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if the given tubapoint is a icident_end_tubapoint and as well start_tubapoint of a vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tuba.define_geometry.TubaVector">
+<em class="property">class </em><code class="descclassname">tuba.define_geometry.</code><code class="descname">TubaVector</code><span class="sig-paren">(</span><em>start_tubapoint</em>, <em>end_tubapoint</em>, <em>vector</em>, <em>name_vector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>TubVector is the Class to contain all information present on a LINE ELEMENT in the piping/rod network</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Commands.html" title="Available TUBA commands"
+             >previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Wagenfeld.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+    </div>
+  </body>
+</html>
