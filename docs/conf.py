@@ -31,8 +31,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
 # ones.
 extensions = [
          
-    'IPython.sphinxext.ipython_directive',              
-    'IPython.sphinxext.ipython_console_highlighting',
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
