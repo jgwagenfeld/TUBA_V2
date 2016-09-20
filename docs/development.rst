@@ -1,5 +1,5 @@
 Developper Section
-------------------------------------
+======================
 
 
 .. autoclass:: tuba.define_geometry.TubaPoint

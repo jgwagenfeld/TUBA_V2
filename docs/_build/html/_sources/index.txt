@@ -4,9 +4,9 @@
    contain the root `toctree` directive.
 
 Welcome to TUBA!
-##############################################
+==================
 
-TUBA is a Python module orginally created by Pascal KREZEL. It allows to create and simulate piping- and rod geometries in Salome-Meca.
+TUBA is a Python module orginally created by Pascal KREZEL. It allows to create and simulate piping- and rod geometries in Salome-Meca (OpenSource under LPGL license).
 
 With a simple to use set of commands even complex piping-geometries can be generated and different load cases can be simulated.
 TUBA prepares the scripts for SalomeMeca, CodeAster and ParaVis which then have to be loaded into Salome-Meca where the actual simulation is effected.

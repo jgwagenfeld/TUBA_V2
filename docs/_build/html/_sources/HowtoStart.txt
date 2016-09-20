@@ -1,19 +1,17 @@
 
 .. _my-reference-label:
-
-##############################################
 How to start
-##############################################
+==============
 
 Assuming you followed the installation steps in the last chapter (`Installation`_), you can now run TUBA in your terminal with
-the Bash command::
+the bash-command::
 
-$ TUBAV3.py  command_script.py
+$ TUBA.py  command_script.py
 
 The command_script as argument is your list of commands defining your geometry, your simulation and output. Executing TUBA will trigger the following actions:
 
 #. generating a 3D-Plot of your defined geometry. The purpose of this plot is to get an immediate visualization of your geometry. 
-   If needed, then your command list can be adapted before you start the time consuming import into Salome-Meca.
+   If needed, then your command list can be adapted before you start the import into Salome-Meca.
 
 #. generating ``command_script_salome.py`` which then has to be loaded into Salome (in the Menu bar: ``File`` - ``Load Script...``)
 
@@ -23,10 +21,11 @@ The command_script as argument is your list of commands defining your geometry, 
 	
 
 Writing the command script
-============================
+---------------------------------
 
 As mentioned above, the command-script consists of a list of commands defining your piping-geometry (or other rod-structure), it's properties(cross section, material, external and internal loads, etc) and finally also the simulation and post-processing.
-It can be edited with any kind of text editor. An IDE with auto completion and auto help like Spyder( include hyper link) can be very helpful in the beginning, especially if you're not so familiar with the available commands.
+
+It can be edited with any kind of text editor. An IDE with auto completion and auto help like Spyder(included in the Anaconda package) can be very helpful in the beginning, especially if you're not so familiar with the available commands.
 
 The following code is a basic command script showing the most important commands - for a complete list of available commands, check - include hyper link. 
 
@@ -44,6 +43,8 @@ The following code is a basic command script showing the most important commands
     
     Model("TUYAU")
     SectionTube(outerRadius,WallThickness)
+
+    Material("SS304")
     Temperature(550,T_ref=20)
     Pressure(2*bar())
 
@@ -80,7 +81,9 @@ To better understand, how TUBA works, we will decompose the upper script step by
 SalomeMeca does not have a fixed default unit system. The user can choose whatever system is preferred - as long as it is consistent. In the `Unit Table <http://caelinux.org/wiki/downloads/docs/PCarrico/CAELINUX_plasticite/CAELINUX_plasticite.html#SECTION000180000000000000000>`_ you can see different consistent unit systems.
 
 Unit Calculator facilitate the use of different, sometimes more intuitive units like bar. The TUBA script was only tested with the mmNS metric system as base (``auto_converter(mmNS)``), therefore it is advisable to stay in this system. 
-The base defines the internal unit system and therefore as well the units of the result. See the documentation of `UnitCalculator <https://github.com/maldun/UnitCalculator>`_ for more informations how to use the calculator and what conversions are available.
+The base defines the internal unit system and therefore as well the units of the result. 
+
+See the documentation of `UnitCalculator <https://github.com/maldun/UnitCalculator>`_ for more informations how to use the calculator and what conversions are available.
 
 
 
@@ -95,18 +98,28 @@ The command script is pure python code. Therefore variable declaration,loops, if
 
     Model("TUYAU")
     SectionTube(outerRadius,WallThickness)
+
+    Material("SS304")
     Temperature(550,T_ref=20)
     Pressure(2*bar())
 
-This section defines the global properties of the following piping system. Model defines the finite element used to model the piping - see  :func:`tuba.define_properties.Model`. for a full list of available models.
+Tuba has two major groups of commands - one defining the geometry, one the properties of the geometry. 
+The property group splits further down in global and local properties. Their biggest difference is how they will be applied.
+The upper code section defines the global properties of the following piping system. This means, all these properties listed above will be applied to all the following defined vectors/pipe segments until the command list ends or the specific property (like Tempererature or Pressure) will be set to another value.
 
+As a consequence, before defining a geometry, essential properties like ``Model("TUYAU")`` and ``SectionTube(outerRadius,WallThickness)`` have to be set first.
 
 ::
 
     P(0,0,0) 
-    FixPoint()  
+    FixPoint()
+    V(1000,0,0)  
 
-    V(1000,0,0)
+Local properties on the other side are just applied to the last created geometry object. In the upper case, a point with ``P(0,0,0)`` is created. Then the degrees of freedom of this Point are limited by using the macro command  ``FixPoint()``. FixPoint calls the local property command ``Block(x=0,y=0, z=0, rx=0, ry=0, rz=0)`` and therefore blocking all degrees of freedom.
+
+``V(1000,0,0)`` creates a vector in the specified direction. To this vector the beforehand defined properties are applied.
+
+::
 
     for i in range(0,4):	
     	Vc(1000)
@@ -118,9 +131,50 @@ This section defines the global properties of the following piping system. Model
     Vc(1000)
     Block(y=-1000)
 
+
+As mentioned above, for-loops can be used as usual. Be aware that the range statement goes up to 4, but not including this number. 
+
+``Vc(1000)`` is another command to create a vector object, more specific a colinear vector to the last created one. Every vector command always creates a point at the end. To this point the local property ``Block(z=0)`` then will be applied.
+
+``Bent(150,90,0)`` creates a 90degree bent with a 150mm (we are in mmNS) bent radius. Find more about this function 
+
+A nonzero input in ``Block(y=-1000)`` represents an imposed displacement, in this case -1000mm in the y-direction.
+
 ::
 
     Calculate("Statique_Linear")
+
+
+Run the simulation:
+---------------------------------
+With the finished script, run TUBA.py in the terminal (directory where the script is located).
+
+.. figure::  _static/1_RunTUBA.png
+   :align:   center
+
+After a succesful run there should be the created salome, aster and postprocessing scripts in the folder.
+
+.. figure::  _static/2_TUBAOutput.png
+   :align:   center
+
+Start SalomeMeca and create a new project file - then load the SalomeScript.
+
+.. figure::  _static/3_ReadSalomeScript.png
+   :align:   center
+
+.. figure::  _static/4_OpenAster.png
+   :align:   center
+
+.. figure::  _static/5_LoadingCommandFile.png
+   :align:   center
+
+.. figure::  _static/6_LoadingMesh.png
+   :align:   center
+
+Analyse the results in ParaVis:
+---------------------------------
+.. figure::  _static/7_ParaVisOutput.png
+   :align:   center
 
 
 .. sidebar:: Sidebar Title
@@ -130,10 +184,4 @@ This section defines the global properties of the following piping system. Model
    the body of the sidebar, and are
    interpreted as body elements.
 
-Run the simulation in Salome:
-==============================
 
-
-
-Analyis the results in ParaVis:
-================================

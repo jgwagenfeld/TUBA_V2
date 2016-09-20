@@ -44,6 +44,7 @@ from tuba.define_macros import *
 
 import tuba.write_Aster_file 
 import tuba.write_Salome_file 
+import tuba.write_ParaPost_file
 import tuba.tuba_vars_and_funcs as tub
 
 #---UnitCalculator to use different input units---
@@ -127,15 +128,16 @@ def Main():
 # Create Code Aster Object and translate dict_tubavectors,dict_tubapoints-
 # Code Aster File --> .Comm script to load into Aster Module and run Simulation
 # ==============================================================================
-#    paraview=tuba.write_ParaPost_file.ParaPost(tuba_directory)
-#    paraview.write(completed_dict_tubavectors, completed_dict_tubapoints)
-#    
-#    try:
-#       f = open(outputFile_Comm, 'w')
-#       f.write('\n'.join(code_aster.lines))
-#       f.close()
-#    except:
-#        print("Error")        
+    paraview=tuba.write_ParaPost_file.ParaPost(my_directory)
+    
+    paraview.write(completed_dict_tubavectors, completed_dict_tubapoints)
+    
+    try:
+       f = open(outputFile_ParaPost, 'w')
+       f.write('\n'.join(paraview.lines))
+       f.close()
+    except:
+        print("Error")        
         
         
         

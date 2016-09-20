@@ -59,12 +59,10 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">How to start</a><ul>
-<li><a class="reference internal" href="#writing-the-command-script">Writing the command script</a><ul>
+<li><a class="reference internal" href="#writing-the-command-script">Writing the command script</a></li>
 <li><a class="reference internal" href="#decomposing-step-by-step">Decomposing step by step:</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#run-the-simulation-in-salome">Run the simulation in Salome:</a></li>
-<li><a class="reference internal" href="#analyis-the-results-in-paravis">Analyis the results in ParaVis:</a></li>
+<li><a class="reference internal" href="#run-the-simulation">Run the simulation:</a></li>
+<li><a class="reference internal" href="#analyse-the-results-in-paravis">Analyse the results in ParaVis:</a></li>
 </ul>
 </li>
 </ul>
@@ -101,24 +99,24 @@
           <div class="body" role="main">
             
   <div class="section" id="how-to-start">
-<span id="my-reference-label"></span><h1>How to start<a class="headerlink" href="#how-to-start" title="Permalink to this headline">¶</a></h1>
+<h1>How to start<a class="headerlink" href="#how-to-start" title="Permalink to this headline">¶</a></h1>
 <p>Assuming you followed the installation steps in the last chapter (<a href="#id2"><span class="problematic" id="id3">`Installation`_</span></a>), you can now run TUBA in your terminal with
-the Bash command:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ TUBAV3.py  command_script.py
+the bash-command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ TUBA.py  command_script.py
 </pre></div>
 </div>
 <p>The command_script as argument is your list of commands defining your geometry, your simulation and output. Executing TUBA will trigger the following actions:</p>
 <ol class="arabic simple">
 <li>generating a 3D-Plot of your defined geometry. The purpose of this plot is to get an immediate visualization of your geometry.
-If needed, then your command list can be adapted before you start the time consuming import into Salome-Meca.</li>
+If needed, then your command list can be adapted before you start the import into Salome-Meca.</li>
 <li>generating <code class="docutils literal"><span class="pre">command_script_salome.py</span></code> which then has to be loaded into Salome (in the Menu bar: <code class="docutils literal"><span class="pre">File</span></code> - <code class="docutils literal"><span class="pre">Load</span> <span class="pre">Script...</span></code>)</li>
 <li>generating <code class="docutils literal"><span class="pre">command_script_aster.comm</span></code> which then has to be loaded into the Code Aster Module. The file defines the simulation in Code Aster. Find more informations concerning the structure of comm-files under :ref:code_aster</li>
 <li>generating <code class="docutils literal"><span class="pre">command_script_post.py</span></code> which then has to be loaded after a successful simulation. This file will start the post processing tool ParaVis and effect some standard plots. It is possible to adapt these plots or add new ones later on.</li>
 </ol>
 <div class="section" id="writing-the-command-script">
 <h2>Writing the command script<a class="headerlink" href="#writing-the-command-script" title="Permalink to this headline">¶</a></h2>
-<p>As mentioned above, the command-script consists of a list of commands defining your piping-geometry (or other rod-structure), it&#8217;s properties(cross section, material, external and internal loads, etc) and finally also the simulation and post-processing.
-It can be edited with any kind of text editor. An IDE with auto completion and auto help like Spyder( include hyper link) can be very helpful in the beginning, especially if you&#8217;re not so familiar with the available commands.</p>
+<p>As mentioned above, the command-script consists of a list of commands defining your piping-geometry (or other rod-structure), it&#8217;s properties(cross section, material, external and internal loads, etc) and finally also the simulation and post-processing.</p>
+<p>It can be edited with any kind of text editor. An IDE with auto completion and auto help like Spyder(included in the Anaconda package) can be very helpful in the beginning, especially if you&#8217;re not so familiar with the available commands.</p>
 <p>The following code is a basic command script showing the most important commands - for a complete list of available commands, check - include hyper link.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#---UnitCalculator to use different input units---</span>
 <span class="kn">from</span> <span class="nn">external.UnitCalculator</span> <span class="k">import</span> <span class="o">*</span>
@@ -129,6 +127,8 @@ It can be edited with any kind of text editor. An IDE with auto completion and a
 
 <span class="n">Model</span><span class="p">(</span><span class="s2">&quot;TUYAU&quot;</span><span class="p">)</span>
 <span class="n">SectionTube</span><span class="p">(</span><span class="n">outerRadius</span><span class="p">,</span><span class="n">WallThickness</span><span class="p">)</span>
+
+<span class="n">Material</span><span class="p">(</span><span class="s2">&quot;SS304&quot;</span><span class="p">)</span>
 <span class="n">Temperature</span><span class="p">(</span><span class="mi">550</span><span class="p">,</span><span class="n">T_ref</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">Pressure</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">bar</span><span class="p">())</span>
 
@@ -151,8 +151,9 @@ It can be edited with any kind of text editor. An IDE with auto completion and a
 <span class="n">Calculate</span><span class="p">(</span><span class="s2">&quot;Statique_Linear&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="decomposing-step-by-step">
-<h3>Decomposing step by step:<a class="headerlink" href="#decomposing-step-by-step" title="Permalink to this headline">¶</a></h3>
+<h2>Decomposing step by step:<a class="headerlink" href="#decomposing-step-by-step" title="Permalink to this headline">¶</a></h2>
 <p>To better understand, how TUBA works, we will decompose the upper script step by step and explaining the functionality.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#---UnitCalculator to use different input units---</span>
 <span class="kn">from</span> <span class="nn">external.UnitCalculator</span> <span class="k">import</span> <span class="o">*</span>
@@ -162,7 +163,8 @@ It can be edited with any kind of text editor. An IDE with auto completion and a
 <p><a class="reference external" href="https://github.com/maldun/UnitCalculator">UnitCalculator</a> is an external python module written by Stefan Reiterer to translate different units.</p>
 <p>SalomeMeca does not have a fixed default unit system. The user can choose whatever system is preferred - as long as it is consistent. In the <a class="reference external" href="http://caelinux.org/wiki/downloads/docs/PCarrico/CAELINUX_plasticite/CAELINUX_plasticite.html#SECTION000180000000000000000">Unit Table</a> you can see different consistent unit systems.</p>
 <p>Unit Calculator facilitate the use of different, sometimes more intuitive units like bar. The TUBA script was only tested with the mmNS metric system as base (<code class="docutils literal"><span class="pre">auto_converter(mmNS)</span></code>), therefore it is advisable to stay in this system.
-The base defines the internal unit system and therefore as well the units of the result. See the documentation of <a class="reference external" href="https://github.com/maldun/UnitCalculator">UnitCalculator</a> for more informations how to use the calculator and what conversions are available.</p>
+The base defines the internal unit system and therefore as well the units of the result.</p>
+<p>See the documentation of <a class="reference external" href="https://github.com/maldun/UnitCalculator">UnitCalculator</a> for more informations how to use the calculator and what conversions are available.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">outerRadius</span><span class="o">=</span><span class="mi">35</span>
 <span class="n">WallThickness</span><span class="o">=</span><span class="mi">4</span>
 </pre></div>
@@ -170,17 +172,24 @@ The base defines the internal unit system and therefore as well the units of the
 <p>The command script is pure python code. Therefore variable declaration,loops, if-statements etc. can be used as usual.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Model</span><span class="p">(</span><span class="s2">&quot;TUYAU&quot;</span><span class="p">)</span>
 <span class="n">SectionTube</span><span class="p">(</span><span class="n">outerRadius</span><span class="p">,</span><span class="n">WallThickness</span><span class="p">)</span>
+
+<span class="n">Material</span><span class="p">(</span><span class="s2">&quot;SS304&quot;</span><span class="p">)</span>
 <span class="n">Temperature</span><span class="p">(</span><span class="mi">550</span><span class="p">,</span><span class="n">T_ref</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">Pressure</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">bar</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>This section defines the global properties of the following piping system. Model defines the finite element used to model the piping - see  <a class="reference internal" href="Commands.html#tuba.define_properties.Model" title="tuba.define_properties.Model"><code class="xref py py-func docutils literal"><span class="pre">tuba.define_properties.Model()</span></code></a>. for a full list of available models.</p>
+<p>Tuba has two major groups of commands - one defining the geometry, one the properties of the geometry.
+The property group splits further down in global and local properties. Their biggest difference is how they will be applied.
+The upper code section defines the global properties of the following piping system. This means, all these properties listed above will be applied to all the following defined vectors/pipe segments until the command list ends or the specific property (like Tempererature or Pressure) will be set to another value.</p>
+<p>As a consequence, before defining a geometry, essential properties like <code class="docutils literal"><span class="pre">Model(&quot;TUYAU&quot;)</span></code> and <code class="docutils literal"><span class="pre">SectionTube(outerRadius,WallThickness)</span></code> have to be set first.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">P</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">FixPoint</span><span class="p">()</span>
-
 <span class="n">V</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>Local properties on the other side are just applied to the last created geometry object. In the upper case, a point with <code class="docutils literal"><span class="pre">P(0,0,0)</span></code> is created. Then the degrees of freedom of this Point are limited by using the macro command  <code class="docutils literal"><span class="pre">FixPoint()</span></code>. FixPoint calls the local property command <code class="docutils literal"><span class="pre">Block(x=0,y=0,</span> <span class="pre">z=0,</span> <span class="pre">rx=0,</span> <span class="pre">ry=0,</span> <span class="pre">rz=0)</span></code> and therefore blocking all degrees of freedom.</p>
+<p><code class="docutils literal"><span class="pre">V(1000,0,0)</span></code> creates a vector in the specified direction. To this vector the beforehand defined properties are applied.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
     <span class="n">Vc</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
     <span class="n">Block</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -191,8 +200,42 @@ The base defines the internal unit system and therefore as well the units of the
 <span class="n">Block</span><span class="p">(</span><span class="n">y</span><span class="o">=-</span><span class="mi">1000</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>As mentioned above, for-loops can be used as usual. Be aware that the range statement goes up to 4, but not including this number.</p>
+<p><code class="docutils literal"><span class="pre">Vc(1000)</span></code> is another command to create a vector object, more specific a colinear vector to the last created one. Every vector command always creates a point at the end. To this point the local property <code class="docutils literal"><span class="pre">Block(z=0)</span></code> then will be applied.</p>
+<p><code class="docutils literal"><span class="pre">Bent(150,90,0)</span></code> creates a 90degree bent with a 150mm (we are in mmNS) bent radius. Find more about this function</p>
+<p>A nonzero input in <code class="docutils literal"><span class="pre">Block(y=-1000)</span></code> represents an imposed displacement, in this case -1000mm in the y-direction.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Calculate</span><span class="p">(</span><span class="s2">&quot;Statique_Linear&quot;</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="run-the-simulation">
+<h2>Run the simulation:<a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>With the finished script, run TUBA.py in the terminal (directory where the script is located).</p>
+<div class="figure align-center">
+<img alt="_images/1_RunTUBA.png" src="_images/1_RunTUBA.png" />
+</div>
+<p>After a succesful run there should be the created salome, aster and postprocessing scripts in the folder.</p>
+<div class="figure align-center">
+<img alt="_images/2_TUBAOutput.png" src="_images/2_TUBAOutput.png" />
+</div>
+<p>Start SalomeMeca and create a new project file - then load the SalomeScript.</p>
+<div class="figure align-center">
+<img alt="_images/3_ReadSalomeScript.png" src="_images/3_ReadSalomeScript.png" />
+</div>
+<div class="figure align-center">
+<img alt="_images/4_OpenAster.png" src="_images/4_OpenAster.png" />
+</div>
+<div class="figure align-center">
+<img alt="_images/5_LoadingCommandFile.png" src="_images/5_LoadingCommandFile.png" />
+</div>
+<div class="figure align-center">
+<img alt="_images/6_LoadingMesh.png" src="_images/6_LoadingMesh.png" />
+</div>
+</div>
+<div class="section" id="analyse-the-results-in-paravis">
+<h2>Analyse the results in ParaVis:<a class="headerlink" href="#analyse-the-results-in-paravis" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<img alt="_images/7_ParaVisOutput.png" src="_images/7_ParaVisOutput.png" />
 </div>
 <div class="sidebar">
 <p class="first sidebar-title">Sidebar Title
@@ -201,13 +244,6 @@ The base defines the internal unit system and therefore as well the units of the
 the body of the sidebar, and are
 interpreted as body elements.</p>
 </div>
-</div>
-</div>
-<div class="section" id="run-the-simulation-in-salome">
-<h2>Run the simulation in Salome:<a class="headerlink" href="#run-the-simulation-in-salome" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="analyis-the-results-in-paravis">
-<h2>Analyis the results in ParaVis:<a class="headerlink" href="#analyis-the-results-in-paravis" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

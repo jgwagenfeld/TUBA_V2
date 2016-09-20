@@ -18,6 +18,7 @@ import library_material
 class CodeAster:
     def __init__(self,tuba_directory):
         self.lines=[]
+        self.TUYAU_flag=False
 
         base_text= open(tuba_directory+"/tuba/TUBA_COMM_BASE.txt", "r")
         code = base_text.readlines()
@@ -352,7 +353,7 @@ class CodeAster:
                 if item_tubavector.model == "TUYAU" or item_tubavector.model == "3D" :
                     new_item.append(name)
   
-
+            print("ITem", item)
             if  new_item:            
                 newlines=[]
                 newlines.extend([
@@ -371,14 +372,14 @@ class CodeAster:
                         text="            "
                         character_count=0
                 newlines.append(text)
-    
+
                 newlines.extend([
                 "        ),",
                 "        PRES="+str(item[0])+",",
                 "    ),",
                 ])
-    
-                insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines)
+                if item[0]:
+                    insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines)
 
 #==============================================================================
     def _linear_forces(self,dict_tubavectors):
@@ -541,6 +542,7 @@ class CodeAster:
                 insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)
                 
             if item[0] == "TUYAU":
+                self.TUYAU_flag=True
                 newlines=[]
                 newlines.extend([
                 "    _F(",
@@ -648,23 +650,40 @@ RESU=MECA_STATIQUE(
 RESU=CALC_CHAMP(reuse =RESU,
      RESULTAT=RESU,
      FORCE=('REAC_NODA','FORC_NODA'),
-#     CONTRAINTE=('SIEF_ELGA','SIPO_NOEU')    #,
-     CRITERES=('SIEQ_ELNO')
-);
-
-
+     CONTRAINTE=('SIEF_ELGA'),
+     #CONTRAINTE=('SIEF_ELGA','SIPO_NOEU')""").split("\n")
+            
+        if self.TUYAU_flag:
+            newlines=newlines+("""     CRITERES=('SIEQ_ELNO'),""").split("\n")          
+        
+        newlines=newlines+(""");
+ 
+IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=RESU));            
+        """).split("\n")
+           
+           
+        if self.TUYAU_flag:
+            newlines=newlines+("""
 MAX_VMIS=POST_CHAMP(
-RESULTAT=RESU,
-TOUT_ORDRE='OUI',
-GROUP_MA='GTUYAU3M',
-MIN_MAX_SP=(",
-   _F( NOM_CHAM='SIEQ_ELNO',
-       NOM_CMP='VMIS',
-       TYPE_MAXI='MAXI',
-      NUME_CHAM_RESU=1,
-   ),
- ),
- );
+    RESULTAT=RESU,
+    TOUT_ORDRE='OUI',
+    GROUP_MA='GTUYAU3M',
+    MIN_MAX_SP=(
+    _F( NOM_CHAM='SIEQ_ELNO',
+           NOM_CMP='VMIS',
+           TYPE_MAXI='MAXI',
+           NUME_CHAM_RESU=1,
+           ),
+    ),
+);
+  
+IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=MAX_VMIS));
+        """).split("\n") 
+     
+
+
+
+
 
 ##    Table=POST_RELEVE_T(ACTION=(_F(OPERATION='EXTRACTION',
 ##                              INTITULE='ReacXYZ',
@@ -675,31 +694,31 @@ MIN_MAX_SP=(",
 ##                              TOUT_CMP='OUI',),),
 ##                   TITRE='Principal stress',);
 
-IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=RESU));
-IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=MAX_VMIS));
+
+
 
 ##    IMPR_TABLE(TABLE=Table,
 ##          FORMAT='TABLEAU',
 ##          SEPARATEUR=' ,',
 ##          TITRE='Reac/Force at nodes',);
 
-MFlex = FORMULE(
-    NOM_PARA=('SMT','SMFY', 'SMFZ', ),
-    VALE=\"\"\"sqrt(SMFY**2 + SMFZ**2 )+SMT**2\"\"\"
-)
+#MFlex = FORMULE(
+#    NOM_PARA=('SMT','SMFY', 'SMFZ', ),
+#    VALE=\"\"\"sqrt(SMFY**2 + SMFZ**2 )+SMT**2\"\"\"
+#)
 #
 #
-RES_MPP = CALC_CHAMP(
-    RESULTAT=RESU,
-    CHAM_UTIL=_F(
-        NOM_CHAM='SIPO_NOEU',
-        FORMULE=(MFlex),
-        NUME_CHAM_RESU=2,
-    ),
-);
+#RES_MPP = CALC_CHAMP(
+#    RESULTAT=RESU,
+#    CHAM_UTIL=_F(
+#        NOM_CHAM='SIPO_NOEU',
+#        FORMULE=(MFlex),
+#        NUME_CHAM_RESU=2,
+#    ),
+#);
 #
-IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=RES_MPP,LIST_INST=listresu,NOM_CHAM_MED='sigflex',));
-      """).split("\n")
+#IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=RES_MPP,LIST_INST=listresu,NOM_CHAM_MED='sigflex',));
+#      """).split("\n")
 
         insert_lines_at_string(self.lines, "#CALCULS", newlines)
 
