@@ -3,7 +3,6 @@
 """
 Created on Wed Mar 30 02:34:03 2016
 
-@author: frenell
 """
 import collections
 import numpy as np

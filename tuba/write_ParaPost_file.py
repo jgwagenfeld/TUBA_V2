@@ -1,9 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 30 02:34:03 2016
 
-@author: frenell
 """
 import collections
 import numpy as np
@@ -42,7 +40,7 @@ import Tkinter,tkFileDialog
 
 root = Tkinter.Tk()
 file = tkFileDialog.askopenfilename(parent=root,
-                                    initialdir=" """+self.my_directory+ """ ",
+                                    initialdir='"""+self.my_directory+ """',
                                     filetypes=[("Result Files","*.rmed")])        
               
 root.destroy()
@@ -53,6 +51,7 @@ pvsimple.ShowParaviewView()
 from pvsimple import *
 #### disable automatic camera reset on 'Show'
 pvsimple._DisableFirstRenderCameraReset()
+
         
 # create a new 'MED Reader'
 new_casermed = MEDReader(FileName=file)
@@ -74,25 +73,41 @@ new_casermed.GenerateVectors = 1
        
     def _deformation_Warp(self): 
         self.lines=self.lines+("""
+# set active source
+SetActiveSource(new_casermed)
 
 # create a new 'Warp By Vector'
 warpByVector1 = WarpByVector(Input=new_casermed)
+
 # show data in view
 warpByVector1Display = Show(warpByVector1, renderView1)
-# hide data in view
-Hide(new_casermed, renderView1)
+
+# Properties modified on warpByVector1Display
+warpByVector1Display.LineWidth = 4.0
+
 # set scalar coloring
 ColorBy(warpByVector1Display, ('POINTS', 'RESU____DEPL'))
+
 # rescale color and/or opacity maps used to include current data range
 warpByVector1Display.RescaleTransferFunctionToDataRange(True)
+
 # show color bar/color legend
 warpByVector1Display.SetScalarBarVisibility(renderView1, True)
+
 # get color transfer function/color map for 'RESUDEPL'
 rESUDEPLLUT = GetColorTransferFunction('RESUDEPL')
+
 # get opacity transfer function/opacity map for 'RESUDEPL'
 rESUDEPLPWF = GetOpacityTransferFunction('RESUDEPL')
 
 RenameSource('DeformedShape', warpByVector1)
+# get color legend/bar for rESUDEPLPWF in view renderView1
+rESUDEPLPWFColorBar = GetScalarBar(rESUDEPLPWF, renderView1)
+# Properties modified on rESUDEPLPWFColorBar
+rESUDEPLPWFColorBar.Title = 'Deformation'
+# Properties modified on rESUDEPLPWFColorBar
+rESUDEPLPWFColorBar.ComponentTitle = 'Magnitude (mm)'
+
       """).split("\n")
        
     def _deformation_Vector(self): 
@@ -115,12 +130,6 @@ glyph1Display = Show(glyph1, renderView1)
 # show color bar/color legend
 glyph1Display.SetScalarBarVisibility(renderView1, True)
 
-# get color transfer function/color map for 'FamilyIdNode'
-familyIdNodeLUT = GetColorTransferFunction('FamilyIdNode')
-
-# get opacity transfer function/opacity map for 'FamilyIdNode'
-familyIdNodePWF = GetOpacityTransferFunction('FamilyIdNode')
-
 # Properties modified on glyph1
 glyph1.ScaleMode = 'vector'
 
@@ -130,23 +139,20 @@ glyph1.ScaleFactor = 1.0
 # set scalar coloring
 ColorBy(glyph1Display, ('POINTS', 'RESU____DEPL'))
 
-# rescale color and/or opacity maps used to include current data range
-glyph1Display.RescaleTransferFunctionToDataRange(True)
-
 # show color bar/color legend
 glyph1Display.SetScalarBarVisibility(renderView1, True)
 
-# reset view to fit data
-renderView1.ResetCamera()
-
-# set active source
-SetActiveSource(new_casermed)
-
-# set active source
-SetActiveSource(glyph1)
 
 # rename source object
 RenameSource('Deformation_Arrows', glyph1)
+
+# get color legend/bar for rESUDEPLLUT in view renderView1
+rESUDEPLLUTColorBar = GetScalarBar(rESUDEPLLUT, renderView1)
+# Properties modified on rESUDEPLLUTColorBar
+rESUDEPLLUTColorBar.Title = 'Deformation'
+# Properties modified on rESUDEPLLUTColorBar
+rESUDEPLLUTColorBar.ComponentTitle = 'Magnitude (mm)'
+
       """).split("\n")
 
 
@@ -160,25 +166,33 @@ RenameSource('Deformation_Arrows', glyph1)
 eLNOMesh1 = ELNOMesh(Input=new_casermed)
 # show data in view
 eLNOMesh1Display = Show(eLNOMesh1, renderView1)
-# hide data in view
-Hide(new_casermed, renderView1)
+
 # set scalar coloring
 ColorBy(eLNOMesh1Display, ('POINTS', 'MAX_VMISUT01_ELNO'))
 # rescale color and/or opacity maps used to include current data range
 eLNOMesh1Display.RescaleTransferFunctionToDataRange(True)
 # show color bar/color legend
 eLNOMesh1Display.SetScalarBarVisibility(renderView1, True)
+# Properties modified on warpByVector1Display
+eLNOMesh1Display.LineWidth = 4.0
+
+
 # get color transfer function/color map for 'MAXVMISUT01ELNO'
 mAXVMISUT01ELNOLUT = GetColorTransferFunction('MAXVMISUT01ELNO')
 # get opacity transfer function/opacity map for 'MAXVMISUT01ELNO'
 mAXVMISUT01ELNOPWF = GetOpacityTransferFunction('MAXVMISUT01ELNO')
-#change array component used for coloring
-mAXVMISUT01ELNOLUT.RGBPoints = [102.55225199846132, 0.231373, 0.298039, 0.752941, 3135.7733391499924, 0.865003, 0.865003, 0.865003, 6168.994426301523, 0.705882, 0.0156863, 0.14902]
-mAXVMISUT01ELNOLUT.VectorMode = 'Component'
-# Properties modified on mAXVMISUT01ELNOPWF
-mAXVMISUT01ELNOPWF.Points = [102.55225199846132, 0.0, 0.5, 0.0, 6168.994426301523, 1.0, 0.5, 0.0]       
 
-RenameSource('VMIS_Stress', eLNOMesh1)     
+
+mAXVMISUT01ELNOLUT.VectorMode = 'Magnitude'
+
+RenameSource('VMIS_Stress', eLNOMesh1)  
+
+# get color legend/bar for mAXVMISUT01ELNOLUT in view renderView1
+mAXVMISUT01ELNOLUTColorBar = GetScalarBar(mAXVMISUT01ELNOLUT, renderView1)
+# Properties modified on mAXVMISUT01ELNOLUTColorBar
+mAXVMISUT01ELNOLUTColorBar.Title = 'VonMise Stress'
+# Properties modified on mAXVMISUT01ELNOLUTColorBar
+mAXVMISUT01ELNOLUTColorBar.ComponentTitle = 'Magnitude (MPa)'   
      """).split("\n")
 
     def _force_Vector(self): 
@@ -202,9 +216,6 @@ glyph1_1Display = Show(glyph1_1, renderView1)
 glyph1_1.GlyphMode = 'All Points'
 
 # Properties modified on glyph1_1Display
-glyph1_1Display.SelectUncertaintyArray = [None, 'FamilyIdNode']
-
-# Properties modified on glyph1_1Display
 glyph1_1Display.SelectInputVectors = ['POINTS', 'GlyphVector']
 
 # set scalar coloring
@@ -216,37 +227,44 @@ glyph1_1Display.RescaleTransferFunctionToDataRange(True)
 # show color bar/color legend
 glyph1_1Display.SetScalarBarVisibility(renderView1, True)
 
+# set active source
+SetActiveSource(glyph1)
+
+# show data in view
+glyph1Display = Show(glyph1, renderView1)
+
+# show color bar/color legend
+glyph1Display.SetScalarBarVisibility(renderView1, True)
+
+# set active source
+SetActiveSource(glyph1)
+
 # rename source object
 RenameSource('Reaction_Forces', glyph1_1)
 
-# hide data in view
-Hide(glyph1, renderView1)
+# get color transfer function/color map for 'RESUFORCNODA'
+rESUFORCNODALUT = GetColorTransferFunction('RESUFORCNODA')
 
-# set active source
-SetActiveSource(glyph1)
+# get opacity transfer function/opacity map for 'RESUFORCNODA'
+rESUFORCNODAPWF = GetOpacityTransferFunction('RESUFORCNODA')
 
-# show data in view
-glyph1Display = Show(glyph1, renderView1)
 
-# show color bar/color legend
-glyph1Display.SetScalarBarVisibility(renderView1, True)
+# get color legend/bar for mAXVMISUT01ELNOPWF in view renderView1
+rESUFORCNODALUTColorBar = GetScalarBar(rESUFORCNODALUT, renderView1)
+# Properties modified on rESUFORCNODALUTColorBar
+rESUFORCNODALUTColorBar.Title = 'Forces'
+# Properties modified on rESUFORCNODALUTColorBar
+rESUFORCNODALUTColorBar.ComponentTitle ='Magnitude (N)'
 
-# hide data in view
-Hide(glyph1, renderView1)
 
-# show data in view
-glyph1Display = Show(glyph1, renderView1)
 
-# show color bar/color legend
-glyph1Display.SetScalarBarVisibility(renderView1, True)
-
-# set active source
-SetActiveSource(glyph1)
      """).split("\n")
 
       
     def _finalize(self): 
-        self.lines=self.lines+("""      
+        self.lines=self.lines+(""" 
+        
+        
 if salome.sg.hasDesktop():
   salome.sg.updateObjBrowser(1)
       """).split("\n")      

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Mar 27 22:05:19 2016
-
-@author: frenell
 """
 #import global_vars as glob
 #from global_functions import *

@@ -3,7 +3,6 @@
 """
 Created on Mon Mar 28 21:31:36 2016
 
-@author: frenell
 """
 from define_geometry import *
 from define_properties import *

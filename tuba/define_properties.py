@@ -3,7 +3,6 @@
 """
 Created on Tue Apr  5 01:20:46 2016
 
-@author: frenell
 """
 import external.euclid as eu
 import logging
