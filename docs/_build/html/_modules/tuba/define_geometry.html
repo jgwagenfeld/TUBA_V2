@@ -73,8 +73,6 @@
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Created on Sun Mar 27 22:05:19 2016</span>
-
-<span class="sd">@author: frenell</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1">#import global_vars as glob</span>
 <span class="c1">#from global_functions import *</span>
@@ -404,11 +402,14 @@
 <span class="c1">#==============================================================================</span>
 <div class="viewcode-block" id="Bent"><a class="viewcode-back" href="../../Commands.html#tuba.define_geometry.Bent">[docs]</a><span class="k">def</span> <span class="nf">Bent</span><span class="p">(</span><span class="n">bending_radius</span><span class="p">,</span><span class="n">arg1</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">arg2</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">arg3</span><span class="o">=</span><span class="s2">&quot;intersect&quot;</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;There are 3 general ways to create a pipe bent:</span>
-<span class="sd">1.  Bent(bending_radius) - this functionality is still not implemented</span>
+<span class="sd">    </span>
+<span class="sd">1.  Bent(bending_radius) - this functionality is still not implemented \n</span>
+
 <span class="sd">2.  Bent(bending_radius,arg1=Vector3) -</span>
 <span class="sd">    arg1 as a vector defines the new direction after the bent</span>
 <span class="sd">    With this function, it&#39;s not possible to create 180°-bents as the bending plane</span>
-<span class="sd">    would not be defined. A workaround would be to define 2 consecutive 90°-bents</span>
+<span class="sd">    would not be defined. A workaround would be to define 2 consecutive 90°-bents \n</span>
+<span class="sd">    </span>
 <span class="sd">3.  Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient)</span>
 <span class="sd">    With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),</span>
 <span class="sd">    the new direction after the bent can be calculated. \n</span>

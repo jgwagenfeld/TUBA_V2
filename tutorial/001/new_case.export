@@ -1,0 +1,30 @@
+P uclient jangeorg
+P mclient jangeorg-VirtualBox
+P follow_output yes
+P display jangeorg-VirtualBox:0.0
+P actions make_etude
+P version stable
+P nomjob new_case
+P debug nodebug
+P mode interactif
+P ncpus 1
+P memjob 524288.0
+A memjeveux 64.0
+P tpsjob 10
+A tpmax 600
+P username jangeorg
+P serveur localhost
+P aster_root /home/jangeorg/salome_meca/V2016/tools/Code_aster_frontend-20160
+P protocol_exec asrun.plugins.server.SSHServer
+P protocol_copyto asrun.plugins.server.SCPServer
+P protocol_copyfrom asrun.plugins.server.SCPServer
+P proxy_dir /tmp
+P consbtc oui
+P soumbtc oui
+P origine salomemeca_asrun 1.10.0
+F comm /home/jangeorg/TUBA/tutorial/001/Tutorial_001_aster.comm D 1
+F mmed /home/jangeorg/TUBA/tutorial/001/new_case.mmed D 20
+F mess /home/jangeorg/TUBA/tutorial/001/new_case.mess R 6
+F resu /home/jangeorg/TUBA/tutorial/001/new_case.resu R 8
+F rmed /home/jangeorg/TUBA/tutorial/001/new_case.rmed R 80
+R base /home/jangeorg/TUBA/tutorial/001/new_case.base RC 0

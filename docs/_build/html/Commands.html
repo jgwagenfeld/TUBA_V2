@@ -103,7 +103,6 @@
 <div class="section" id="module-tuba.define_geometry">
 <span id="geometry-commands"></span><h2>Geometry  Commands<a class="headerlink" href="#module-tuba.define_geometry" title="Permalink to this headline">¶</a></h2>
 <p>Created on Sun Mar 27 22:05:19 2016</p>
-<p>&#64;author: frenell</p>
 <dl class="function">
 <dt id="tuba.define_geometry.P">
 <code class="descclassname">tuba.define_geometry.</code><code class="descname">P</code><span class="sig-paren">(</span><em>x</em>, <em>y=''</em>, <em>z=''</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#P"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.P" title="Permalink to this definition">¶</a></dt>
@@ -134,14 +133,13 @@ current_tubapoint is used as startpoint</p>
 <dl class="function">
 <dt id="tuba.define_geometry.Bent">
 <code class="descclassname">tuba.define_geometry.</code><code class="descname">Bent</code><span class="sig-paren">(</span><em>bending_radius</em>, <em>arg1=''</em>, <em>arg2=''</em>, <em>arg3='intersect'</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Bent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Bent" title="Permalink to this definition">¶</a></dt>
-<dd><p>There are 3 general ways to create a pipe bent:
-1.  Bent(bending_radius) - this functionality is still not implemented
-2.  Bent(bending_radius,arg1=Vector3) -</p>
-<blockquote>
-<div>arg1 as a vector defines the new direction after the bent
+<dd><p>There are 3 general ways to create a pipe bent:</p>
+<ol class="arabic simple">
+<li>Bent(bending_radius) - this functionality is still not implemented</li>
+<li>Bent(bending_radius,arg1=Vector3) -
+arg1 as a vector defines the new direction after the bent
 With this function, it&#8217;s not possible to create 180°-bents as the bending plane
-would not be defined. A workaround would be to define 2 consecutive 90°-bents</div></blockquote>
-<ol class="arabic simple" start="3">
+would not be defined. A workaround would be to define 2 consecutive 90°-bents</li>
 <li>Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient)
 With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
 the new direction after the bent can be calculated.</li>
@@ -169,7 +167,6 @@ before defines Cross-Section. The branche is defined by the user-arguments</p>
 <div class="section" id="module-tuba.define_properties">
 <span id="global-properties-commands"></span><h2>Global Properties  Commands<a class="headerlink" href="#module-tuba.define_properties" title="Permalink to this headline">¶</a></h2>
 <p>Created on Tue Apr  5 01:20:46 2016</p>
-<p>&#64;author: frenell</p>
 <dl class="function">
 <dt id="tuba.define_properties.Model">
 <code class="descclassname">tuba.define_properties.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Model" title="Permalink to this definition">¶</a></dt>
@@ -273,7 +270,6 @@ There are several ways how to use it:</p>
 <div class="section" id="module-tuba.define_macros">
 <span id="macro-commands"></span><h2>Macro Commands<a class="headerlink" href="#module-tuba.define_macros" title="Permalink to this headline">¶</a></h2>
 <p>Created on Mon Mar 28 21:31:36 2016</p>
-<p>&#64;author: frenell</p>
 <dl class="function">
 <dt id="tuba.define_macros.FixPoint">
 <code class="descclassname">tuba.define_macros.</code><code class="descname">FixPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_macros.html#FixPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_macros.FixPoint" title="Permalink to this definition">¶</a></dt>

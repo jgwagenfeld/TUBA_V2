@@ -144,6 +144,9 @@ A nonzero input in ``Block(y=-1000)`` represents an imposed displacement, in thi
 
     Calculate("Statique_Linear")
 
+In this section, the simulation is defined. For now, it is limited to a linear static simulation. In the future, there will be more options available.
+
+
 
 Run the simulation:
 ---------------------------------
@@ -152,27 +155,46 @@ With the finished script, run TUBA.py in the terminal (directory where the scrip
 .. figure::  _static/1_RunTUBA.png
    :align:   center
 
-After a succesful run there should be the created salome, aster and postprocessing scripts in the folder.
+After a succesful run, the created salome, aster and postprocessing scripts should be in the folder. Furthermore you will have the 3D plot as fast visualization.
 
 .. figure::  _static/2_TUBAOutput.png
    :align:   center
 
-Start SalomeMeca and create a new project file - then load the SalomeScript.
+Start SalomeMeca and create a new project file - if you already have an open SalomeMeca project, use ``Ctrl`` + ``N`` as shortkey to reset. Then load the ``command_script_salome.py`` file.
 
 .. figure::  _static/3_ReadSalomeScript.png
    :align:   center
 
+After the script has finished succesfully, you will see the created geometry and mesh in the object browser. You can control these results by starting the geometry and mesh module respectively. Keep in mind, that the geometry module just creates a 3D visualization of an 1D mesh. 
+This doesn't apply in cases you actually define a 3D-model (see documentation).
+
+As a next step, open the Aster module and ``Add study case``.  file. 
+
 .. figure::  _static/4_OpenAster.png
    :align:   center
+
+Load from disk the created ``command_script_aster.comm``. 
+
 
 .. figure::  _static/5_LoadingCommandFile.png
    :align:   center
 
+The mesh has to be choosen from the object browser to the left. Select the compound mesh  ``Completed_Mesh`` and confirm.
+
 .. figure::  _static/6_LoadingMesh.png
    :align:   center
 
+
+You can ignore the 'Alarm'-message at the end. If the simulation failed, check your python script again if everything was defined correctly. If you are familiar with Code Aster, you can check the ``.mess`` and ``.resu`` files for more information.
+
+Your simulation results are written into an ``.rmed`` file. 
+
 Analyse the results in ParaVis:
 ---------------------------------
+
+To analyse, open the ParaVis module. Load the ``command_script_post.py`` file and choose the respective ``.rmed`` file.
+A set of graphs will be plotted as a first point for further exploration.
+
 .. figure::  _static/7_ParaVisOutput.png
    :align:   center
 

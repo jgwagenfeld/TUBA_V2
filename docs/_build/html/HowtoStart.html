@@ -207,6 +207,7 @@ The upper code section defines the global properties of the following piping sys
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Calculate</span><span class="p">(</span><span class="s2">&quot;Statique_Linear&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>In this section, the simulation is defined. For now, it is limited to a linear static simulation. In the future, there will be more options available.</p>
 </div>
 <div class="section" id="run-the-simulation">
 <h2>Run the simulation:<a class="headerlink" href="#run-the-simulation" title="Permalink to this headline">¶</a></h2>
@@ -214,26 +215,35 @@ The upper code section defines the global properties of the following piping sys
 <div class="figure align-center">
 <img alt="_images/1_RunTUBA.png" src="_images/1_RunTUBA.png" />
 </div>
-<p>After a succesful run there should be the created salome, aster and postprocessing scripts in the folder.</p>
+<p>After a succesful run, the created salome, aster and postprocessing scripts should be in the folder. Furthermore you will have the 3D plot as fast visualization.</p>
 <div class="figure align-center">
 <img alt="_images/2_TUBAOutput.png" src="_images/2_TUBAOutput.png" />
 </div>
-<p>Start SalomeMeca and create a new project file - then load the SalomeScript.</p>
+<p>Start SalomeMeca and create a new project file - if you already have an open SalomeMeca project, use <code class="docutils literal"><span class="pre">Ctrl</span></code> + <code class="docutils literal"><span class="pre">N</span></code> as shortkey to reset. Then load the <code class="docutils literal"><span class="pre">command_script_salome.py</span></code> file.</p>
 <div class="figure align-center">
 <img alt="_images/3_ReadSalomeScript.png" src="_images/3_ReadSalomeScript.png" />
 </div>
+<p>After the script has finished succesfully, you will see the created geometry and mesh in the object browser. You can control these results by starting the geometry and mesh module respectively. Keep in mind, that the geometry module just creates a 3D visualization of an 1D mesh.
+This doesn&#8217;t apply in cases you actually define a 3D-model (see documentation).</p>
+<p>As a next step, open the Aster module and <code class="docutils literal"><span class="pre">Add</span> <span class="pre">study</span> <span class="pre">case</span></code>.  file.</p>
 <div class="figure align-center">
 <img alt="_images/4_OpenAster.png" src="_images/4_OpenAster.png" />
 </div>
+<p>Load from disk the created <code class="docutils literal"><span class="pre">command_script_aster.comm</span></code>.</p>
 <div class="figure align-center">
 <img alt="_images/5_LoadingCommandFile.png" src="_images/5_LoadingCommandFile.png" />
 </div>
+<p>The mesh has to be choosen from the object browser to the left. Select the compound mesh  <code class="docutils literal"><span class="pre">Completed_Mesh</span></code> and confirm.</p>
 <div class="figure align-center">
 <img alt="_images/6_LoadingMesh.png" src="_images/6_LoadingMesh.png" />
 </div>
+<p>You can ignore the &#8216;Alarm&#8217;-message at the end. If the simulation failed, check your python script again if everything was defined correctly. If you are familiar with Code Aster, you can check the <code class="docutils literal"><span class="pre">.mess</span></code> and <code class="docutils literal"><span class="pre">.resu</span></code> files for more information.</p>
+<p>Your simulation results are written into an <code class="docutils literal"><span class="pre">.rmed</span></code> file.</p>
 </div>
 <div class="section" id="analyse-the-results-in-paravis">
 <h2>Analyse the results in ParaVis:<a class="headerlink" href="#analyse-the-results-in-paravis" title="Permalink to this headline">¶</a></h2>
+<p>To analyse, open the ParaVis module. Load the <code class="docutils literal"><span class="pre">command_script_post.py</span></code> file and choose the respective <code class="docutils literal"><span class="pre">.rmed</span></code> file.
+A set of graphs will be plotted as a first point for further exploration.</p>
 <div class="figure align-center">
 <img alt="_images/7_ParaVisOutput.png" src="_images/7_ParaVisOutput.png" />
 </div>

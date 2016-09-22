@@ -183,7 +183,9 @@ mAXVMISUT01ELNOLUT = GetColorTransferFunction('MAXVMISUT01ELNO')
 mAXVMISUT01ELNOPWF = GetOpacityTransferFunction('MAXVMISUT01ELNO')
 
 
-mAXVMISUT01ELNOLUT.VectorMode = 'Magnitude'
+mAXVMISUT01ELNOLUT.VectorMode = 'Component'
+# rescale color and/or opacity maps used to exactly fit the current data range
+eLNOMesh1Display.RescaleTransferFunctionToDataRange(False)
 
 RenameSource('VMIS_Stress', eLNOMesh1)  
 

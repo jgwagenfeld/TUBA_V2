@@ -1,9 +1,4 @@
 #---UnitCalculator to use different input units---
-from tuba.define_geometry import *
-from tuba.define_properties import *
-from tuba.define_simulation import *
-from tuba.define_macros import *
-
 from external.UnitCalculator import *
 auto_converter(mmNS)
 
