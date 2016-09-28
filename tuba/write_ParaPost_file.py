@@ -19,11 +19,26 @@ class ParaPost:
 
 
     def write(self,dict_tubavectors,dict_tubapoints):
-
+        Flag_3D=False
+        Flag_TUYAU=False
+        
+        for tubavector in dict_tubavectors:
+            if tubavector.model=="3D":
+                Flag_3D=True
+            if tubavector.model=="TUYAU":
+                Flag_TUYAU=True
+                
         #Point Functions
-        self._base(dict_tubapoints) 
+        if Flag_3D:        
+            self._base3D(dict_tubapoints)
+            self._ELNO_Mesh_3D()
+        else:
+            self._base(dict_tubapoints)
+            
         self._deformation_Warp()
-        self._ELNO_Mesh()
+
+        if Flag_TUYAU:
+            self._ELNO_Mesh_TUYAU(Flag_3D)
         self._deformation_Vector()
         self._force_Vector()
         self._finalize()
@@ -70,6 +85,56 @@ renderView1 = GetActiveViewOrCreate('RenderView')
 new_casermed.GenerateVectors = 1        
        """).split("\n")
        
+    def _base3D(self,dict_tubapoints):       
+        self.lines=self.lines+("""
+        
+# ======== Select a file for opening:
+import Tkinter,tkFileDialog
+
+root = Tkinter.Tk()
+file = tkFileDialog.askopenfilename(parent=root,
+                                    initialdir='"""+self.my_directory+ """',
+                                    filetypes=[("Result Files","*.rmed")])        
+              
+root.destroy()
+        
+import pvsimple
+pvsimple.ShowParaviewView()
+#### import the simple module from the paraview
+from pvsimple import *
+#### disable automatic camera reset on 'Show'
+pvsimple._DisableFirstRenderCameraReset()
+
+        
+# create a new 'MED Reader'
+new_casermed = MEDReader(FileName=file)
+new_casermed_2 = MEDReader(FileName=file)
+
+
+# Properties modified on new_casermed
+new_casermed.AllArrays = ['TS1/MAIL/ComSup1/RESU____DEPL@@][@@P1', 
+                          'TS1/MAIL/ComSup1/RESU____FORC_NODA@@][@@P1', 
+                          'TS1/MAIL/ComSup1/RESU____REAC_NODA@@][@@P1', 
+                          'TS1/MAIL/ComSup1/RESU____SIEF_ELGA@@][@@GAUSS', 
+                          'TS1/MAIL/ComSup1/RESU____SIEQ_ELNO@@][@@GSSNE',
+                          ]        
+new_casermed_2.AllArrays =['TS1/MAIL/ComSup0/MAX_VMISUT01_ELNO@@][@@GSSNE']
+
+renderView1 = GetActiveViewOrCreate('RenderView')
+# show data in view
+new_casermedDisplay = Show(new_casermed, renderView1)
+
+
+
+
+
+        
+# Properties modified on new_casermed
+new_casermed.GenerateVectors = 1        
+       """).split("\n")
+
+
+
        
     def _deformation_Warp(self): 
         self.lines=self.lines+("""
@@ -159,11 +224,22 @@ rESUDEPLLUTColorBar.ComponentTitle = 'Magnitude (mm)'
 
 
 
-    def _ELNO_Mesh(self): 
+    def _ELNO_Mesh_TUYAU(self,Flag_3D): 
+        
+        if Flag_3D:
+            case="new_casermed_2"
+        else:
+            case="new_casermed"
+            
+        self.lines=self.lines+("""      
+# create a new 'ELNO Mesh'        
+eLNOMesh1 = ELNOMesh(Input="""+case+""")
+       """).split("\n")
+       
+        
         self.lines=self.lines+("""
        
 # create a new 'ELNO Mesh'
-eLNOMesh1 = ELNOMesh(Input=new_casermed)
 # show data in view
 eLNOMesh1Display = Show(eLNOMesh1, renderView1)
 
@@ -187,15 +263,65 @@ mAXVMISUT01ELNOLUT.VectorMode = 'Component'
 # rescale color and/or opacity maps used to exactly fit the current data range
 eLNOMesh1Display.RescaleTransferFunctionToDataRange(False)
 
-RenameSource('VMIS_Stress', eLNOMesh1)  
+RenameSource('VMIS_Stress_MAX', eLNOMesh1)  
 
 # get color legend/bar for mAXVMISUT01ELNOLUT in view renderView1
 mAXVMISUT01ELNOLUTColorBar = GetScalarBar(mAXVMISUT01ELNOLUT, renderView1)
 # Properties modified on mAXVMISUT01ELNOLUTColorBar
-mAXVMISUT01ELNOLUTColorBar.Title = 'VonMise Stress'
+mAXVMISUT01ELNOLUTColorBar.Title = 'VonMise Stress Max over Crosssection'
 # Properties modified on mAXVMISUT01ELNOLUTColorBar
 mAXVMISUT01ELNOLUTColorBar.ComponentTitle = 'Magnitude (MPa)'   
      """).split("\n")
+
+
+
+    def _ELNO_Mesh_3D(self):
+
+        self.lines=self.lines+("""
+
+
+# create a new 'ELNO Mesh'
+eLNOMesh1_2 = ELNOMesh(Input=new_casermed)
+
+# show data in view
+eLNOMesh1_2Display = Show(eLNOMesh1_2, renderView1)
+
+
+# set scalar coloring
+ColorBy(eLNOMesh1_2Display, ('POINTS', 'RESU____SIEQ_ELNO'))
+
+# rescale color and/or opacity maps used to include current data range
+eLNOMesh1_2Display.RescaleTransferFunctionToDataRange(True)
+
+# show color bar/color legend
+eLNOMesh1_2Display.SetScalarBarVisibility(renderView1, True)
+
+# get color transfer function/color map for 'RESUSIEQELNO'
+rESUSIEQELNOLUT = GetColorTransferFunction('RESUSIEQELNO')
+
+# get opacity transfer function/opacity map for 'RESUSIEQELNO'
+rESUSIEQELNOPWF = GetOpacityTransferFunction('RESUSIEQELNO')
+
+#change array component used for coloring
+rESUSIEQELNOLUT.VectorComponent = 0
+rESUSIEQELNOLUT.VectorMode = 'Component'
+
+
+
+
+RenameSource('VMIS_Stress_3D', eLNOMesh1_2) 
+
+rESUSIEQELNOLUTColorBar = GetScalarBar(rESUSIEQELNOLUT, renderView1)
+# Properties modified on rESUSIEQELNOLUTColorBar
+rESUSIEQELNOLUTColorBar.Title = 'VonMise Stress'
+# Properties modified on rESUSIEQELNOLUTColorBar
+rESUSIEQELNOLUTColorBar.ComponentTitle = 'Magnitude (MPa)' 
+
+# rescale color and/or opacity maps used to exactly fit the current data range
+eLNOMesh1_2Display.RescaleTransferFunctionToDataRange(False)
+     """).split("\n")
+
+
 
     def _force_Vector(self): 
         self.lines=self.lines+("""
@@ -270,3 +396,5 @@ rESUFORCNODALUTColorBar.ComponentTitle ='Magnitude (N)'
 if salome.sg.hasDesktop():
   salome.sg.updateObjBrowser(1)
       """).split("\n")      
+      
+      

@@ -81,6 +81,9 @@
 
 <span class="kn">import</span> <span class="nn">tuba_vars_and_funcs</span> <span class="kn">as</span> <span class="nn">tub</span>
 
+<span class="kn">from</span> <span class="nn">external.UnitCalculator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">auto_converter</span><span class="p">(</span><span class="n">mmNS</span><span class="p">)</span>
+
 <span class="c1">#==============================================================================</span>
 <span class="c1">#==============================================================================</span>
 <span class="c1">## Point Properties</span>
@@ -88,7 +91,7 @@
 <span class="c1">#==============================================================================</span>
         
 <span class="c1">#Command to define degree of freedom of a point- &#39;x&#39; represents freedom, 0 no freedom and a value an imposed deformation</span>
-<div class="viewcode-block" id="Block"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Block">[docs]</a><span class="k">def</span> <span class="nf">Block</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">rx</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">ry</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">rz</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Block"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Block">[docs]</a><span class="k">def</span> <span class="nf">Block</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">rx</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">ry</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">rz</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;The Block function blocks the degree of freedoms of the last created point. Per default all components are set to &#39;x&#39; </span>
 <span class="sd">        which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, </span>
 <span class="sd">        whereas a value != to 0 implies a deflection/torsion of the point.</span>
@@ -96,18 +99,20 @@
 <span class="sd">        Block single compontents by naming --&gt; B(x=0,rz=0)&#39;&#39;&#39;</span>
     <span class="n">ddl</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl</span><span class="o">=</span><span class="n">ddl</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl_reference</span><span class="o">=</span><span class="n">reference</span>
     <span class="k">print</span> <span class="p">(</span><span class="n">ddl</span><span class="p">)</span></div>
  
 
-<div class="viewcode-block" id="Spring"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Spring">[docs]</a><span class="k">def</span> <span class="nf">Spring</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Spring"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Spring">[docs]</a><span class="k">def</span> <span class="nf">Spring</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a stiffness matrix to the current tubapoint.</span>
 <span class="sd">    </span>
 <span class="sd">        Multiple stiffness matrixes can be summed up.    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stiffness</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
-    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">stiffness</span><span class="o">=</span><span class="n">stiffness</span></div>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">stiffness</span><span class="o">=</span><span class="n">stiffness</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">stiffness_reference</span><span class="o">=</span><span class="n">reference</span></div>
     
-<div class="viewcode-block" id="Force"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Force">[docs]</a><span class="k">def</span> <span class="nf">Force</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Force"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Force">[docs]</a><span class="k">def</span> <span class="nf">Force</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a force-vector to the current tubapoint</span>
 <span class="sd">            </span>
 <span class="sd">       Multiple force vectors can be summed up. </span>
@@ -138,10 +143,14 @@
 <span class="sd">    &quot;RECTANGULAR&quot;  \n</span>
 
 <span class="sd">    &quot;BEAM&quot; \n</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;BAR&quot;  \n</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;TUYAU&quot; \n    </span>
 <span class="sd">        </span>
 <span class="sd">    The following models will be added in the future:</span>
 
-<span class="sd">    &quot;TUYAU&quot; \n</span>
+
 <span class="sd">    &quot;CABLE&quot; \n</span>
 <span class="sd">    &quot;3D?&quot;\n</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
@@ -170,6 +179,10 @@
     <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="p">,</span><span class="n">thickness_y</span><span class="p">,</span><span class="n">thickness_z</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Pressure"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Pressure">[docs]</a><span class="k">def</span> <span class="nf">Pressure</span><span class="p">(</span><span class="n">pressure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation. \n</span>
+<span class="sd">       For TUBE -Elements this pressure is only taken into account for the postprocessing by superposing it with the simulation\n</span>
+<span class="sd">       results.             </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_pressure</span><span class="o">=</span><span class="n">pressure</span></div>
 
 <div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Material">[docs]</a><span class="k">def</span> <span class="nf">Material</span><span class="p">(</span><span class="n">material</span><span class="p">):</span>
@@ -190,7 +203,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_material</span><span class="o">=</span><span class="n">material</span></div>
     
-<div class="viewcode-block" id="LinearForce"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.LinearForce">[docs]</a><span class="k">def</span> <span class="nf">LinearForce</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="LinearForce"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.LinearForce">[docs]</a><span class="k">def</span> <span class="nf">LinearForce</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a linear force-vector to the last created vector.</span>
 <span class="sd">       [N/mm]</span>
 <span class="sd">            </span>
@@ -199,9 +212,22 @@
     <span class="n">force</span><span class="o">=</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">dict_tubavectors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">linear_force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">force</span><span class="p">)</span>    </div>
 
-<div class="viewcode-block" id="RhoFluid"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.RhoFluid">[docs]</a><span class="k">def</span> <span class="nf">RhoFluid</span><span class="p">():</span>
-    <span class="k">pass</span>    </div>
+<div class="viewcode-block" id="RhoFluid"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.RhoFluid">[docs]</a><span class="k">def</span> <span class="nf">RhoFluid</span><span class="p">(</span><span class="n">density_fluid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;allows to take into account the weight of the fluid in the pipe. &quot;&quot;&quot;</span>
     
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span><span class="o">=</span><span class="n">density_fluid</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;density_fluid&quot;</span><span class="p">,</span><span class="n">density_fluid</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Insulation"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Insulation">[docs]</a><span class="k">def</span> <span class="nf">Insulation</span><span class="p">(</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;by providing insulation thickness and density, this function</span>
+<span class="sd">    allows to take into account the weight of the pipe insulation. &quot;&quot;&quot;</span>
+    
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span><span class="o">=</span><span class="p">[</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Insulation&quot;</span><span class="p">,</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">)</span></div>
+    
+<span class="k">def</span> <span class="nf">Windload</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>     
+    <span class="k">pass</span>
 </pre></div>
 
           </div>

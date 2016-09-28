@@ -33,13 +33,19 @@ class Salome:
             logging.debug("Processing TubaPoint: "+ tubapoint.name+ " \n ====")
             self._point(tubapoint)
             print("DDL", tubapoint.ddl)
-            if not tubapoint.ddl == ['x', 'x', 'x', 'x', 'x', 'x']:
-                self._visualize_ddl
+                
 
         for tubavector in dict_tubavectors:
             logging.debug("Processing TubaVector: "+tubavector.name+ " \n ====")
             self._vector(tubavector)
             self._visualize_Pipe_1D(tubavector.model)
+
+           
+            self._visualize_ddl(tubavector.start_tubapoint,tubavector.section)
+            if tubavector.end_tubapoint.is_element_end:
+                self._visualize_ddl(tubavector.end_tubapoint,tubavector.section)
+
+            
         
         self._create_mesh_compound(dict_tubavectors)
         self._finalize()
@@ -350,7 +356,65 @@ class Salome:
 
 #==============================================================================
 
-    def _visualize_ddl(self):
+    def _visualize_ddl(self,tubapoint,section):
+
+#
+#        tubapoint.ddl
+#        section
+#
+#
+#
+#        self.lines=self.lines+("""        
+#
+#      try:",
+#         """+name_point+"""
+##    "   R="+str(R),
+##    "   Re="+str(Re),
+##    "
+#         Pna=geompy.MakeVertexWithRef(Px,"+V1s+")",
+#         Liste.append([Pna,\"Pna\"])",
+#
+#         Pnb=geompy.MakeVertexWithRef(Px,"+V2s+")",
+##    "   Liste.append([Pnb,\"Pnb\"])",
+##    
+##    "   Vp=geompy.MakeVector(Pna,Pnb)",
+##    "   Liste.append([Vp,\"Vp\"])",
+##    
+##    "   Cone1 = geompy.MakeCone(Pna,Vp,Re,0,2*Re-R)",
+##    "   Liste.append([Cone1,\"Cone1\"])",
+##    
+##    "   P2a=geompy.MakeVertexWithRef(Px,"+V3s+")",
+##    "   Liste.append([P2a,\"P2a\"])",
+##    
+##    "   P2b=geompy.MakeVertexWithRef(Px,"+V4s+")",
+##    "   Liste.append([P2b,\"P2b\"])",  
+##    
+##    "   Vm=geompy.MakeVector(P2a,P2b)",
+##    "   Liste.append([Vm,\"Vm\"])",
+##    
+##    "   Cone2 = geompy.MakeCone(P2a,Vm,Re,0,2*Re-R)",
+##    "   Liste.append([Cone2,\"Cone2\"])",
+##    
+##    "   B=geompy.MakeCompound([Cone1,Cone2])",
+##    "   B.SetColor(SALOMEDS.Color("+Couleur["Bloc"]+"))",
+##    "   B_id=geompy.addToStudy(B,\""+ B +"\")",
+##    "   gg.createAndDisplayGO(B_id)",
+##    "   gg.setDisplayMode(B_id,1)",
+##    
+##    "   for x in Liste:",
+##    "       geompy.addToStudyInFather(B,x[0],x[1])",
+##    
+##    "except:",
+##    
+##    "   for x in Liste:",
+##    "       geompy.addToStudy(x[0],x[1])", 
+##    "   return",
+## 
+##    ])        
+#        
+#    """).split("\n")        
+        
+        
         pass
 
 #==============================================================================

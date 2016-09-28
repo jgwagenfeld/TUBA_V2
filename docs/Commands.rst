@@ -42,7 +42,7 @@ Global Properties  Commands
 .. autofunction:: LinearForce
 .. autofunction:: Pressure
 .. autofunction:: RhoFluid
-
+.. autofunction:: Insulation
 
 Local Properties  Commands
 ------------------------------------

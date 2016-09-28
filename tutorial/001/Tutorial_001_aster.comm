@@ -270,23 +270,6 @@ CARAELEM=AFFE_CARA_ELEM(
 );
 
 
-#-------------------------------------------------------------------------------
-# This section specifies mechanical loads due to the elements own weight
-#-------------------------------------------------------------------------------
-
-POIDS=AFFE_CHAR_MECA(       
-        MODELE=MODMECA,
-
-        PESANTEUR=(
-            _F( GRAVITE=9800,
-                DIRECTION=(0.0,0.0,-1.0),
-            ),
-        ),
-        
-        FORCE_POUTRE=(
-        #FORCE_CONTENU
-        ),
-);
 
 #-------------------------------------------------------------------------------
 # This section specifies external mechanical loads (imposed forces at nodes and line elements)
@@ -298,6 +281,11 @@ CHARG1=AFFE_CHAR_MECA(
         #FORCE_NODALE
         ),
 
+        PESANTEUR=(
+            _F( GRAVITE=9800,
+                DIRECTION=(0.0,0.0,-1.0),
+            ),
+        ),
 
         FORCE_POUTRE=(
         #FORCE_POUTRE                         
@@ -441,8 +429,6 @@ RESU=MECA_STATIQUE(
      INST=1,
      EXCIT=(
          _F(   CHARGE=BLOCAGE
-          ),
-         _F(   CHARGE=POIDS,
           ),
          _F(   CHARGE=CHARG1,
           ),

@@ -3,12 +3,20 @@
 import external.euclid as eu
 import logging
 
+from external.UnitCalculator import *
+auto_converter(mmNS)
+
+G=9.81*m()/sec()
+
 current_temperature = 20
 current_ref_temperature = 20
 current_pressure = ""
 current_model = "TUBE"
 current_section = []
 current_material = "SS316"
+
+current_rho_fluid=0
+current_insulation=[]
 
 tubapoint_counter = 0
 dict_tubapoints = []
@@ -21,7 +29,7 @@ current_tubavector = []
 vd1x0 = eu.Vector3(0, 1, 0)              # default dihedral vector 1
 vd2x0 = eu.Vector3(1, 0, 0)
 
-V_GRAVITATION = eu.Vector3(0, 0, -9.8)   # gravitational vector (m/s²)
+V_gravitation = eu.Vector3(0, 0, -9.8)   # gravitational vector (m/s²)
 
 MeshNbElement = 8
 

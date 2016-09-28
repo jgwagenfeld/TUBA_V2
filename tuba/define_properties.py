@@ -10,6 +10,9 @@ import math
 
 import tuba_vars_and_funcs as tub
 
+from external.UnitCalculator import *
+auto_converter(mmNS)
+
 #==============================================================================
 #==============================================================================
 ## Point Properties
@@ -17,7 +20,7 @@ import tuba_vars_and_funcs as tub
 #==============================================================================
         
 #Command to define degree of freedom of a point- 'x' represents freedom, 0 no freedom and a value an imposed deformation
-def Block (x='x',y='x',z='x',rx='x',ry='x',rz='x',reference="local"):
+def Block (x='x',y='x',z='x',rx='x',ry='x',rz='x',reference="global"):
     '''The Block function blocks the degree of freedoms of the last created point. Per default all components are set to 'x' 
         which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, 
         whereas a value != to 0 implies a deflection/torsion of the point.
@@ -25,18 +28,20 @@ def Block (x='x',y='x',z='x',rx='x',ry='x',rz='x',reference="local"):
         Block single compontents by naming --> B(x=0,rz=0)'''
     ddl=[x,y,z,rx,ry,rz]
     tub.current_tubapoint.ddl=ddl
+    tub.current_tubapoint.ddl_reference=reference
     print (ddl)
  
 
-def Spring (x=0, y=0, z=0, rx=0, ry=0, rz=0,reference="local"):
+def Spring (x=0, y=0, z=0, rx=0, ry=0, rz=0,reference="global"):
     """appends a stiffness matrix to the current tubapoint.
     
         Multiple stiffness matrixes can be summed up.    
     """
     stiffness=[x,y,z,rx,ry,rz]
     tub.current_tubapoint.stiffness=stiffness
+    tub.current_tubapoint.stiffness_reference=reference
     
-def Force(x=0,y=0,z=0,reference="local"):
+def Force(x=0,y=0,z=0,reference="global"):
     """appends a force-vector to the current tubapoint
             
        Multiple force vectors can be summed up. 
@@ -67,10 +72,14 @@ def Model (model):
     "RECTANGULAR"  \n
 
     "BEAM" \n
+    
+    "BAR"  \n
+    
+    "TUYAU" \n    
         
     The following models will be added in the future:
 
-    "TUYAU" \n
+
     "CABLE" \n
     "3D?"\n
     """    
@@ -99,6 +108,10 @@ def SectionRectangular(height_y,height_z=0,thickness_y=0,thickness_z=0):
     tub.current_section=[height_y,height_z,thickness_y,thickness_z]
 
 def Pressure(pressure):
+    """Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation. \n
+       For TUBE -Elements this pressure is only taken into account for the postprocessing by superposing it with the simulation\n
+       results.             
+    """
     tub.current_pressure=pressure
 
 def Material(material):
@@ -119,7 +132,7 @@ def Material(material):
     """
     tub.current_material=material
     
-def LinearForce(x=0,y=0,z=0,reference="local"):
+def LinearForce(x=0,y=0,z=0,reference="global"):
     """appends a linear force-vector to the last created vector.
        [N/mm]
             
@@ -128,6 +141,19 @@ def LinearForce(x=0,y=0,z=0,reference="local"):
     force=eu.Vector3(x,y,z)
     tub.dict_tubavectors[-1].linear_force.append(force)    
 
-def RhoFluid():
-    pass    
+def RhoFluid(density_fluid):
+    """allows to take into account the weight of the fluid in the pipe. """
     
+    tub.current_rho_fluid=density_fluid
+    print("density_fluid",density_fluid)
+
+
+def Insulation(insulation_thickness, insulation_density):
+    """by providing insulation thickness and density, this function
+    allows to take into account the weight of the pipe insulation. """
+    
+    tub.current_insulation=[insulation_thickness, insulation_density]
+    print("Insulation",insulation_thickness, insulation_density)
+    
+def Windload(x,y,z):     
+    pass

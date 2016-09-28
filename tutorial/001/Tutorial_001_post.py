@@ -71,10 +71,13 @@ rESUDEPLPWFColorBar.Title = 'Deformation'
 rESUDEPLPWFColorBar.ComponentTitle = 'Magnitude (mm)'
 
       
+      
+# create a new 'ELNO Mesh'        
+eLNOMesh1 = ELNOMesh(Input=new_casermed)
+       
 
        
 # create a new 'ELNO Mesh'
-eLNOMesh1 = ELNOMesh(Input=new_casermed)
 # show data in view
 eLNOMesh1Display = Show(eLNOMesh1, renderView1)
 

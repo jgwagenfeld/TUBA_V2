@@ -27,7 +27,9 @@ class TubaPoint:
         self.name = name
         self.pos = eu.Point3(x, y, z)              # Position of the Point
         self.ddl = ['x', 'x', 'x', 'x', 'x', 'x']  # Degree of Freedom/Deflection
+        self.ddl_reference = "global"      
         self.stiffness = [0, 0, 0, 0, 0, 0]  # Stiffness-Matrix of the Point
+        self.stiffness_reference = "global"   
         self.mass = 0                        # Discret Mass at the Point
         self.moment = []           # Sum of Moments applied at the Point
         self.force = []                      # List of Forces applied at the Point
@@ -119,6 +121,7 @@ class TubaVector:
         tub.tubavector_counter += 1
         tub.dict_tubavectors.append(self)
         self._update_attached_tubapoints()
+        self._update_global_forces()
     
     def _update_attached_tubapoints(self):
         
@@ -141,6 +144,36 @@ class TubaVector:
 
         self.start_tubapoint.vd2x=self.vector.normalized()
         self.end_tubapoint.vd2x=self.vector.normalized()
+        
+    def _update_global_forces(self):        
+
+# Fluid Weight in Pipe
+#--------------------------------------------
+        if self.model in ["TUBE","TUYAU"]:
+            if tub.current_rho_fluid:
+                density_fluid=tub.current_rho_fluid
+                outer_radius=self.section[0]
+                wall_thickness=self.section[1]
+                force_grav_fluid= math.pi*(outer_radius-wall_thickness)**2*density_fluid*tub.G
+                print("Fluid_Weight N/mm", force_grav_fluid)
+                self.linear_force.append(eu.Vector3(0,0,-force_grav_fluid))
+                print("Fluid_Weight N/mm", eu.Vector3(0,0,-force_grav_fluid))
+
+# Insulation of the Pipe
+#--------------------------------------------
+        if self.model in ["TUBE","TUYAU"]:
+            if tub.current_insulation:            
+                [insulation_thickness, insulation_density]=tub.current_insulation
+                outer_radius=self.section[0]
+    
+    
+                force_grav_insulation= math.pi*((outer_radius+insulation_thickness)**2-outer_radius**2)*insulation_density*9.81
+                print("Insulation_Weight N/mm", force_grav_insulation)
+                self.linear_force.append(eu.Vector3(0,0,-force_grav_insulation))
+ 
+# Wind Load
+#--------------------------------------------        
+        
 # ==============================================================================
 # ==============================================================================
 class TubaBent(TubaVector):

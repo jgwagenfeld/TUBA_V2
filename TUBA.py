@@ -9,7 +9,7 @@ This programm is used to prepare a FEM piping network simulation in Code Aster
 and Salome. The User defines this piping network in a script with a list
 of functions. 
 
-1.The main function processes the script(argument when calling TUBAV3.py)
+1.The main function processes the script(argument when calling TUBA.py)
 
 2.These functions are defined in the tuba-Module - they produce a list of
 TubaPoint and TubaVector-Objects. These classes are a container for
@@ -70,22 +70,19 @@ outputFile_Salome = my_directory + "/" + cmd_script + "_salome" + ".py"
 # File used in Code Aster to define Simulation parameters
 outputFile_Comm = my_directory + "/" + cmd_script + "_aster" + ".comm"
 
-
 # File used in Code Aster to define Simulation parameters
 outputFile_ParaPost = my_directory + "/" + cmd_script + "_post" + ".py"
 
 
-def Main():
 
-    
+def Main():
+  
 #    simulation=tuba.define_simulation.Simulation() 
 
     print("\n------------------------")
     print("  reading and processing the User-Input")
     print("------------------------\n")
-    
-    
-    
+          
     exec(open(inputFileTuba).read())
 
     completed_dict_tubavectors = tub.dict_tubavectors
@@ -95,7 +92,7 @@ def Main():
     print("  print point and vector lists with piping properties")
     print("------------------------\n")
 
-   # printall_tuba_points_vectors(completed_dict_tubapoints, completed_dict_tubavectors)
+    printall_tuba_points_vectors(completed_dict_tubapoints, completed_dict_tubavectors)
 
 #==============================================================================
 # Create Code Salome Object and translate dict_tubavectors,dict_tubapoints-
@@ -140,10 +137,10 @@ def Main():
         print("Error")        
         
         
-        
-        
 #==============================================================================
-
+    for tubavector in completed_dict_tubavectors:
+            print(tubavector.name)
+            print(tubavector.linear_force)
     print
     print("------------------------")
     print("         OK")
@@ -160,6 +157,8 @@ def Main():
     dtime = time_end - time_start
     print("------------------------")
     print("Execution time :"+str(round(dtime,2)) + "s")
+    
+    
 
 #==============================================================================
 #==============================================================================

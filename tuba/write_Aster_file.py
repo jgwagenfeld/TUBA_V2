@@ -384,17 +384,20 @@ class CodeAster:
     def _linear_forces(self,dict_tubavectors):
         for tubavector in dict_tubavectors: 
             newlines=[]  
-
+            force_sum = (0,0,0)
             for i,force in enumerate(tubavector.linear_force):
-                if force != (0,0,0):
-                    newlines=[
-                        "_F(",
-                        "GROUP_MA='" + tubavector.name + "',",
-                        "FX="+str(force.x)+", FY="+str(force.y)+", FZ="+str(force.z),
-                        "),"
-                        ]                           
-                    
-                    insert_lines_at_string(self.lines,"#FORCE_POUTRE",newlines)
+                force_sum=force_sum+force
+             
+            print("force_sum", force_sum) 
+            if force_sum != (0,0,0):
+                newlines=[
+                    "_F(",
+                    "GROUP_MA='" + tubavector.name + "',",
+                    "FX="+str(force_sum.x)+", FY="+str(force_sum.y)+", FZ="+str(force_sum.z),
+                    "),"
+                    ]                           
+                
+                insert_lines_at_string(self.lines,"#FORCE_POUTRE",newlines)
 
 #==============================================================================
     def _section(self,dict_tubavectors):
@@ -487,13 +490,7 @@ class CodeAster:
                     ])
                 insert_lines_at_string(self.lines,"#SECTION_POUTRE",newlines)            
 
-
-
-            
-    
-            
-            
-            
+          
        
 #==============================================================================      
          
@@ -566,8 +563,6 @@ class CodeAster:
                 newlines.append("        ),")
                 newlines.append("    ),")
                 insert_lines_at_string(self.lines,"#CREA_GROUPE_MAILLE ",newlines)
-
-
                 
                 newlines=[
                 "    _F(",
@@ -578,7 +573,46 @@ class CodeAster:
                 ]
                 
                 insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)                
+             
+             
+            if item[0] == "BAR":
+
+                newlines=[]
+                newlines.extend([
+                "    _F(",
+                "        NOM='GBARRE',",
+                "        TYPE_MAILLE = '1D',",
+                "        UNION=(",
+                ])                
+                character_count=0
+                text="            "
+                for name in item[1] :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+    
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="            "
+                        character_count=0
+                newlines.append(text)
+
+
+                newlines.append("        ),")
+                newlines.append("    ),")
+                insert_lines_at_string(self.lines,"#CREA_GROUPE_MAILLE ",newlines)                
                 
+                newlines=[]
+                newlines.extend([                
+                "    _F(",
+                "        GROUP_MA='GBARRE',",                        
+                "        PHENOMENE = 'MECANIQUE',",
+                "        MODELISATION = 'BARRE'));",             
+                "    ),",
+                ])            
+                
+                insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)
+             
+             
             if item[0] == "3D":  
                 pass
                 
@@ -636,8 +670,6 @@ RESU=MECA_STATIQUE(
      INST=1,
      EXCIT=(
          _F(   CHARGE=BLOCAGE
-          ),
-         _F(   CHARGE=POIDS,
           ),
          _F(   CHARGE=CHARG1,
           ),

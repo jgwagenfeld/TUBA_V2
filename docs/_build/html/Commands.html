@@ -175,8 +175,9 @@ available at the moment:</p>
 <p>&#8220;TUBE&#8221;</p>
 <p>&#8220;RECTANGULAR&#8221;</p>
 <p>&#8220;BEAM&#8221;</p>
-<p>The following models will be added in the future:</p>
+<p>&#8220;BAR&#8221;</p>
 <p>&#8220;TUYAU&#8221;</p>
+<p>The following models will be added in the future:</p>
 <p>&#8220;CABLE&#8221;</p>
 <p>&#8220;3D?&#8221;</p>
 </dd></dl>
@@ -195,7 +196,10 @@ the thermal dilation is zero, T_ref has to be set to 300°C</p>
 <dl class="function">
 <dt id="tuba.define_properties.Pressure">
 <code class="descclassname">tuba.define_properties.</code><code class="descname">Pressure</code><span class="sig-paren">(</span><em>pressure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Pressure" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation.</p>
+<p>For TUBE -Elements this pressure is only taken into account for the postprocessing by superposing it with the simulation</p>
+<p>results.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="tuba.define_properties.Material">
@@ -216,7 +220,7 @@ properties can be defined in library_material.py</p>
 
 <dl class="function">
 <dt id="tuba.define_properties.LinearForce">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">LinearForce</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='local'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#LinearForce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.LinearForce" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_properties.</code><code class="descname">LinearForce</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#LinearForce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.LinearForce" title="Permalink to this definition">¶</a></dt>
 <dd><p>appends a linear force-vector to the last created vector.
 [N/mm]</p>
 <p>Multiple force vectors can be summed up.</p>
@@ -225,19 +229,30 @@ properties can be defined in library_material.py</p>
 <dl class="function">
 <dt>
 <code class="descclassname">tuba.define_properties.</code><code class="descname">Pressure</code><span class="sig-paren">(</span><em>pressure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Pressure"><span class="viewcode-link">[source]</span></a></dt>
-<dd></dd></dl>
+<dd><p>Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation.</p>
+<p>For TUBE -Elements this pressure is only taken into account for the postprocessing by superposing it with the simulation</p>
+<p>results.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="tuba.define_properties.RhoFluid">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">RhoFluid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#RhoFluid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.RhoFluid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">tuba.define_properties.</code><code class="descname">RhoFluid</code><span class="sig-paren">(</span><em>density_fluid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#RhoFluid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.RhoFluid" title="Permalink to this definition">¶</a></dt>
+<dd><p>allows to take into account the weight of the fluid in the pipe.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tuba.define_properties.Insulation">
+<code class="descclassname">tuba.define_properties.</code><code class="descname">Insulation</code><span class="sig-paren">(</span><em>insulation_thickness</em>, <em>insulation_density</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Insulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Insulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>by providing insulation thickness and density, this function
+allows to take into account the weight of the pipe insulation.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="local-properties-commands">
 <h2>Local Properties  Commands<a class="headerlink" href="#local-properties-commands" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tuba.define_properties.Block">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Block</code><span class="sig-paren">(</span><em>x='x'</em>, <em>y='x'</em>, <em>z='x'</em>, <em>rx='x'</em>, <em>ry='x'</em>, <em>rz='x'</em>, <em>reference='local'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Block" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_properties.</code><code class="descname">Block</code><span class="sig-paren">(</span><em>x='x'</em>, <em>y='x'</em>, <em>z='x'</em>, <em>rx='x'</em>, <em>ry='x'</em>, <em>rz='x'</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Block" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Block function blocks the degree of freedoms of the last created point. Per default all components are set to &#8216;x&#8217; 
 which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, 
 whereas a value != to 0 implies a deflection/torsion of the point.
@@ -247,14 +262,14 @@ There are several ways how to use it:</p>
 
 <dl class="function">
 <dt id="tuba.define_properties.Spring">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Spring</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>rx=0</em>, <em>ry=0</em>, <em>rz=0</em>, <em>reference='local'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Spring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Spring" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_properties.</code><code class="descname">Spring</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>rx=0</em>, <em>ry=0</em>, <em>rz=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Spring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Spring" title="Permalink to this definition">¶</a></dt>
 <dd><p>appends a stiffness matrix to the current tubapoint.</p>
 <p>Multiple stiffness matrixes can be summed up.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="tuba.define_properties.Force">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Force</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='local'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Force" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_properties.</code><code class="descname">Force</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Force" title="Permalink to this definition">¶</a></dt>
 <dd><p>appends a force-vector to the current tubapoint</p>
 <p>Multiple force vectors can be summed up.</p>
 </dd></dl>

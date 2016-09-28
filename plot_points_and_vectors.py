@@ -73,7 +73,7 @@ for vector in tub.dict_tubavectors:
         x_lin=[]
         y_lin=[]
         z_lin=[]    
-        print("Hallo")
+
         for p in range(0,10): 
             x_lin.append(vector.start_tubapoint.pos.x+vector.vector.x/10*p)
             y_lin.append(vector.start_tubapoint.pos.y+vector.vector.y/10*p)            
