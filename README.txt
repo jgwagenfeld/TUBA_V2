@@ -1,16 +1,9 @@
 
+TUBA is a Python module orginally created by Pascal KREZEL. It allows to create and simulate piping- and rod geometries in Salome-Meca (OpenSource under LPGL license).
 
-Naming Convention
+With a simple to use set of commands even complex piping-geometries can be generated and different load cases can be simulated.
+TUBA prepares the scripts for SalomeMeca, CodeAster and ParaVis which then have to be loaded into Salome-Meca where the actual simulation is effected.
 
+Even without further knowledge of SalomeMeca, TUBA allows to quickly and easily create piping-geometries and effect the targeted calculation and analysis.
 
-a TubaPoint object has to be adressed always by a _tubapoint ending:
- f.ex  --> Startpoint  =>   start_tubapoint
-
-In contrast, a real point(euclid.Point3-Object) as a reprensentation of a position in a 3D-Space
-can be named _point or _position
-
-This convention is introduced to distiguish between a tubapoint as an information vessel and the
-geometrical representation of a point
-
-
-The same applies for TubaVector-Objects.
+Check http://tuba-v2.readthedocs.io/en/latest/ for more informatios
