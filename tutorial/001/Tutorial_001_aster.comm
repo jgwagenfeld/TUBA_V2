@@ -46,13 +46,13 @@ MAIL=DEFI_GROUP(
                     
         CREA_GROUP_MA=( 
             _F(
-                NOM='GTUYAU3M',
+                NOM='GTUBE_D',
                 TYPE_MAILLE = '1D',
                 UNION=(
-                    'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V_Bent6', 'V7', 
-                    
-                ),
-            ),
+            'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V_Bent6', 'V7', 
+            
+               ),
+        ),
         #CREA_GROUPE_MAILLE                        
         ),                 
 
@@ -73,9 +73,9 @@ MODMECA=AFFE_MODELE(
 
         AFFE=(
             _F(
-                GROUP_MA='GTUYAU3M',
+                GROUP_MA='GTUBE_D',
                 PHENOMENE='MECANIQUE',
-                MODELISATION='TUYAU_3M',
+                MODELISATION='POU_D_T',
             ),
         #MODELISATION
         ),
@@ -247,7 +247,7 @@ CARAELEM=AFFE_CARA_ELEM(
                 ),
                 SECTION ='CERCLE',
                 CARA=('R','EP',),
-                VALE=(35, 4),
+                VALE=(35.0, 4.0),
             ),
         #SECTION_TUBE
         #SECTION_TUYAU3M
@@ -292,36 +292,30 @@ CHARG1=AFFE_CHAR_MECA(
         ),
         
         FORCE_TUYAU=(
+        
+        #-------------------------------------------------------------------------------",
+        # Pressure Field",
+        #-------------------------------------------------------------------------------",
+        CHA_PRES=CREA_CHAMP(
+             OPERATION='AFFE',
+             TYPE_CHAM='NOEU_TEMP_R',
+             MODELE=MODMECA,
+             AFFE=(                
             _F(
-                GROUP_MA=(
+                GROUP_MA=(                
+        
                     'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V_Bent6', 'V7', 
                     
                 ),
+                        NOM_CMP='TEMP',
+                        VALE=0,
+                        ),
                 PRES=0.2,
             ),
         #FORCE_TUYAU                        
         ),
 
 );
-
-
-
-#DEF_FORCE_REDUCTEUR
-
-
-
-
-
-
-
-CHARG2F=AFFE_CHAR_MECA_F(    
-        MODELE=MODMECA,
-
-        FORCE_POUTRE=(
-        #FORCE_F_CONTENU
-        ),
-);
-
 
 
 #-------------------------------------------------------------------------------
@@ -339,8 +333,14 @@ CHA_TEMP=CREA_CHAMP(
 
                 _F(
                    GROUP_MA=(
-                    'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V_Bent6', 'V7', 
-                    
+                    'V_Bent6', 'V7', 
+                   ),
+                   NOM_CMP='TEMP',
+                   VALE=20,
+                ),
+                _F(
+                   GROUP_MA=(
+                    'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 
                    ),
                    NOM_CMP='TEMP',
                    VALE=550,
@@ -364,9 +364,12 @@ RES_TEMP=CREA_RESU(
 );
 
 
+#-------------------------------------------------------------------------------
+# Creates a dummy pressure filed for TUBE-elememts
+#-------------------------------------------------------------------------------
                
 
-#CHAMPS_FLEX
+#Pressure_Field
 
 
 #-------------------------------------------------------------------------------
@@ -414,6 +417,12 @@ CHMATH=AFFE_MATERIAU(
 );
 
 
+
+
+
+
+
+
 ####################################################################################################
 #SIMULATION STEP
 ####################################################################################################
@@ -442,26 +451,9 @@ RESU=CALC_CHAMP(reuse =RESU,
      FORCE=('REAC_NODA','FORC_NODA'),
      CONTRAINTE=('SIEF_ELGA'),
      #CONTRAINTE=('SIEF_ELGA','SIPO_NOEU')
-     CRITERES=('SIEQ_ELNO'),
 );
  
 IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=RESU));            
-        
-
-MAX_VMIS=POST_CHAMP(
-    RESULTAT=RESU,
-    TOUT_ORDRE='OUI',
-    GROUP_MA='GTUYAU3M',
-    MIN_MAX_SP=(
-    _F( NOM_CHAM='SIEQ_ELNO',
-           NOM_CMP='VMIS',
-           TYPE_MAXI='MAXI',
-           NUME_CHAM_RESU=1,
-           ),
-    ),
-);
-  
-IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=MAX_VMIS));
         
 #CALCULS
 

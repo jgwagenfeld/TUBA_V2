@@ -41,8 +41,12 @@ class ParaPost:
             self._ELNO_Mesh_TUYAU(Flag_3D)
         self._deformation_Vector()
         self._force_Vector()
-        self._finalize()
 
+                
+       # self._visualize_ddl(dict_tubapoints) 
+        
+        
+        self._finalize()
                
 #==============================================================================
 #  Write PostBase
@@ -397,4 +401,62 @@ if salome.sg.hasDesktop():
   salome.sg.updateObjBrowser(1)
       """).split("\n")      
       
-      
+   
+    def _visualize_ddl(self,dict_tubapoints):
+        '''perhaps obsolete function'''
+
+        for tubapoint in dict_tubapoints:
+            
+            if not tubapoint.ddl[0]=="x":     #x
+
+
+                self.lines=self.lines+("""                
+# create a new 'Cone'
+"""+tubapoint.name+"""_x = Cone()
+RenameSource('"""+tubapoint.name+"""_x', """+tubapoint.name+"""_x)
+"""+tubapoint.name+"""_x.Direction = [1.0, 0.0, 0.0]
+"""+tubapoint.name+"""_x.Height = 300.0
+"""+tubapoint.name+"""_x.Resolution = 100
+"""+tubapoint.name+"""_x.Radius = 100.0
+"""+tubapoint.name+"""_x.Center = ["""+str(tubapoint.pos.x)+""","""+str(tubapoint.pos.y)+""","""+str(tubapoint.pos.z)+"""]
+
+SetActiveSource("""+tubapoint.name+"""_x)
+"""+tubapoint.name+"""_x_Display = Show("""+tubapoint.name+"""_x, renderView1)
+
+                """).split("\n")
+                
+                
+            if not tubapoint.ddl[1]=="x":     #y
+ 
+                self.lines=self.lines+("""                
+# create a new 'Cone'
+"""+tubapoint.name+"""_y = Cone()
+RenameSource('"""+tubapoint.name+"""_y', """+tubapoint.name+"""_y)
+"""+tubapoint.name+"""_y.Direction = [1.0, 0.0, 0.0]
+"""+tubapoint.name+"""_y.Height = 300.0
+"""+tubapoint.name+"""_y.Resolution = 100
+"""+tubapoint.name+"""_y.Radius = 100.0
+"""+tubapoint.name+"""_y.Center = ["""+str(tubapoint.pos.x)+""","""+str(tubapoint.pos.y)+""","""+str(tubapoint.pos.z)+"""]
+
+SetActiveSource("""+tubapoint.name+"""_y)
+"""+tubapoint.name+"""_y_Display = Show("""+tubapoint.name+"""_y, renderView1)
+                """).split("\n")
+       
+            if not tubapoint.ddl[2]=="x":     #z
+            
+                self.lines=self.lines+("""                
+# create a new 'Cone'
+"""+tubapoint.name+"""_z = Cone()
+RenameSource('"""+tubapoint.name+"""_z', """+tubapoint.name+"""_z)
+"""+tubapoint.name+"""_z.Direction = [0.0, 0.0, 1.0]
+"""+tubapoint.name+"""_z.Height = 300.0
+"""+tubapoint.name+"""_z.Resolution = 100
+"""+tubapoint.name+"""_z.Radius = 100.0
+"""+tubapoint.name+"""_z.Center = ["""+str(tubapoint.pos.x)+""","""+str(tubapoint.pos.y)+""","""+str(tubapoint.pos.z)+"""]
+SetActiveSource("""+tubapoint.name+"""_z)
+"""+tubapoint.name+"""_z_Display = Show("""+tubapoint.name+"""_z, renderView1)
+                """).split("\n")            
+            
+            
+            
+    

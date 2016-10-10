@@ -380,6 +380,76 @@ class CodeAster:
                 if item[0]:
                     insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines)
 
+
+            for name in item[1]:
+                item_tubavector=([tubavector for tubavector in dict_tubavectors
+                                            if tubavector.name == name][0])                                
+                if item_tubavector.model == "TUBE":
+                    new_item.append(name)
+  
+            print("ITem", item)
+            if  new_item:            
+                newlines=[]
+                newlines=newlines+("""
+#-------------------------------------------------------------------------------",
+# Pressure Field",
+#-------------------------------------------------------------------------------",
+CHA_PRES=CREA_CHAMP(
+     OPERATION='AFFE',
+     TYPE_CHAM='NOEU_TEMP_R',
+     MODELE=MODMECA,
+     AFFE=(                
+    _F(
+        GROUP_MA=(                
+""").split("\n") 
+   
+                character_count=0
+                text="            "
+                for name in new_item :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+    
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="            "
+                        character_count=0
+                newlines.append(text)              
+                
+                
+                newlines.extend([
+                "        ),",
+                "                NOM_CMP='TEMP',",
+                "                VALE=0,",
+                "                ),",
+                "        PRES="+str(item[0])+",",
+                "    ),",
+                ])
+                if item[0]:
+                    insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines) 
+#    "#-------------------------------------------------------------------------------",
+#    "# Champ de pression",
+#    "#-------------------------------------------------------------------------------",
+#    "CHA_PRES=CREA_CHAMP(",
+#    "     OPERATION='AFFE',",
+#    "     TYPE_CHAM='NOEU_TEMP_R',",
+#    "     MODELE=MODMECA,",
+#    "     AFFE=(",
+#    "            _F( TOUT='OUI',",
+#    "                NOM_CMP='TEMP',",
+#    "                VALE=0,",
+#    "                ),",
+#    "",
+#    "                #CHAMP_PRESS",
+#    "    ),",
+#    ");",
+#    "IMPR_RESU(FORMAT='MED',RESU=_F(CHAM_GD=CHA_PRES));",                
+#                                 
+
+
+
+
+
+
 #==============================================================================
     def _linear_forces(self,dict_tubavectors):
         for tubavector in dict_tubavectors: 

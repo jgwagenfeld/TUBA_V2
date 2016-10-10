@@ -34,7 +34,7 @@ V_gravitation = eu.Vector3(0, 0, -9.8)   # gravitational vector (m/s²)
 MeshNbElement = 8
 
 colors = {
-    "Bloc":"1,1,0",
+    "BLOCK":"1,1,0",
     "POUTRE_RECTANGLE":"0.8,0.8,0.8",       #grey
     "RECTANGULAR":"0.8,0.8,0.8",            #grey
     "POUTRE":"0.8,0.8,0.8",                 #grey

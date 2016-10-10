@@ -6,7 +6,7 @@
                      révision 77d3379d51e8 - branche 'v12'                      
                          Copyright EDF R&D 1991 - 2016                          
                                                                                 
-                    Exécution du : Thu Sep 22 22:44:19 2016                     
+                    Exécution du : Thu Oct  6 01:01:02 2016                     
                     Nom de la machine : jangeorg-VirtualBox                     
                               Architecture : 64bit                              
                           Type de processeur : x86_64                           
@@ -25,9 +25,9 @@
                         Librairie PETSc : non disponible                        
                     Version de la librairie SCOTCH : 5.1.10                     
                   Mémoire limite pour l'exécution : 862.00 Mo                   
-                   consommée par l'initialisation : 376.57 Mo                   
+                   consommée par l'initialisation : 376.65 Mo                   
                   par les objets du jeu de commandes : 0.00 Mo                  
-                 reste pour l'allocation dynamique : 481.96 Mo                  
+                 reste pour l'allocation dynamique : 481.89 Mo                  
                 Taille limite des fichiers d'échange : 12.00 Go                 
                                                                                 
    
@@ -72,44 +72,40 @@
  <FIN> Arrêt normal dans "FIN".
  <I> <FIN> ARRET NORMAL DANS "FIN" PAR APPEL A "JEFINI".
   
- <I> <FIN> MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :                      44.21 Mo
- <I> <FIN> MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :                      53.45 Mo
- <I> <FIN> MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS LORS DE L'EXECUTION :     439.49 Mo
+ <I> <FIN> MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :                      28.39 Mo
+ <I> <FIN> MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :                      35.93 Mo
+ <I> <FIN> MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS LORS DE L'EXECUTION :     417.92 Mo
 
  ********************************************************************************
  * COMMAND                  :       USER :     SYSTEM :   USER+SYS :    ELAPSED *
  ********************************************************************************
- * init (jdc)               :       2.35 :       0.12 :       2.47 :       3.70 *
- *  . compile               :       0.00 :       0.00 :       0.00 :       0.01 *
- *  . exec_compile          :       2.04 :       0.10 :       2.14 :       3.30 *
- * DEBUT                    :       0.03 :       0.02 :       0.05 :       0.09 *
- * LIRE_MAILLAGE            :       0.01 :       0.00 :       0.01 :       0.02 *
- * CREA_MAILLAGE            :       0.00 :       0.00 :       0.00 :       0.01 *
- * DEFI_GROUP               :       0.01 :       0.00 :       0.01 :       0.02 *
- * AFFE_MODELE              :       0.01 :       0.00 :       0.01 :       0.03 *
+ * init (jdc)               :       0.64 :       0.19 :       0.83 :       1.74 *
+ *  . compile               :       0.01 :       0.00 :       0.01 :       0.00 *
+ *  . exec_compile          :       0.39 :       0.16 :       0.55 :       1.42 *
+ * DEBUT                    :       0.04 :       0.03 :       0.07 :       0.20 *
+ * LIRE_MAILLAGE            :       0.01 :       0.01 :       0.02 :       0.06 *
+ * CREA_MAILLAGE            :       0.00 :       0.01 :       0.01 :       0.01 *
+ * DEFI_GROUP               :       0.00 :       0.00 :       0.00 :       0.03 *
+ * AFFE_MODELE              :       0.01 :       0.00 :       0.01 :       0.07 *
+ * DEFI_FONCTION            :       0.00 :       0.00 :       0.00 :       0.01 *
  * DEFI_FONCTION            :       0.01 :       0.00 :       0.01 :       0.00 *
- * DEFI_FONCTION            :       0.00 :       0.00 :       0.00 :       0.01 *
- * DEFI_FONCTION            :       0.00 :       0.00 :       0.00 :       0.01 *
+ * DEFI_FONCTION            :       0.00 :       0.00 :       0.00 :       0.00 *
  * DEFI_MATERIAU            :       0.01 :       0.00 :       0.01 :       0.02 *
- * AFFE_CHAR_MECA           :       0.01 :       0.00 :       0.01 :       0.03 *
- * AFFE_CARA_ELEM           :       0.03 :       0.00 :       0.03 :       0.04 *
- * AFFE_CHAR_MECA           :       0.00 :       0.00 :       0.00 :       0.00 *
- * AFFE_CHAR_MECA           :       0.00 :       0.00 :       0.00 :       0.01 *
- * AFFE_CHAR_MECA_F         :       0.00 :       0.00 :       0.00 :       0.01 *
- * CREA_CHAMP               :       0.00 :       0.00 :       0.00 :       0.01 *
- * IMPR_RESU                :       0.02 :       0.00 :       0.02 :       0.03 *
- * CREA_RESU                :       0.00 :       0.00 :       0.00 :       0.01 *
- * AFFE_MATERIAU            :       0.00 :       0.00 :       0.00 :       0.00 *
- * AFFE_MATERIAU            :       0.00 :       0.00 :       0.00 :       0.01 *
- * MECA_STATIQUE            :       1.19 :       0.02 :       1.21 :       1.69 *
- * CALC_CHAMP               :       0.37 :       0.02 :       0.39 :       0.44 *
- * IMPR_RESU                :       0.10 :       0.01 :       0.11 :       0.23 *
- * POST_CHAMP               :       0.03 :       0.01 :       0.04 :       0.06 *
- * IMPR_RESU                :       0.01 :       0.00 :       0.01 :       0.03 *
- * FIN                      :       0.04 :       0.01 :       0.05 :       0.12 *
- *  . part Superviseur      :       0.53 :       0.05 :       0.58 :       1.05 *
- *  . part Fortran          :       1.82 :       0.07 :       1.89 :       2.65 *
+ * AFFE_CHAR_MECA           :       0.03 :       0.00 :       0.03 :       0.05 *
+ * AFFE_CARA_ELEM           :       0.03 :       0.02 :       0.05 :       0.07 *
+ * AFFE_CHAR_MECA           :       0.00 :       0.00 :       0.00 :       0.02 *
+ * CREA_CHAMP               :       0.00 :       0.00 :       0.00 :       0.02 *
+ * IMPR_RESU                :       0.02 :       0.00 :       0.02 :       0.06 *
+ * CREA_RESU                :       0.00 :       0.00 :       0.00 :       0.02 *
+ * AFFE_MATERIAU            :       0.01 :       0.00 :       0.01 :       0.00 *
+ * AFFE_MATERIAU            :       0.01 :       0.00 :       0.01 :       0.02 *
+ * MECA_STATIQUE            :       0.03 :       0.02 :       0.05 :       0.12 *
+ * CALC_CHAMP               :       0.03 :       0.00 :       0.03 :       0.08 *
+ * IMPR_RESU                :       0.01 :       0.01 :       0.02 :       0.04 *
+ * FIN                      :       0.02 :       0.03 :       0.05 :       0.11 *
+ *  . part Superviseur      :       0.44 :       0.09 :       0.53 :       1.09 *
+ *  . part Fortran          :       0.20 :       0.10 :       0.30 :       0.64 *
  ********************************************************************************
- * TOTAL_JOB                :       2.35 :       0.12 :       2.47 :       3.70 *
+ * TOTAL_JOB                :       0.64 :       0.19 :       0.83 :       1.74 *
  ********************************************************************************
 

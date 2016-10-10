@@ -90,8 +90,8 @@
 <span class="sd">    It is important to  note that each tubapoint inside a piping is always an</span>
 <span class="sd">    attribute of two vectors, one time as start_tubapoint, one time as end_tubapoint.</span>
 
-<span class="sd">    Furthermore each tubapoint can only be endpoint for a single vector but</span>
-<span class="sd">    startpoint for as many vectors as wished.</span>
+<span class="sd">    The only exception are start and endpoints of a piping system. For each point it is possibe </span>
+<span class="sd">    to check wether it is a element start or an end at the current time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">nocount</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -157,14 +157,14 @@
 
 <span class="c1">#------------------------------------------------------------------------------           </span>
 <div class="viewcode-block" id="TubaPoint.get_last_vector"><a class="viewcode-back" href="../../development.html#tuba.define_geometry.TubaPoint.get_last_vector">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;checks if the given tubapoint is a icident_end_tubapoint and as well start_tubapoint of a vector.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">for</span> <span class="n">tubavectors</span> <span class="ow">in</span> <span class="n">tub</span><span class="o">.</span><span class="n">dict_tubavectors</span><span class="p">:</span>
-             <span class="k">if</span> <span class="n">tubavectors</span><span class="o">.</span><span class="n">end_tubapoint</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                 <span class="k">return</span> <span class="n">tubavectors</span>
-             <span class="k">if</span> <span class="n">tubavectors</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;TubaTShape3D&quot;</span><span class="p">:</span>
-                 <span class="k">if</span> <span class="n">tubavectors</span><span class="o">.</span><span class="n">incident_end_tubapoint</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                     <span class="k">return</span> <span class="n">tubavectors</span></div></div>
+        <span class="sd">&#39;&#39;&#39;Finds the vector, where this tubapoint acts as an endpoint&#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">tubavector</span> <span class="ow">in</span> <span class="n">tub</span><span class="o">.</span><span class="n">dict_tubavectors</span><span class="p">:</span>
+             <span class="k">if</span> <span class="n">tubavector</span><span class="o">.</span><span class="n">end_tubapoint</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                 <span class="k">return</span> <span class="n">tubavector</span>
+             <span class="k">if</span> <span class="n">tubavector</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;TubaTShape3D&quot;</span><span class="p">:</span>
+                 <span class="k">if</span> <span class="n">tubavector</span><span class="o">.</span><span class="n">incident_end_tubapoint</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                     <span class="k">return</span> <span class="n">tubavector</span></div></div>
 
         
           
@@ -221,24 +221,26 @@
 <span class="c1"># Fluid Weight in Pipe</span>
 <span class="c1">#--------------------------------------------</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TUBE&quot;</span><span class="p">,</span><span class="s2">&quot;TUYAU&quot;</span><span class="p">]:</span>
-            <span class="n">density_fluid</span><span class="o">=</span><span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span>
-            <span class="n">outer_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">wall_thickness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">force_grav_fluid</span><span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">outer_radius</span><span class="o">-</span><span class="n">wall_thickness</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">density_fluid</span><span class="o">*</span><span class="n">tub</span><span class="o">.</span><span class="n">G</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Fluid_Weight N/mm&quot;</span><span class="p">,</span> <span class="n">force_grav_fluid</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">linear_force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">force_grav_fluid</span><span class="p">))</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Fluid_Weight N/mm&quot;</span><span class="p">,</span> <span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">force_grav_fluid</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span><span class="p">:</span>
+                <span class="n">density_fluid</span><span class="o">=</span><span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span>
+                <span class="n">outer_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">wall_thickness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">force_grav_fluid</span><span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">outer_radius</span><span class="o">-</span><span class="n">wall_thickness</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">density_fluid</span><span class="o">*</span><span class="n">tub</span><span class="o">.</span><span class="n">G</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Fluid_Weight N/mm&quot;</span><span class="p">,</span> <span class="n">force_grav_fluid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">linear_force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">force_grav_fluid</span><span class="p">))</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Fluid_Weight N/mm&quot;</span><span class="p">,</span> <span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">force_grav_fluid</span><span class="p">))</span>
 
 <span class="c1"># Insulation of the Pipe</span>
 <span class="c1">#--------------------------------------------</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TUBE&quot;</span><span class="p">,</span><span class="s2">&quot;TUYAU&quot;</span><span class="p">]:</span>
-            <span class="p">[</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">]</span><span class="o">=</span><span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span>
-            <span class="n">outer_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-
-            <span class="n">force_grav_insulation</span><span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">((</span><span class="n">outer_radius</span><span class="o">+</span><span class="n">insulation_thickness</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">outer_radius</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">insulation_density</span><span class="o">*</span><span class="mf">9.81</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Insulation_Weight N/mm&quot;</span><span class="p">,</span> <span class="n">force_grav_insulation</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">linear_force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">force_grav_insulation</span><span class="p">))</span></div>
+            <span class="k">if</span> <span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span><span class="p">:</span>            
+                <span class="p">[</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">]</span><span class="o">=</span><span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span>
+                <span class="n">outer_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    
+                <span class="n">force_grav_insulation</span><span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">((</span><span class="n">outer_radius</span><span class="o">+</span><span class="n">insulation_thickness</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">outer_radius</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">insulation_density</span><span class="o">*</span><span class="mf">9.81</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Insulation_Weight N/mm&quot;</span><span class="p">,</span> <span class="n">force_grav_insulation</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">linear_force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">force_grav_insulation</span><span class="p">))</span></div>
  
 <span class="c1"># Wind Load</span>
 <span class="c1">#--------------------------------------------        </span>
@@ -369,7 +371,7 @@
 <span class="c1">#==============================================================================</span>
 <span class="c1">#==============================================================================</span>
 <div class="viewcode-block" id="V"><a class="viewcode-back" href="../../Commands.html#tuba.define_geometry.V">[docs]</a><span class="k">def</span> <span class="nf">V</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">name_point</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a vector and an end point starting from the latest created point. The direction is defined by the</span>
+    <span class="sd">&quot;&quot;&quot;Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the</span>
 <span class="sd">    user input x,y,z.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

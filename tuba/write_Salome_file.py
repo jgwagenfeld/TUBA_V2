@@ -357,65 +357,58 @@ class Salome:
 #==============================================================================
 
     def _visualize_ddl(self,tubapoint,section):
+        
+        outerRadius=section[0]
+        
+        V1s_list=[]        
+        if not tubapoint.ddl[0]=="x":
+            V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0]])
+        if not tubapoint.ddl[1]=="x":
+            V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0]])          
+        if not tubapoint.ddl[2]=="x":
+            V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius]])            
 
-#
-#        tubapoint.ddl
-#        section
-#
-#
-#
-#        self.lines=self.lines+("""        
-#
-#      try:",
-#         """+name_point+"""
-##    "   R="+str(R),
-##    "   Re="+str(Re),
-##    "
-#         Pna=geompy.MakeVertexWithRef(Px,"+V1s+")",
-#         Liste.append([Pna,\"Pna\"])",
-#
-#         Pnb=geompy.MakeVertexWithRef(Px,"+V2s+")",
-##    "   Liste.append([Pnb,\"Pnb\"])",
-##    
-##    "   Vp=geompy.MakeVector(Pna,Pnb)",
-##    "   Liste.append([Vp,\"Vp\"])",
-##    
-##    "   Cone1 = geompy.MakeCone(Pna,Vp,Re,0,2*Re-R)",
-##    "   Liste.append([Cone1,\"Cone1\"])",
-##    
-##    "   P2a=geompy.MakeVertexWithRef(Px,"+V3s+")",
-##    "   Liste.append([P2a,\"P2a\"])",
-##    
-##    "   P2b=geompy.MakeVertexWithRef(Px,"+V4s+")",
-##    "   Liste.append([P2b,\"P2b\"])",  
-##    
-##    "   Vm=geompy.MakeVector(P2a,P2b)",
-##    "   Liste.append([Vm,\"Vm\"])",
-##    
-##    "   Cone2 = geompy.MakeCone(P2a,Vm,Re,0,2*Re-R)",
-##    "   Liste.append([Cone2,\"Cone2\"])",
-##    
-##    "   B=geompy.MakeCompound([Cone1,Cone2])",
-##    "   B.SetColor(SALOMEDS.Color("+Couleur["Bloc"]+"))",
-##    "   B_id=geompy.addToStudy(B,\""+ B +"\")",
-##    "   gg.createAndDisplayGO(B_id)",
-##    "   gg.setDisplayMode(B_id,1)",
-##    
-##    "   for x in Liste:",
-##    "       geompy.addToStudyInFather(B,x[0],x[1])",
-##    
-##    "except:",
-##    
-##    "   for x in Liste:",
-##    "       geompy.addToStudy(x[0],x[1])", 
-##    "   return",
-## 
-##    ])        
+        
+        name_point=tubapoint.name
+
+        for V1s in V1s_list:
+            self.lines=self.lines+("""        
+ 
+#    try:
+    Radius="""+str(outerRadius)+"""
+
+
+    Pna=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[0][0])+","+str(V1s[0][1])+","+str(V1s[0][2])+""")
+    Pnb=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[1][0])+","+str(V1s[1][1])+","+str(V1s[1][2])+""")  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[2][0])+","+str(V1s[2][1])+","+str(V1s[2][2])+""")    
+    P2b=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[3][0])+","+str(V1s[3][1])+","+str(V1s[3][2])+""")    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color("""+tub.colors["BLOCK"]+"""))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
 #        
-#    """).split("\n")        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
         
+    """).split("\n")        
         
-        pass
+
 
 #==============================================================================
     def _initialize(self):

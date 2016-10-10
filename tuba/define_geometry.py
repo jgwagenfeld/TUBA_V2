@@ -19,8 +19,8 @@ class TubaPoint:
     It is important to  note that each tubapoint inside a piping is always an
     attribute of two vectors, one time as start_tubapoint, one time as end_tubapoint.
 
-    Furthermore each tubapoint can only be endpoint for a single vector but
-    startpoint for as many vectors as wished.
+    The only exception are start and endpoints of a piping system. For each point it is possibe 
+    to check wether it is a element start or an end at the current time.
     """
 
     def __init__(self, x, y, z, name="", nocount=False):
@@ -86,16 +86,23 @@ class TubaPoint:
 
 #------------------------------------------------------------------------------           
     def get_last_vector(self):
-        '''checks if the given tubapoint is a icident_end_tubapoint and as well start_tubapoint of a vector.
-        '''
-        for tubavectors in tub.dict_tubavectors:
-             if tubavectors.end_tubapoint.name == self.name:
-                 return tubavectors
-             if tubavectors.__class__.__name__ == "TubaTShape3D":
-                 if tubavectors.incident_end_tubapoint.name == self.name:
-                     return tubavectors
+        '''Finds the vector, where this tubapoint acts as an endpoint'''
 
-        
+        for tubavector in tub.dict_tubavectors:
+             if tubavector.end_tubapoint.name == self.name:
+                 return tubavector
+             if tubavector.__class__.__name__ == "TubaTShape3D":
+                 if tubavector.incident_end_tubapoint.name == self.name:
+                     return tubavector
+
+#------------------------------------------------------------------------------
+    def get_next_vector(self):
+        '''Finds the vector, where this tubapoint acts as an endpoint'''
+
+        for tubavector in tub.dict_tubavectors:
+             if tubavector.start_tubapoint.name == self.name:
+                 return tubavector
+ 
           
             
 #==============================================================================
@@ -300,7 +307,7 @@ def gotoP(name_point):
 #==============================================================================
 #==============================================================================
 def V(x,y,z,name_point=""):
-    """Creates a vector and an end point starting from the latest created point. The direction is defined by the
+    """Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the
     user input x,y,z.
     """
 

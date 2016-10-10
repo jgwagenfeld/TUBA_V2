@@ -107,7 +107,7 @@ Tuba has two major groups of commands - one defining the geometry, one the prope
 The property group splits further down in global and local properties. Their biggest difference is how they will be applied.
 The upper code section defines the global properties of the following piping system. This means, all these properties listed above will be applied to all the following defined vectors/pipe segments until the command list ends or the specific property (like Tempererature or Pressure) will be set to another value.
 
-As a consequence, before defining a geometry, essential properties like ``Model("TUYAU")`` and ``SectionTube(outerRadius,WallThickness)`` have to be set first.
+As a consequence, before defining a geometry, essential global properties like ``Model("TUYAU")`` and ``SectionTube(outerRadius,WallThickness)`` have to be set before the first vector is defined.
 
 ::
 
@@ -180,12 +180,13 @@ Load from disk the created ``command_script_aster.comm``.
    :align:   center
 
 The mesh has to be choosen from the object browser to the left. Select the compound mesh  ``Completed_Mesh`` and confirm.
+You can then select the now created Code Aster case and start the simulation. A terminal will open showing the ongoing simulation.
 
 .. figure::  _static/6_LoadingMesh.png
    :align:   center
 
 
-You can ignore the 'Alarm'-message at the end. If the simulation failed, check your python script again if everything was defined correctly. If you are familiar with Code Aster, you can check the ``.mess`` and ``.resu`` files for more information.
+After the simulation finishes, you will most likely get an 'Alarm'-message - which can be ignored. If the simulation failed, check your python script again if everything was defined correctly. If you are familiar with Code Aster, you can check the ``.mess`` and ``.resu`` files for more information.
 
 Your simulation results are written into an ``.rmed`` file. 
 

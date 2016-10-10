@@ -52,6 +52,17 @@
 
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Developper Section</a><ul>
+<li><a class="reference internal" href="#create-a-macro-command">Create a Macro Command</a></li>
+<li><a class="reference internal" href="#naming-convention">Naming Convention</a></li>
+<li><a class="reference internal" href="#tubapoint">TubaPoint</a></li>
+<li><a class="reference internal" href="#tubavector">TubaVector</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="Commands.html"
                         title="previous chapter">Available TUBA commands</a></p>
@@ -82,18 +93,38 @@
             
   <div class="section" id="developper-section">
 <h1>Developper Section<a class="headerlink" href="#developper-section" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-a-macro-command">
+<h2>Create a Macro Command<a class="headerlink" href="#create-a-macro-command" title="Permalink to this headline">¶</a></h2>
+<p>An easy way to start with the underlying Python code is to create a Macro command for TUBA. A macro is just a sequence of already existing TUBA commands. The best example is the macro <code class="docutils literal"><span class="pre">FixPoint()</span></code> which calls <code class="docutils literal"><span class="pre">Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)</span></code>.
+For repetitve use of certain structures we could imagine to create a parametric version.
+In the following, we walk through the creation of the macro command <code class="docutils literal"><span class="pre">Lyre()</span></code></p>
+</div>
+<div class="section" id="naming-convention">
+<h2>Naming Convention<a class="headerlink" href="#naming-convention" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>a TubaPoint object has to be adressed always by a _tubapoint ending:</dt>
+<dd>f.ex  &#8211;&gt; Startpoint  =&gt;   start_tubapoint</dd>
+</dl>
+<p>In contrast, a real point(euclid.Point3-Object) as a reprensentation of a position in a 3D-Space
+can be named _point or _position</p>
+<p>This convention is introduced to distiguish between a tubapoint as an information vessel and the
+geometrical representation of a point</p>
+<p>The same applies for TubaVector-Objects.</p>
+</div>
+<div class="section" id="tubapoint">
+<h2>TubaPoint<a class="headerlink" href="#tubapoint" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tuba.define_geometry.TubaPoint">
 <em class="property">class </em><code class="descclassname">tuba.define_geometry.</code><code class="descname">TubaPoint</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name=''</em>, <em>nocount=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Containes all information present at a POINT in the piping/rod network</p>
 <p>It is important to  note that each tubapoint inside a piping is always an
 attribute of two vectors, one time as start_tubapoint, one time as end_tubapoint.</p>
-<p>Furthermore each tubapoint can only be endpoint for a single vector but
-startpoint for as many vectors as wished.</p>
+<p>The only exception are start and endpoints of a piping system. For each point it is possibe 
+to check wether it is a element start or an end at the current time.</p>
 <dl class="method">
 <dt id="tuba.define_geometry.TubaPoint.get_last_vector">
 <code class="descname">get_last_vector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaPoint.get_last_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaPoint.get_last_vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>checks if the given tubapoint is a icident_end_tubapoint and as well start_tubapoint of a vector.</p>
+<dd><p>Finds the vector, where this tubapoint acts as an endpoint</p>
 </dd></dl>
 
 <dl class="method">
@@ -118,12 +149,16 @@ If false, this means that it&#8217;s the beginning of the piping</p>
 
 </dd></dl>
 
+</div>
+<div class="section" id="tubavector">
+<h2>TubaVector<a class="headerlink" href="#tubavector" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tuba.define_geometry.TubaVector">
 <em class="property">class </em><code class="descclassname">tuba.define_geometry.</code><code class="descname">TubaVector</code><span class="sig-paren">(</span><em>start_tubapoint</em>, <em>end_tubapoint</em>, <em>vector</em>, <em>name_vector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TubaVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TubaVector" title="Permalink to this definition">¶</a></dt>
 <dd><p>TubVector is the Class to contain all information present on a LINE ELEMENT in the piping/rod network</p>
 </dd></dl>
 
+</div>
 </div>
 
 

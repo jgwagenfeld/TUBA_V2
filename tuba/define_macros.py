@@ -13,6 +13,7 @@ def FixPoint():
     Block(0,0,0,0,0,0)
     
 def Joint():
+    '''Restrains all 3 spatial directions but allows rotation around the axis'''
     Block(0,0,0,'x','x','x')
 
 

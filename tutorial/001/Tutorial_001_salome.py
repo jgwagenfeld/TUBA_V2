@@ -133,8 +133,8 @@ def Project():
       ListeV.append(V0)
         
 
-      _C1 = geompy.MakeCircle(P0, V0,35)
-      _C2 = geompy.MakeCircle(P0, V0,31)
+      _C1 = geompy.MakeCircle(P0, V0,35.0)
+      _C2 = geompy.MakeCircle(P0, V0,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -151,7 +151,6 @@ def Project():
        V0M = smesh.Mesh(V0)
        Decoupage = V0M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V0M,'V0')
        V0M.Compute()
@@ -177,6 +176,111 @@ def Project():
        Liste=[]
        ListeV=[]
     
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P0,105.0,0,0)
+    Pnb=geompy.MakeVertexWithRef(P0,70.0,0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P0,-105.0,0,0)    
+    P2b=geompy.MakeVertexWithRef(P0,-70.0,0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P0,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P0,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P0,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P0,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P0,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P0,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P0,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P0,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
 
     try:
       print("Add V1")
@@ -187,8 +291,8 @@ def Project():
       ListeV.append(V1)
         
 
-      _C1 = geompy.MakeCircle(P1, V1,35)
-      _C2 = geompy.MakeCircle(P1, V1,31)
+      _C1 = geompy.MakeCircle(P1, V1,35.0)
+      _C2 = geompy.MakeCircle(P1, V1,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -205,7 +309,6 @@ def Project():
        V1M = smesh.Mesh(V1)
        Decoupage = V1M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V1M,'V1')
        V1M.Compute()
@@ -231,6 +334,76 @@ def Project():
        Liste=[]
        ListeV=[]
     
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P2,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P2,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P2,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P2,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P2,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P2,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P2,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P2,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
 
     try:
       print("Add V2")
@@ -241,8 +414,8 @@ def Project():
       ListeV.append(V2)
         
 
-      _C1 = geompy.MakeCircle(P2, V2,35)
-      _C2 = geompy.MakeCircle(P2, V2,31)
+      _C1 = geompy.MakeCircle(P2, V2,35.0)
+      _C2 = geompy.MakeCircle(P2, V2,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -259,7 +432,6 @@ def Project():
        V2M = smesh.Mesh(V2)
        Decoupage = V2M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V2M,'V2')
        V2M.Compute()
@@ -285,6 +457,146 @@ def Project():
        Liste=[]
        ListeV=[]
     
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P2,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P2,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P2,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P2,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P2,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P2,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P2,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P2,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P3,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P3,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P3,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P3,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P3,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P3,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P3,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P3,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
 
     try:
       print("Add V3")
@@ -295,8 +607,8 @@ def Project():
       ListeV.append(V3)
         
 
-      _C1 = geompy.MakeCircle(P3, V3,35)
-      _C2 = geompy.MakeCircle(P3, V3,31)
+      _C1 = geompy.MakeCircle(P3, V3,35.0)
+      _C2 = geompy.MakeCircle(P3, V3,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -313,7 +625,6 @@ def Project():
        V3M = smesh.Mesh(V3)
        Decoupage = V3M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V3M,'V3')
        V3M.Compute()
@@ -339,6 +650,146 @@ def Project():
        Liste=[]
        ListeV=[]
     
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P3,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P3,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P3,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P3,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P3,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P3,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P3,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P3,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P4,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P4,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P4,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P4,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P4,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P4,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P4,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P4,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
 
     try:
       print("Add V4")
@@ -349,8 +800,8 @@ def Project():
       ListeV.append(V4)
         
 
-      _C1 = geompy.MakeCircle(P4, V4,35)
-      _C2 = geompy.MakeCircle(P4, V4,31)
+      _C1 = geompy.MakeCircle(P4, V4,35.0)
+      _C2 = geompy.MakeCircle(P4, V4,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -367,7 +818,6 @@ def Project():
        V4M = smesh.Mesh(V4)
        Decoupage = V4M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V4M,'V4')
        V4M.Compute()
@@ -393,6 +843,146 @@ def Project():
        Liste=[]
        ListeV=[]
     
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P4,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P4,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P4,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P4,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P4,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P4,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P4,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P4,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P5,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P5,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P5,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P5,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P5,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P5,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P5,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P5,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
 
     try:
       print("Add V5")
@@ -403,8 +993,8 @@ def Project():
       ListeV.append(V5)
         
 
-      _C1 = geompy.MakeCircle(P5, V5,35)
-      _C2 = geompy.MakeCircle(P5, V5,31)
+      _C1 = geompy.MakeCircle(P5, V5,35.0)
+      _C2 = geompy.MakeCircle(P5, V5,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -421,7 +1011,6 @@ def Project():
        V5M = smesh.Mesh(V5)
        Decoupage = V5M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V5M,'V5')
        V5M.Compute()
@@ -447,6 +1036,76 @@ def Project():
        Liste=[]
        ListeV=[]
     
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P5,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P5,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P5,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P5,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P5,0,0,105.0)
+    Pnb=geompy.MakeVertexWithRef(P5,0,0,70.0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P5,0,0,-105.0)    
+    P2b=geompy.MakeVertexWithRef(P5,0,0,-70.0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
+    
 
     try:
       print("Add  V_Bent6 ")
@@ -458,8 +1117,8 @@ def Project():
 
          
 
-      C1 = geompy.MakeCircle(P6,Vd2x_P6,35)
-      C2 = geompy.MakeCircle(P6,Vd2x_P6,31)
+      C1 = geompy.MakeCircle(P6,Vd2x_P6,35.0)
+      C2 = geompy.MakeCircle(P6,Vd2x_P6,31.0)
       FaceTube = geompy.MakeFaceWires([C1, C2], 1)
       Liste.append([C1 ,"CercleExt"])
       Liste.append([C2 ,"CercleInt"])
@@ -477,7 +1136,6 @@ def Project():
        V_Bent6M = smesh.Mesh(V_Bent6)
        Decoupage = V_Bent6M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V_Bent6M,'V_Bent6')
        V_Bent6M.Compute()
@@ -513,8 +1171,8 @@ def Project():
       ListeV.append(V7)
         
 
-      _C1 = geompy.MakeCircle(P7, V7,35)
-      _C2 = geompy.MakeCircle(P7, V7,31)
+      _C1 = geompy.MakeCircle(P7, V7,35.0)
+      _C2 = geompy.MakeCircle(P7, V7,31.0)
       FaceTube = geompy.MakeFaceWires([_C1, _C2], 1)
       Liste.append([_C1 ,"CercleExt"])
       Liste.append([_C2 ,"CercleInt"])
@@ -531,7 +1189,6 @@ def Project():
        V7M = smesh.Mesh(V7)
        Decoupage = V7M.Segment()
        Decoupage.NumberOfSegments(8)
-       Quadratic_Mesh = Decoupage.QuadraticMesh()
 
        smesh.SetName(V7M,'V7')
        V7M.Compute()
@@ -556,6 +1213,41 @@ def Project():
            geompy.addToStudyInFather(Pipe,x[0],x[1])
        Liste=[]
        ListeV=[]
+    
+        
+ 
+#    try:
+    Radius=35.0
+
+
+    Pna=geompy.MakeVertexWithRef(P8,0,105.0,0)
+    Pnb=geompy.MakeVertexWithRef(P8,0,70.0,0)  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+    Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
+
+   
+    P2a=geompy.MakeVertexWithRef(P8,0,-105.0,0)    
+    P2b=geompy.MakeVertexWithRef(P8,0,-70.0,0)    
+    Vm=geompy.MakeVector(P2a,P2b)  
+    Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
+    
+    B=geompy.MakeCompound([Cone1,Cone2])
+    B.SetColor(SALOMEDS.Color(1,1,0))
+    B_id=geompy.addToStudy(B,"B")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+ 
+    
+    
+#    for x in Liste:
+#        geompy.addToStudyInFather(B,x[0],x[1])
+#        
+#    except:
+#        print("DDL wasnt visualized")
+#        for x in Liste:
+#            geompy.addToStudy(x[0],x[1])
+#            return
+        
     
         
     #Creates the mesh compound

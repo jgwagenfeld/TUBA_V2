@@ -112,7 +112,7 @@
 <dl class="function">
 <dt id="tuba.define_geometry.V">
 <code class="descclassname">tuba.define_geometry.</code><code class="descname">V</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.V" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a vector and an end point starting from the latest created point. The direction is defined by the
+<dd><p>Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the
 user input x,y,z.</p>
 </dd></dl>
 
@@ -172,11 +172,22 @@ before defines Cross-Section. The branche is defined by the user-arguments</p>
 <code class="descclassname">tuba.define_properties.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append a FEM-Model to the defined Vector-Object. The following models are 
 available at the moment:</p>
-<p>&#8220;TUBE&#8221;</p>
+<p>&#8220;TUBE&#8221;:</p>
+<p>The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can
+be deformed but not the &#8220;wall&#8221;(cross-section) itself. This theory gives a 
+good approximation for straight pipes but especially for bents this theory is limited.
+As in a bent, flexibility and stress intensity are strongly influenced by the deformation of the cross-section
+itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to
+correct the model.</p>
+<p>Furthermore, as the crosssection is stiff, the influence of internal pressure can&#8217;t be calculated. Normally pressure is taken into account
+by superposition after solving the calculation.</p>
+<p>Most commercial piping codes and ASME 31.3 work with this model.</p>
+<p>&#8220;TUYAU&#8221;:</p>
+<p>A more advanced model is the TUYAU model. Along the 1-dimensional mesh,</p>
 <p>&#8220;RECTANGULAR&#8221;</p>
 <p>&#8220;BEAM&#8221;</p>
 <p>&#8220;BAR&#8221;</p>
-<p>&#8220;TUYAU&#8221;</p>
+<p>A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.</p>
 <p>The following models will be added in the future:</p>
 <p>&#8220;CABLE&#8221;</p>
 <p>&#8220;3D?&#8221;</p>
@@ -216,14 +227,6 @@ properties can be defined in library_material.py</p>
 <p>&#8220;IMS&#8221;  - constant</p>
 <p>&#8220;RIGIDE&#8221;  - constant</p>
 <p>&#8220;ACIER&#8221;  - constant</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.LinearForce">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">LinearForce</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#LinearForce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.LinearForce" title="Permalink to this definition">¶</a></dt>
-<dd><p>appends a linear force-vector to the last created vector.
-[N/mm]</p>
-<p>Multiple force vectors can be summed up.</p>
 </dd></dl>
 
 <dl class="function">
@@ -281,6 +284,14 @@ There are several ways how to use it:</p>
 <p>Multiple moments can be summed up.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="tuba.define_properties.LinearForce">
+<code class="descclassname">tuba.define_properties.</code><code class="descname">LinearForce</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#LinearForce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.LinearForce" title="Permalink to this definition">¶</a></dt>
+<dd><p>appends a linear force-vector to the last created vector.
+[N/mm]</p>
+<p>Multiple force vectors can be summed up.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-tuba.define_macros">
 <span id="macro-commands"></span><h2>Macro Commands<a class="headerlink" href="#module-tuba.define_macros" title="Permalink to this headline">¶</a></h2>
@@ -294,7 +305,8 @@ There are several ways how to use it:</p>
 <dl class="function">
 <dt id="tuba.define_macros.Joint">
 <code class="descclassname">tuba.define_macros.</code><code class="descname">Joint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_macros.html#Joint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_macros.Joint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Restrains all 3 spatial directions but allows rotation around the axis</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="tuba.define_macros.Guide">

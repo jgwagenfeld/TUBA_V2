@@ -71,45 +71,6 @@ rESUDEPLPWFColorBar.Title = 'Deformation'
 rESUDEPLPWFColorBar.ComponentTitle = 'Magnitude (mm)'
 
       
-      
-# create a new 'ELNO Mesh'        
-eLNOMesh1 = ELNOMesh(Input=new_casermed)
-       
-
-       
-# create a new 'ELNO Mesh'
-# show data in view
-eLNOMesh1Display = Show(eLNOMesh1, renderView1)
-
-# set scalar coloring
-ColorBy(eLNOMesh1Display, ('POINTS', 'MAX_VMISUT01_ELNO'))
-# rescale color and/or opacity maps used to include current data range
-eLNOMesh1Display.RescaleTransferFunctionToDataRange(True)
-# show color bar/color legend
-eLNOMesh1Display.SetScalarBarVisibility(renderView1, True)
-# Properties modified on warpByVector1Display
-eLNOMesh1Display.LineWidth = 4.0
-
-
-# get color transfer function/color map for 'MAXVMISUT01ELNO'
-mAXVMISUT01ELNOLUT = GetColorTransferFunction('MAXVMISUT01ELNO')
-# get opacity transfer function/opacity map for 'MAXVMISUT01ELNO'
-mAXVMISUT01ELNOPWF = GetOpacityTransferFunction('MAXVMISUT01ELNO')
-
-
-mAXVMISUT01ELNOLUT.VectorMode = 'Component'
-# rescale color and/or opacity maps used to exactly fit the current data range
-eLNOMesh1Display.RescaleTransferFunctionToDataRange(False)
-
-RenameSource('VMIS_Stress', eLNOMesh1)  
-
-# get color legend/bar for mAXVMISUT01ELNOLUT in view renderView1
-mAXVMISUT01ELNOLUTColorBar = GetScalarBar(mAXVMISUT01ELNOLUT, renderView1)
-# Properties modified on mAXVMISUT01ELNOLUTColorBar
-mAXVMISUT01ELNOLUTColorBar.Title = 'VonMise Stress'
-# Properties modified on mAXVMISUT01ELNOLUTColorBar
-mAXVMISUT01ELNOLUTColorBar.ComponentTitle = 'Magnitude (MPa)'   
-     
 
 
 # set active source
