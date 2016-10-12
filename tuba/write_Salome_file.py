@@ -38,13 +38,14 @@ class Salome:
         for tubavector in dict_tubavectors:
             logging.debug("Processing TubaVector: "+tubavector.name+ " \n ====")
             self._vector(tubavector)
-            self._visualize_Pipe_1D(tubavector.model)
+            self._visualize_Pipe_1D(tubavector)
 
-           
+            self._visualize_stiffness(tubavector.start_tubapoint,tubavector.section)
             self._visualize_ddl(tubavector.start_tubapoint,tubavector.section)
-            if tubavector.end_tubapoint.is_element_end:
-                self._visualize_ddl(tubavector.end_tubapoint,tubavector.section)
-
+            if tubavector.start_tubapoint.is_element_start:
+                print(str(tubavector.name)+"is an element start")
+                self._visualize_ddl(tubavector.start_tubapoint,tubavector.section)
+                self._visualize_stiffness(tubavector.start_tubapoint,tubavector.section)
             
         
         self._create_mesh_compound(dict_tubavectors)
@@ -69,7 +70,7 @@ class Salome:
         self.lines=self.lines+("    Vd2x_"+name_point+" = geompy.MakeVectorDXDYDZ("+vd2x+""")
     """ +name_point+"_vd2x=    geompy.MakeTranslationVectorDistance("+name_point+",Vd2x_"+name_point+""",100)
     Vd2x_"""+name_point+"= geompy.MakeVector("+name_point+","+name_point+"""_vd2x)
-    geompy.addToStudy(Vd2x_"""+name_point+",\"Vd2x_"+ name_point+""" " )"""
+    geompy.addToStudyInFather("""+name_point+",Vd2x_"""+name_point+",\"Vd2x_"+ name_point+""" " )"""
         ).split("\n")
 
     
@@ -122,8 +123,8 @@ class Salome:
       """+name_vector+"= geompy.MakeVector("+name_startpoint+","+name_endpoint+""")
       #Liste.append(["""+name_startpoint+",\""+name_startpoint+"""\"])
       geompy.addToStudy("""+name_vector+",\""+name_vector+"""\" )
-      Liste.append(["""+name_vector+",\""+name_vector+"""\"])
-      ListeV.append("""+name_vector+""")
+#     Liste.append(["""+name_vector+",\""+name_vector+"""\"])
+      List_Visualization.append("""+name_vector+""")
         """).split("\n")
 
         self.lines=self.lines+("""
@@ -219,8 +220,8 @@ class Salome:
       """+name_vector+"= geompy.MakeVector("+name_startpoint+","+name_endpoint+""")
       #Liste.append(["""+name_startpoint+",\""+name_startpoint+"""\"])
       geompy.addToStudy("""+name_vector+",\""+name_vector+"""\" )
-      Liste.append(["""+name_vector+",\""+name_vector+"""\"])
-      ListeV.append("""+name_vector+""")
+#      Liste.append(["""+name_vector+",\""+name_vector+"""\"])
+      List_Visualization.append("""+name_vector+""")
         """).split("\n")
 
         if solid_crosssection:
@@ -295,21 +296,21 @@ class Salome:
 
 
 #==============================================================================
-    def _visualize_Pipe_1D(self, model):
-
+    def _visualize_Pipe_1D(self, tubavector):
+        model=tubavector.model
         self.lines=self.lines+("""
 
-    if ListeV!=[]:
-       _W=geompy.MakeWire(ListeV,1e-7)
+    if List_Visualization!=[]:
+       _W=geompy.MakeWire(List_Visualization,1e-7)
        Pipe = geompy.MakePipe( FaceTube ,_W)
        Pipe.SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
-       Pipe_id=geompy.addToStudy(Pipe,\"Pipe\")
+       Pipe_id=geompy.addToStudyInFather("""+tubavector.name+""",Pipe,\"Pipe\")
        gg.createAndDisplayGO(Pipe_id)
        gg.setDisplayMode(Pipe_id,"""+"1"+""")
        for x in Liste:
            geompy.addToStudyInFather(Pipe,x[0],x[1])
        Liste=[]
-       ListeV=[]
+       List_Visualization=[]
     """).split("\n")
 
 
@@ -357,22 +358,41 @@ class Salome:
 #==============================================================================
 
     def _visualize_ddl(self,tubapoint,section):
-        
         outerRadius=section[0]
-        
-        V1s_list=[]        
-        if not tubapoint.ddl[0]=="x":
-            V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0]])
-        if not tubapoint.ddl[1]=="x":
-            V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0]])          
-        if not tubapoint.ddl[2]=="x":
-            V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius]])            
-
-        
         name_point=tubapoint.name
+           
+        if tubapoint.ddl==[0,0,0,0,0,0]:
+            self.lines=self.lines+("""
+                
+    """+name_point+"""_BLOCK_xyzrxryrz=geompy.MakeBox("""+str(tubapoint.pos.x+2*outerRadius)+""","""+str(tubapoint.pos.y+2*outerRadius)+""","""+str(tubapoint.pos.z+2*outerRadius)+""","""+str(tubapoint.pos.x-2*outerRadius)+""","""+str(tubapoint.pos.y-2*outerRadius)+""","""+str(tubapoint.pos.z-2*outerRadius)+""")	
+    """+name_point+"""_BLOCK_xyzrxryrz.SetColor(SALOMEDS.Color("""+tub.colors["BLOCK"]+"""))
+    B_id=geompy.addToStudyInFather( """+ name_point +""", """+name_point+"""_BLOCK_xyzrxryrz,'"""+name_point+"""_BLOCK_xyzrxryrz' )
 
-        for V1s in V1s_list:
-            self.lines=self.lines+("""        
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+
+
+
+ 
+
+#        
+    """).split("\n")  	            
+      
+        else:    
+        
+            V1s_list=[]        
+            if not tubapoint.ddl[0]=="x":
+                V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0],"x"])
+            if not tubapoint.ddl[1]=="x":
+                V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
+            if not tubapoint.ddl[2]=="x":
+                V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
+    
+            
+
+    
+            for V1s in V1s_list:
+                self.lines=self.lines+("""        
  
 #    try:
     Radius="""+str(outerRadius)+"""
@@ -389,13 +409,14 @@ class Salome:
     Vm=geompy.MakeVector(P2a,P2b)  
     Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
     
-    B=geompy.MakeCompound([Cone1,Cone2])
-    B.SetColor(SALOMEDS.Color("""+tub.colors["BLOCK"]+"""))
-    B_id=geompy.addToStudy(B,"B")
+    BLOCK_"""+V1s[4]+"""=geompy.MakeCompound([Cone1,Cone2])
+    BLOCK_"""+V1s[4]+""".SetColor(SALOMEDS.Color("""+tub.colors["BLOCK"]+"""))
+    B_id=geompy.addToStudyInFather( """+ name_point +""", BLOCK_"""+str(V1s[4])+",'"+name_point+"_BLOCK_"""+str(V1s[4])+"""' )    
+    
+#   B_id=geompy.addToStudy(B,"B")
     gg.createAndDisplayGO(B_id)
     gg.setDisplayMode(B_id,1)
  
-    
     
 #    for x in Liste:
 #        geompy.addToStudyInFather(B,x[0],x[1])
@@ -409,6 +430,53 @@ class Salome:
     """).split("\n")        
         
 
+    def _visualize_stiffness(self,tubapoint,section):
+        outerRadius=section[0]
+        name_point=tubapoint.name
+
+        V1s_list=[]        
+        if not tubapoint.stiffness[0]==0:
+            V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0],"x"])
+        if not tubapoint.stiffness[1]==0:
+            V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
+        if not tubapoint.stiffness[2]==0:
+            V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
+    
+            
+
+    
+        for V1s in V1s_list:
+                self.lines=self.lines+("""        
+ 
+#    try:
+    Radius="""+str(outerRadius)+"""
+
+
+    Pna=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[0][0])+","+str(V1s[0][1])+","+str(V1s[0][2])+""")
+    Pnb=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[1][0])+","+str(V1s[1][1])+","+str(V1s[1][2])+""")  
+    Vp=geompy.MakeVector(Pna,Pnb)  
+
+    Torus_1 = geompy.MakeTorus(Pna, Vp, Radius, Radius/2) 
+    Torus_2 = geompy.MakeTorus(Pnb, Vp, Radius, Radius/2)  
+ 
+    P2a=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[2][0])+","+str(V1s[2][1])+","+str(V1s[2][2])+""")    
+    P2b=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[3][0])+","+str(V1s[3][1])+","+str(V1s[3][2])+""")    
+    Vm=geompy.MakeVector(P2a,P2b)  
+
+    Torus_3 = geompy.MakeTorus(P2a, Vm, Radius, Radius/2) 
+    Torus_4 = geompy.MakeTorus(P2b, Vm, Radius, Radius/2)  
+
+    
+    STIFFNESS_"""+V1s[4]+"""=geompy.MakeCompound([Torus_1,Torus_2,Torus_3,Torus_4])
+    STIFFNESS_"""+V1s[4]+""".SetColor(SALOMEDS.Color("""+tub.colors["STIFFNESS"]+"""))
+    S_id=geompy.addToStudyInFather( """+ name_point +""", STIFFNESS_"""+str(V1s[4])+",'"+name_point+"_STIFFNESS_"""+str(V1s[4])+"""' )    
+    
+    gg.createAndDisplayGO(S_id)
+    gg.setDisplayMode(S_id,1)
+ 
+    
+       
+    """).split("\n") 
 
 #==============================================================================
     def _initialize(self):
@@ -460,7 +528,7 @@ def Project():
     geompy.addToStudy(Vz,"Vz")
     # List of elements which are added to the study
     Liste=[]
-    ListeV=[]
+    List_Visualization=[]
     L1=[]
     L2=[]
     List_id=[]
@@ -536,7 +604,7 @@ def Project():
                       ""","""+name_startpoint+""","""+name_endpoint+""")
       geompy.addToStudy("""+name_vector+""",\""""+name_vector+ """\")
       Liste.append(["""+name_vector+""",\""""+name_vector+"""\"])
-      ListeV.append("""+name_vector+""")
+      List_Visualization.append("""+name_vector+""")
 
          """).split("\n")
 

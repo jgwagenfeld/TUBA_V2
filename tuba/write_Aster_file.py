@@ -387,45 +387,44 @@ class CodeAster:
                 if item_tubavector.model == "TUBE":
                     new_item.append(name)
   
-            print("ITem", item)
-            if  new_item:            
-                newlines=[]
-                newlines=newlines+("""
-#-------------------------------------------------------------------------------",
-# Pressure Field",
-#-------------------------------------------------------------------------------",
-CHA_PRES=CREA_CHAMP(
-     OPERATION='AFFE',
-     TYPE_CHAM='NOEU_TEMP_R',
-     MODELE=MODMECA,
-     AFFE=(                
-    _F(
-        GROUP_MA=(                
-""").split("\n") 
-   
-                character_count=0
-                text="            "
-                for name in new_item :
-                    character_count+=len(name)+4
-                    text += "'"+name+"', "
-    
-                    if character_count > 50:
-                        newlines.append(text)
-                        text="            "
-                        character_count=0
-                newlines.append(text)              
-                
-                
-                newlines.extend([
-                "        ),",
-                "                NOM_CMP='TEMP',",
-                "                VALE=0,",
-                "                ),",
-                "        PRES="+str(item[0])+",",
-                "    ),",
-                ])
-                if item[0]:
-                    insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines) 
+#            if  new_item:            
+#                newlines=[]
+#                newlines=newlines+("""
+##-------------------------------------------------------------------------------",
+## Pressure Field",
+##-------------------------------------------------------------------------------",
+#CHA_PRES=CREA_CHAMP(
+#     OPERATION='AFFE',
+#     TYPE_CHAM='NOEU_TEMP_R',
+#     MODELE=MODMECA,
+#     AFFE=(                
+#    _F(
+#        GROUP_MA=(                
+#""").split("\n") 
+#   
+#                character_count=0
+#                text="            "
+#                for name in new_item :
+#                    character_count+=len(name)+4
+#                    text += "'"+name+"', "
+#    
+#                    if character_count > 50:
+#                        newlines.append(text)
+#                        text="            "
+#                        character_count=0
+#                newlines.append(text)              
+#                
+#                
+#                newlines.extend([
+#                "        ),",
+#                "                NOM_CMP='TEMP',",
+#                "                VALE=0,",
+#                "                ),",
+#                "        PRES="+str(item[0])+",",
+#                "    ),",
+#                ])
+#                if item[0]:
+#                    insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines) 
 #    "#-------------------------------------------------------------------------------",
 #    "# Champ de pression",
 #    "#-------------------------------------------------------------------------------",
@@ -826,6 +825,16 @@ IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=MAX_VMIS));
 
     def _write_tables(self):
         pass
+    
+#    
+#    def clean_for_EFICAS(self):    
+#        for i, line in enumerate(input_file):
+#            if not line.startswith('##'):
+#                output.write(line)
+#                if not line.startswith('#'):
+#            else:
+#                if not line.startswith('#'):
+#                    output.write(line)
 #==============================================================================
 #==============================================================================
 
@@ -858,6 +867,4 @@ def extract_group_attributes_from_list(key_attribute,name_attribute,dict_tubavec
 
 
         
-    
-    
     

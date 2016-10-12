@@ -38,11 +38,11 @@ colors = {
     "POUTRE_RECTANGLE":"0.8,0.8,0.8",       #grey
     "RECTANGULAR":"0.8,0.8,0.8",            #grey
     "POUTRE":"0.8,0.8,0.8",                 #grey
-    "TUBE":"0.8,0.8,0.8",                   #grey
-    "BARRE":"0.8,0.8,0.8",                  #grey
+    "TUBE":"0.6,0.6,0.6",                   #grey
+    "BAR":"0.4,0.4,0.4",                    #grey
     "CABLE":"0.8,0.8,0.8",                  #grey
-    "TUYAU":"0.8,0.8,0.8",                  #grey
-    "SPRING":"1.0,1.0,0.0",
+    "TUYAU":"0.9,0.9,0.9",                  #grey
+    "STIFFNESS":"0,0,1",
     "Bute": "0,1,1" ,
     "3D":"0.5,0.8,0.8",
     "Bride":"1,0.6,0",

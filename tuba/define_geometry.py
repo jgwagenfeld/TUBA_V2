@@ -55,6 +55,7 @@ class TubaPoint:
 
         same_names=[tubavectors for tubavectors in tub.dict_tubavectors
                     if tubavectors.end_tubapoint.name == self.name]  #Points with the same name
+        print ("is element start",self.name, same_names)            
         if same_names==[]:
             return True
             logging.debug(str(self.name)+" is a start point as there is no Vector-end_tubapoint with the same name")
@@ -68,6 +69,7 @@ class TubaPoint:
 
         same_names=[tubavectors for tubavectors in tub.dict_tubavectors
                     if tubavectors.start_tubapoint.name == self.name]  #Points with the same name
+        print ("is element end",self.name, same_names)             
         if same_names==[]:
             return True
             logging.debug(str(self.name)+" is a start point as there is no Vector-end_tubapoint with the same name")
@@ -337,14 +339,14 @@ def V(x,y,z,name_point=""):
     
 #==============================================================================
 #==============================================================================
-def Vc(length,name_p=""):
+def Vc(length,name_point=""):
     """Creates a colinear vector in direction of the last vector.
     (The information for the colinear vector is contained in current_tubapoint.Vd2x)"""
 
     x=length*tub.current_tubapoint.vd2x.x
     y=length*tub.current_tubapoint.vd2x.y
     z=length*tub.current_tubapoint.vd2x.z
-    V(x,y,z,name_p)
+    V(x,y,z,name_point)
     
 #==============================================================================
 def Vp(endpoint_name, startpoint_name=""):
@@ -372,16 +374,18 @@ def Vp(endpoint_name, startpoint_name=""):
 def Bent(bending_radius,arg1="",arg2="",arg3="intersect",name=""):
     """There are 3 general ways to create a pipe bent:
     
-1.  Bent(bending_radius) - this functionality is still not implemented \n
 
-2.  Bent(bending_radius,arg1=Vector3) -
+1.  Bent(bending_radius,arg1=Vector3) -
     arg1 as a vector defines the new direction after the bent
     With this function, it's not possible to create 180°-bents as the bending plane
     would not be defined. A workaround would be to define 2 consecutive 90°-bents \n
     
-3.  Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient)
+2.  Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient)
     With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
     the new direction after the bent can be calculated. \n
+
+3.  Give 2 absolut vectors and make bent in between -- still not implemented
+
 
 arg3 defines around which point the bent will be created.
 For "add" the start_tubapoint of the Bent will be the end_tubapoint of the last vector.\n
