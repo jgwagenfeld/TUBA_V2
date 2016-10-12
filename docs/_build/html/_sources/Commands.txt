@@ -22,7 +22,7 @@ Geometry  Commands
 
 
 
-Global Properties  Commands
+Global Property  Commands
 ------------------------------------
 
 .. automodule:: tuba.define_properties
@@ -42,7 +42,7 @@ Global Properties  Commands
 .. autofunction:: RhoFluid
 .. autofunction:: Insulation
 
-Local Properties  Commands
+Local Property  Commands
 ------------------------------------
 
 
