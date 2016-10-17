@@ -395,7 +395,22 @@ rESUFORCNODALUTColorBar.ComponentTitle ='Magnitude (N)'
       
     def _finalize(self): 
         self.lines=self.lines+(""" 
-        
+
+try:
+    # create a new 'Legacy VTK Reader'
+    legacyVTKReader1 = LegacyVTKReader(FileNames=['/"""+self.my_directory+"""/compound_paravis.vtk'])
+
+    # set active source
+    SetActiveSource(legacyVTKReader1)
+
+    # show data in view
+    legacyVTKReader1Display = Show(legacyVTKReader1, renderView1)
+
+    # Properties modified on legacyVTKReader1Display
+    legacyVTKReader1Display.Opacity = 0.2       
+except:
+    print("GEOM compound couldn't be loaded")
+
         
 if salome.sg.hasDesktop():
   salome.sg.updateObjBrowser(1)

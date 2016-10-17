@@ -52,7 +52,8 @@ from external.UnitCalculator import *
 auto_converter(mmNS)
 
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 # Track duration of the script
 time_start = time.time()
 # ------------------------------------------------------------------------------

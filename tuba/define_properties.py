@@ -67,25 +67,25 @@ def Model (model):
     """Append a FEM-Model to the defined Vector-Object. The following models are 
     available at the moment:
     
-    "TUBE": \n 
+#.  "TUBE": \n      
     The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can
     be deformed but not the "wall"(cross-section) itself. This theory gives a 
     good approximation for straight pipes but especially for bents this theory is limited.
-    As in a bent, flexibility and stress intensity are strongly influenced by the deformation of the cross-section
+    As in a bent, flexibility and stress intensity are strongly influenced by the deformation (ovalisation) of the cross-section
     itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to
     correct the model.\n
     Furthermore, as the crosssection is stiff, the influence of internal pressure can't be calculated. Normally pressure is taken into account
     by superposition after solving the calculation.\n
     Most commercial piping codes and ASME 31.3 work with this model.
     
-    "TUYAU": \n  
+#.  "TUYAU": \n  
     A more advanced model is the TUYAU model. Along the 1-dimensional mesh,       
     
-    "RECTANGULAR"  \n
+#.  "RECTANGULAR"  \n
 
-    "BEAM" \n
+#.  "BEAM" \n
     
-    "BAR"  \n
+#.  "BAR"  \n
     A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.
      
      
@@ -93,8 +93,10 @@ def Model (model):
     The following models will be added in the future:
 
 
-    "CABLE" \n
-    "3D?"\n
+#.    "CABLE" \n
+
+#.    "3D?"\n
+
     """    
     
     tub.current_model=model

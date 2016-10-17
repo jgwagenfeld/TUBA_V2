@@ -29,6 +29,8 @@ Translate from old TUBA:
 General:
 
 -Correct the Aster_Base_File so that visualization in EFICAS is as well possible
+   --Change: included structelem in a developpermode
+
 -Run CodeAster directly with popen()
 
 

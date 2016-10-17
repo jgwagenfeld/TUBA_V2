@@ -138,25 +138,25 @@
     <span class="sd">&quot;&quot;&quot;Append a FEM-Model to the defined Vector-Object. The following models are </span>
 <span class="sd">    available at the moment:</span>
 <span class="sd">    </span>
-<span class="sd">    &quot;TUBE&quot;: \n </span>
+<span class="sd">#.  &quot;TUBE&quot;: \n      </span>
 <span class="sd">    The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can</span>
 <span class="sd">    be deformed but not the &quot;wall&quot;(cross-section) itself. This theory gives a </span>
 <span class="sd">    good approximation for straight pipes but especially for bents this theory is limited.</span>
-<span class="sd">    As in a bent, flexibility and stress intensity are strongly influenced by the deformation of the cross-section</span>
+<span class="sd">    As in a bent, flexibility and stress intensity are strongly influenced by the deformation (ovalisation) of the cross-section</span>
 <span class="sd">    itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to</span>
 <span class="sd">    correct the model.\n</span>
 <span class="sd">    Furthermore, as the crosssection is stiff, the influence of internal pressure can&#39;t be calculated. Normally pressure is taken into account</span>
 <span class="sd">    by superposition after solving the calculation.\n</span>
 <span class="sd">    Most commercial piping codes and ASME 31.3 work with this model.</span>
 <span class="sd">    </span>
-<span class="sd">    &quot;TUYAU&quot;: \n  </span>
+<span class="sd">#.  &quot;TUYAU&quot;: \n  </span>
 <span class="sd">    A more advanced model is the TUYAU model. Along the 1-dimensional mesh,       </span>
 <span class="sd">    </span>
-<span class="sd">    &quot;RECTANGULAR&quot;  \n</span>
+<span class="sd">#.  &quot;RECTANGULAR&quot;  \n</span>
 
-<span class="sd">    &quot;BEAM&quot; \n</span>
+<span class="sd">#.  &quot;BEAM&quot; \n</span>
 <span class="sd">    </span>
-<span class="sd">    &quot;BAR&quot;  \n</span>
+<span class="sd">#.  &quot;BAR&quot;  \n</span>
 <span class="sd">    A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.</span>
 <span class="sd">     </span>
 <span class="sd">     </span>
@@ -164,8 +164,10 @@
 <span class="sd">    The following models will be added in the future:</span>
 
 
-<span class="sd">    &quot;CABLE&quot; \n</span>
-<span class="sd">    &quot;3D?&quot;\n</span>
+<span class="sd">#.    &quot;CABLE&quot; \n</span>
+
+<span class="sd">#.    &quot;3D?&quot;\n</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>    
     
     <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="n">model</span></div>

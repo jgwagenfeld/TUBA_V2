@@ -53,6 +53,9 @@ class CodeAster:
         #Simulation
         self._simulation()
         self._write_tables()
+        
+        #Output
+        self._clean_for_EFICAS()
 
 #==============================================================================
 #  Write Point Properties
@@ -74,7 +77,7 @@ class CodeAster:
             newlines.append("),")
     
             if len(newlines)>3:   #just checks if there where actually ddls defined
-                insert_lines_at_string(self.lines,"#LIAISON_OBLIQUE",newlines)
+                insert_lines_at_string(self.lines,"##LIAISON_OBLIQUE",newlines)
 
 #==============================================================================            
     def _ddl_create_node_group(self,dict_tubapoints):
@@ -104,7 +107,7 @@ class CodeAster:
         ])
         
         if newlines>4:
-            insert_lines_at_string(self.lines,"#CREA_GROUPE_NOEUD",newlines)
+            insert_lines_at_string(self.lines,"##CREA_GROUPE_NOEUD",newlines)
 
 #==============================================================================
     def _stiffness(self,dict_tubapoints):
@@ -132,7 +135,7 @@ class CodeAster:
             ])         
         
 
-            insert_lines_at_string(self.lines,"#MODELISATION",newlines)
+            insert_lines_at_string(self.lines,"##MODELISATION",newlines)
             newlines=[]
            
       
@@ -146,7 +149,7 @@ class CodeAster:
                 "),",
                 ]
       
-                insert_lines_at_string(self.lines,"#CREA_POI1",newlines)
+                insert_lines_at_string(self.lines,"##CREA_POI1",newlines)
                 newlines=[]    
     
                 print (tubapoint.stiffness)
@@ -167,7 +170,7 @@ class CodeAster:
                 "),",
                 ]
         
-                insert_lines_at_string(self.lines,"#STIFFNESS_DISCRET",newlines)
+                insert_lines_at_string(self.lines,"##STIFFNESS_DISCRET",newlines)
 
 
 
@@ -186,7 +189,7 @@ class CodeAster:
                         "),"
                         ]                           
                     
-                    insert_lines_at_string(self.lines,"#FORCE_NODALE",newlines)
+                    insert_lines_at_string(self.lines,"##FORCE_NODALE",newlines)
 #==============================================================================
     def _force(self,dict_tubapoints):
                 
@@ -202,7 +205,7 @@ class CodeAster:
                         "),"
                         ]                           
                     
-                    insert_lines_at_string(self.lines,"#FORCE_NODALE",newlines)
+                    insert_lines_at_string(self.lines,"##FORCE_NODALE",newlines)
                                    
 #==============================================================================
 #  Write Vector Properties
@@ -236,7 +239,7 @@ class CodeAster:
             "   VALE="+str(item[0])+",",
             "),",
             ])
-            insert_lines_at_string(self.lines,"#CHAMP_TEMP",newlines)
+            insert_lines_at_string(self.lines,"##CHAMP_TEMP",newlines)
 
 #==============================================================================
     def _material(self,dict_tubavectors):
@@ -272,8 +275,8 @@ class CodeAster:
             "    ),",
             ])
 
-            insert_lines_at_string(self.lines,"#CHMAT_AFFE",newlines)
-            insert_lines_at_string(self.lines,"#CHMATH_AFFE",newlines)
+            insert_lines_at_string(self.lines,"##CHMAT_AFFE",newlines)
+            insert_lines_at_string(self.lines,"##CHMATH_AFFE",newlines)
         #======================================================================
         #   Define the used material
         #======================================================================
@@ -289,7 +292,7 @@ class CodeAster:
                     "           ),",
                     "     );",
                     ]
-                    insert_lines_at_string(self.lines,"#DEF_MATERIAU",newlines)
+                    insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
 
             for material in library_material.dict_mat_F:
                 if material == item[0]:
@@ -302,7 +305,7 @@ class CodeAster:
                     "              PROL_DROITE='CONSTANT',   ",
                     "              PROL_GAUCHE='CONSTANT',); ",
                     "",]
-                    insert_lines_at_string(self.lines,"#DEF_MATERIAU",newlines)
+                    insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
 
 
                     newlines=[
@@ -312,7 +315,7 @@ class CodeAster:
                     "              PROL_DROITE='CONSTANT',   ",
                     "              PROL_GAUCHE='CONSTANT',); ",
                     "",]
-                    insert_lines_at_string(self.lines,"#DEF_MATERIAU",newlines)
+                    insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
 
                     newlines=[
                     "A_"+material+"=DEFI_FONCTION(NOM_PARA='TEMP',",
@@ -321,7 +324,7 @@ class CodeAster:
                     "              PROL_DROITE='CONSTANT',   ",
                     "              PROL_GAUCHE='CONSTANT',); ",
                     "",]
-                    insert_lines_at_string(self.lines,"#DEF_MATERIAU",newlines)
+                    insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
 
 
                     newlines=[
@@ -334,7 +337,7 @@ class CodeAster:
                     "           ),",
                     ");",
                     ]
-                    insert_lines_at_string(self.lines,"#DEF_MATERIAU",newlines)
+                    insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
 
 
 #==============================================================================
@@ -378,7 +381,7 @@ class CodeAster:
                 "    ),",
                 ])
                 if item[0]:
-                    insert_lines_at_string(self.lines,"#FORCE_TUYAU",newlines)
+                    insert_lines_at_string(self.lines,"##FORCE_TUYAU",newlines)
 
 
             for name in item[1]:
@@ -466,7 +469,7 @@ class CodeAster:
                     "),"
                     ]                           
                 
-                insert_lines_at_string(self.lines,"#FORCE_POUTRE",newlines)
+                insert_lines_at_string(self.lines,"##LINEAR_FORCE",newlines)
 
 #==============================================================================
     def _section(self,dict_tubavectors):
@@ -509,7 +512,7 @@ class CodeAster:
                 "        VALE=("+ str(item[0].strip("[],")) +"),",
                 "    ),",
                 ])
-                insert_lines_at_string(self.lines,"#SECTION_TUBE",newlines)    
+                insert_lines_at_string(self.lines,"##SECTION_TUBE",newlines)    
 #------------------------------------------------------------------------------
             new_item=[]
             for name in item[1]:
@@ -557,9 +560,55 @@ class CodeAster:
                                 str(thickness_y)+", "+str(thickness_z)+"),",
                     "),",
                     ])
-                insert_lines_at_string(self.lines,"#SECTION_POUTRE",newlines)            
+                insert_lines_at_string(self.lines,"##SECTION_POUTRE",newlines)            
 
           
+#------------------------------------------------------------------------------            
+            for name in item[1]:
+                item_tubavector=([tubavector for tubavector in dict_tubavectors
+                                            if tubavector.name == name][0])                                
+                if item_tubavector.model == "TUBE" or item_tubavector.model == "TUYAU": 
+                    new_item.append(name)                           
+             
+            if new_item:        
+                newlines=[]
+                newlines.extend([
+                "    _F(",
+                "        GROUP_MA=(",
+                ])
+    
+                character_count=0
+                text="           "
+                for name in new_item :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+    
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="           "
+                        character_count=0
+                newlines.append(text)
+                newlines.append("        ),")
+                
+                newlines.extend([
+                "        SECTION ='CERCLE',",
+                "        CARA=('R','EP',),",
+                "        VALE=("+ str(item[0].strip("[],")) +"),",
+                "    ),",
+                ])
+                insert_lines_at_string(self.lines,"##SECTION_TUBE",newlines) 
+
+
+
+#_F ( 
+#                                      GROUP_MA = 'Bars',
+#                                      SECTION = 'GENERALE',
+#                                      CARA = 'A',
+#                                      VALE = 0.5
+#                                      ));  
+
+
+
        
 #==============================================================================      
          
@@ -592,7 +641,7 @@ class CodeAster:
 
                 newlines.append("       ),")
                 newlines.append("),")
-                insert_lines_at_string(self.lines,"#CREA_GROUPE_MAILLE ",newlines)
+                insert_lines_at_string(self.lines,"##CREA_GROUPE_MAILLE ",newlines)
 
 
                 
@@ -604,7 +653,7 @@ class CodeAster:
                 "    ),",
                 ]
                 
-                insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)
+                insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
                 
             if item[0] == "TUYAU":
                 self.TUYAU_flag=True
@@ -631,7 +680,7 @@ class CodeAster:
 
                 newlines.append("        ),")
                 newlines.append("    ),")
-                insert_lines_at_string(self.lines,"#CREA_GROUPE_MAILLE ",newlines)
+                insert_lines_at_string(self.lines,"##CREA_GROUPE_MAILLE ",newlines)
                 
                 newlines=[
                 "    _F(",
@@ -641,7 +690,7 @@ class CodeAster:
                 "    ),",
                 ]
                 
-                insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)                
+                insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)                
              
              
             if item[0] == "BAR":
@@ -649,7 +698,7 @@ class CodeAster:
                 newlines=[]
                 newlines.extend([
                 "    _F(",
-                "        NOM='GBARRE',",
+                "        NOM='GBAR',",
                 "        TYPE_MAILLE = '1D',",
                 "        UNION=(",
                 ])                
@@ -668,18 +717,18 @@ class CodeAster:
 
                 newlines.append("        ),")
                 newlines.append("    ),")
-                insert_lines_at_string(self.lines,"#CREA_GROUPE_MAILLE ",newlines)                
+                insert_lines_at_string(self.lines,"##CREA_GROUPE_MAILLE ",newlines)                
                 
                 newlines=[]
                 newlines.extend([                
                 "    _F(",
-                "        GROUP_MA='GBARRE',",                        
+                "        GROUP_MA='GBAR',",                        
                 "        PHENOMENE = 'MECANIQUE',",
-                "        MODELISATION = 'BARRE'));",             
+                "        MODELISATION = 'BARRE',",             
                 "    ),",
                 ])            
                 
-                insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)
+                insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
              
              
             if item[0] == "3D":  
@@ -700,7 +749,7 @@ class CodeAster:
                 "),",
                 ]
                 
-                insert_lines_at_string(self.lines,"#MODELISATION" ,newlines)        
+                insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)        
                 
 
                 
@@ -724,7 +773,7 @@ class CodeAster:
     ),""").split("\n")                  
                 
                              
-                insert_lines_at_string(self.lines,"#LIAISON_3D_TUBE" ,newlines)
+                insert_lines_at_string(self.lines,"##LIAISON_3D_TUBE" ,newlines)
 
             
 #==============================================================================
@@ -743,7 +792,7 @@ RESU=MECA_STATIQUE(
          _F(   CHARGE=CHARG1,
           ),
 
-         #CHARGEMENT
+         ##CHARGEMENT
      ),
 );
 
@@ -820,21 +869,16 @@ IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=MAX_VMIS));
 #IMPR_RESU(FORMAT='MED',RESU=_F(RESULTAT=RES_MPP,LIST_INST=listresu,NOM_CHAM_MED='sigflex',));
 #      """).split("\n")
 
-        insert_lines_at_string(self.lines, "#CALCULS", newlines)
+        insert_lines_at_string(self.lines, "##CALCULS", newlines)
 
 
     def _write_tables(self):
         pass
     
 #    
-#    def clean_for_EFICAS(self):    
-#        for i, line in enumerate(input_file):
-#            if not line.startswith('##'):
-#                output.write(line)
-#                if not line.startswith('#'):
-#            else:
-#                if not line.startswith('#'):
-#                    output.write(line)
+    def _clean_for_EFICAS(self):    
+        cleaned_lines = [line for line in self.lines if not line.lstrip().startswith('##')]
+        self.lines=cleaned_lines
 #==============================================================================
 #==============================================================================
 

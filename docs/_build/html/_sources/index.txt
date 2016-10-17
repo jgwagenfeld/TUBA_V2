@@ -6,7 +6,7 @@
 Welcome to TUBA!
 ==================
 
-TUBA is a Python module orginally created by Pascal KREZEL. It allows to create and simulate piping- and rod geometries in Salome-Meca (OpenSource under LPGL license).
+TUBA is a Python module based on the orginal code by Pascal KREZEL. It allows to create and simulate piping- and rod geometries in Salome-Meca (OpenSource under LPGL license).
 
 With a simple to use set of commands even complex piping-geometries can be generated and different load cases can be simulated.
 TUBA prepares the scripts for SalomeMeca, CodeAster and ParaVis which then have to be loaded into Salome-Meca where the actual simulation is effected.
@@ -19,6 +19,8 @@ Afterwards, the complete set of commands is introduced.
 
 The development section is intended for people who wish to understand the underlying Python code and idealy want to contribute to this opensource project.
 
+.. figure::  _static/ExampleTUBA.png
+   :align:   center
 
 Contents:
 

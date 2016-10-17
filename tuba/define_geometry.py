@@ -375,16 +375,16 @@ def Bent(bending_radius,arg1="",arg2="",arg3="intersect",name=""):
     """There are 3 general ways to create a pipe bent:
     
 
-1.  Bent(bending_radius,arg1=Vector3) -
+#.  Bent(bending_radius,arg1=Vector3): \n
     arg1 as a vector defines the new direction after the bent
     With this function, it's not possible to create 180°-bents as the bending plane
     would not be defined. A workaround would be to define 2 consecutive 90°-bents \n
     
-2.  Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient)
+#.  Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient): \n
     With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
     the new direction after the bent can be calculated. \n
 
-3.  Give 2 absolut vectors and make bent in between -- still not implemented
+#.  Give 2 absolut vectors and make bent in between -- still not implemented
 
 
 arg3 defines around which point the bent will be created.

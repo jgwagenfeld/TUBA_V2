@@ -134,15 +134,18 @@ current_tubapoint is used as startpoint</p>
 <dt id="tuba.define_geometry.Bent">
 <code class="descclassname">tuba.define_geometry.</code><code class="descname">Bent</code><span class="sig-paren">(</span><em>bending_radius</em>, <em>arg1=''</em>, <em>arg2=''</em>, <em>arg3='intersect'</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Bent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Bent" title="Permalink to this definition">¶</a></dt>
 <dd><p>There are 3 general ways to create a pipe bent:</p>
-<ol class="arabic simple">
-<li>Bent(bending_radius,arg1=Vector3) -
-arg1 as a vector defines the new direction after the bent
+<ol class="arabic">
+<li><p class="first">Bent(bending_radius,arg1=Vector3):</p>
+<p>arg1 as a vector defines the new direction after the bent
 With this function, it&#8217;s not possible to create 180°-bents as the bending plane
-would not be defined. A workaround would be to define 2 consecutive 90°-bents</li>
-<li>Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient)
-With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
-the new direction after the bent can be calculated.</li>
-<li>Give 2 absolut vectors and make bent in between &#8211; still not implemented</li>
+would not be defined. A workaround would be to define 2 consecutive 90°-bents</p>
+</li>
+<li><p class="first">Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient):</p>
+<p>With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
+the new direction after the bent can be calculated.</p>
+</li>
+<li><p class="first">Give 2 absolut vectors and make bent in between &#8211; still not implemented</p>
+</li>
 </ol>
 <p>arg3 defines around which point the bent will be created.
 For &#8220;add&#8221; the start_tubapoint of the Bent will be the end_tubapoint of the last vector.</p>
@@ -170,27 +173,38 @@ before defines Cross-Section. The branche is defined by the user-arguments</p>
 <dl class="function">
 <dt id="tuba.define_properties.Model">
 <code class="descclassname">tuba.define_properties.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append a FEM-Model to the defined Vector-Object. The following models are 
-available at the moment:</p>
-<p>&#8220;TUBE&#8221;:</p>
+<dd><dl class="docutils">
+<dt>Append a FEM-Model to the defined Vector-Object. The following models are </dt>
+<dd>available at the moment:</dd>
+</dl>
+<ol class="arabic">
+<li><p class="first">&#8220;TUBE&#8221;:</p>
 <p>The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can
 be deformed but not the &#8220;wall&#8221;(cross-section) itself. This theory gives a 
 good approximation for straight pipes but especially for bents this theory is limited.
-As in a bent, flexibility and stress intensity are strongly influenced by the deformation of the cross-section
+As in a bent, flexibility and stress intensity are strongly influenced by the deformation (ovalisation) of the cross-section
 itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to
 correct the model.</p>
 <p>Furthermore, as the crosssection is stiff, the influence of internal pressure can&#8217;t be calculated. Normally pressure is taken into account
 by superposition after solving the calculation.</p>
 <p>Most commercial piping codes and ASME 31.3 work with this model.</p>
-<p>&#8220;TUYAU&#8221;:</p>
+</li>
+<li><p class="first">&#8220;TUYAU&#8221;:</p>
 <p>A more advanced model is the TUYAU model. Along the 1-dimensional mesh,</p>
-<p>&#8220;RECTANGULAR&#8221;</p>
-<p>&#8220;BEAM&#8221;</p>
-<p>&#8220;BAR&#8221;</p>
+</li>
+<li><p class="first">&#8220;RECTANGULAR&#8221;</p>
+</li>
+<li><p class="first">&#8220;BEAM&#8221;</p>
+</li>
+<li><p class="first">&#8220;BAR&#8221;</p>
 <p>A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.</p>
 <p>The following models will be added in the future:</p>
-<p>&#8220;CABLE&#8221;</p>
-<p>&#8220;3D?&#8221;</p>
+</li>
+<li><p class="first">&#8220;CABLE&#8221;</p>
+</li>
+<li><p class="first">&#8220;3D?&#8221;</p>
+</li>
+</ol>
 </dd></dl>
 
 <div class="figure align-center" id="tuyau">
