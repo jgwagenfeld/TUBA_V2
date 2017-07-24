@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>How to start &mdash; TUBA 1.1 documentation</title>
+    <title>How to start &#8212; TUBA 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,13 +17,15 @@
         VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TUBA 1.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="&lt;no title&gt;" href="Tutorials.html" />
     <link rel="prev" title="Installation" href="Installation.html" /> 
   </head>
@@ -39,9 +41,6 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li class="right" >
           <a href="Tutorials.html" title="&lt;no title&gt;"
              accesskey="N">next</a> |</li>
@@ -76,15 +75,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/HowtoStart.txt"
+      <li><a href="_sources/HowtoStart.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -107,11 +106,15 @@ the bash-command:</p>
 </div>
 <p>The command_script as argument is your list of commands defining your geometry, your simulation and output. Executing TUBA will trigger the following actions:</p>
 <ol class="arabic simple">
-<li>generating a 3D-Plot of your defined geometry. The purpose of this plot is to get an immediate visualization of your geometry.
-If needed, then your command list can be adapted before you start the import into Salome-Meca.</li>
 <li>generating <code class="docutils literal"><span class="pre">command_script_salome.py</span></code> which then has to be loaded into Salome (in the Menu bar: <code class="docutils literal"><span class="pre">File</span></code> - <code class="docutils literal"><span class="pre">Load</span> <span class="pre">Script...</span></code>)</li>
 <li>generating <code class="docutils literal"><span class="pre">command_script_aster.comm</span></code> which then has to be loaded into the Code Aster Module. The file defines the simulation in Code Aster. Find more informations concerning the structure of comm-files under :ref:code_aster</li>
 <li>generating <code class="docutils literal"><span class="pre">command_script_post.py</span></code> which then has to be loaded after a successful simulation. This file will start the post processing tool ParaVis and effect some standard plots. It is possible to adapt these plots or add new ones later on.</li>
+</ol>
+<p>You have two optional arguments</p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">-plot</span></code> generates a 3D-Plot of your defined geometry. The purpose of this plot is to get an immediate visualization of your geometry.
+If needed, then your command list can be adapted before you start the import into Salome-Meca.</li>
+<li><code class="docutils literal"><span class="pre">-salome</span></code> launches directly Salome-Meca using the generated command_script_salome.py to generate the geometry and mesh.</li>
 </ol>
 <div class="section" id="writing-the-command-script">
 <h2>Writing the command script<a class="headerlink" href="#writing-the-command-script" title="Permalink to this headline">¶</a></h2>
@@ -271,9 +274,6 @@ interpreted as body elements.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="Tutorials.html" title="&lt;no title&gt;"
              >next</a> |</li>
         <li class="right" >
@@ -285,8 +285,8 @@ interpreted as body elements.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Wagenfeld.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2016, Wagenfeld.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

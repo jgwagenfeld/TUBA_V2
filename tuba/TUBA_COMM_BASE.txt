@@ -1,3 +1,6 @@
+##PYTHON
+
+
 #PAR_LOT='NON' means, the code is executed line py line. This is a prerequistance to use Python Code. INFO=2 --> additional information in the output are printed
 #--------------------------------------------------------------------------------------
 
@@ -36,10 +39,15 @@ MAIL=DEFI_GROUP(
         MAILLAGE=MAIL,
 
         CREA_GROUP_NO=(
+            _F(TOUT_GROUP_MA='OUI',),   #Creates a node group for each element
+    
+                
         ##CREA_GROUPE_NOEUD
         ),
                     
-        CREA_GROUP_MA=( 
+        CREA_GROUP_MA=(
+            _F(NOM='ALL',TOUT='OUI',),  #Creates a group for all element
+                
         ##CREA_GROUPE_MAILLE                        
         ),                 
 
@@ -110,7 +118,7 @@ BLOCAGE=AFFE_CHAR_MECA(
         ),
                   
         LIAISON_OBLIQUE=(
-        ##LIAISON_OBLIQUE
+            ##LIAISON_OBLIQUE
         ),
         
         LIAISON_MAIL=(
@@ -145,13 +153,13 @@ CARAELEM=AFFE_CARA_ELEM(
         ),
                                                                                                
         DEFI_ARC=(
-        ##CENTRE_COURBURE
+        ##DEFINE_BENT
         ),
                   
         DISCRET=(
         ##STIFFNESS_DISCRET
 
-        ##MASSE_DISCRET
+        ##MASS_DISCRET
         ),
                   
         ORIENTATION=(
@@ -161,10 +169,11 @@ CARAELEM=AFFE_CARA_ELEM(
 
 
 
+
 #-------------------------------------------------------------------------------
 # This section specifies external mechanical loads (imposed forces at nodes and line elements)
 #-------------------------------------------------------------------------------
-CHARG1=AFFE_CHAR_MECA(      
+LOAD=AFFE_CHAR_MECA(      
         MODELE=MODMECA,
 
         FORCE_NODALE=(
@@ -201,22 +210,20 @@ CHA_TEMP=CREA_CHAMP(
                 VALE=20,
                 ),
 
-                ##CHAMP_TEMP
+                ##TEMPERATURE
     ),
 );
 
-IMPR_RESU(FORMAT='MED',RESU=_F(CHAM_GD=CHA_TEMP));
 
 RES_TEMP=CREA_RESU(
      OPERATION='AFFE',
      TYPE_RESU='EVOL_THER',
      NOM_CHAM='TEMP',
      AFFE=(
-            _F( CHAM_GD=CHA_TEMP,
-                INST=1,
+           _F( CHAM_GD=CHA_TEMP,
+               INST=0,
                 ),
-
-     ),
+   ),
 );
 
 
@@ -225,26 +232,33 @@ RES_TEMP=CREA_RESU(
 #-------------------------------------------------------------------------------
                
 
-##Pressure_Field
+#CHA_PRES=CREA_CHAMP(
+#     OPERATION='AFFE',         #assigns a value on nodes or meshes
+#     TYPE_CHAM='NOEU_TEMP_R',
+#     MODELE=MODMECA,
+#     AFFE=(
+#            _F( TOUT='OUI',
+#                NOM_CMP='TEMP',
+#                VALE=0,
+#                ),
+#               ##Pressure_Field
+
+#    ),
+#);
+#IMPR_RESU(FORMAT='MED',RESU=_F(CHAM_GD=CHA_PRES));
+
 
 
 #-------------------------------------------------------------------------------
 # Applies the defined materials to the different meshgroups
 #-------------------------------------------------------------------------------
-CHMAT=AFFE_MATERIAU(        
+
+
+CH_MAT=AFFE_MATERIAU(        
     MAILLAGE=MAIL,
 
     AFFE=(
-    ##CHMAT_AFFE     
-    ),
-                
-);
-
-CHMATH=AFFE_MATERIAU(        
-    MAILLAGE=MAIL,
-
-    AFFE=(
-    ##CHMATH_AFFE     
+    ##ASSIGN_MATERIAL     
     ),
             
     AFFE_VARC=(  
@@ -272,7 +286,13 @@ CHMATH=AFFE_MATERIAU(
 
 ##FONCTIONS
 
-##CALCULS
+##SIMULATION
+
+##CALCULATE_FIELDS
+
+##RESULTS_TO_SALOME
+
+##TABLE_OUTPUT
 
 
 

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 """
-Orginal Code by Pascal KREZEL (pascal.krezel@gmail.com) Janvier 2012
-Modified by Jan-Georg WAGENFELD (jangeorgwagenfeld@gmail.com) 2016
+Based on Code by Pascal KREZEL (pascal.krezel@gmail.com) Janvier 2012
+Further developpment by Jan-Georg WAGENFELD (jangeorgwagenfeld@gmail.com) 2016
 
 This programm is used to prepare a FEM piping network simulation in Code Aster
 and Salome. The User defines this piping network in a script with a list
@@ -34,6 +34,8 @@ import logging
 import unittest
 import time
 
+from subprocess import Popen
+
 # importes the namesspace of the TUBA-Module
 import tuba
 
@@ -47,9 +49,10 @@ import tuba.write_Salome_file
 import tuba.write_ParaPost_file
 import tuba.tuba_vars_and_funcs as tub
 
-#---UnitCalculator to use different input units---
-from external.UnitCalculator import *
-auto_converter(mmNS)
+##---UnitCalculator to use different input units---
+#from external.UnitCalculator import *
+#
+#auto_converter(mmNS)
 
 
 #logging.basicConfig(level=logging.INFO)
@@ -59,24 +62,35 @@ time_start = time.time()
 # ------------------------------------------------------------------------------
 # Definition where to read and write the input/output-files
 # --------------------------------------------------------------------------
-my_directory = os.getcwd()
+
+
+
+salome_root=os.getenv('HOME')+'/salome_meca/appli_V2016/salome' # Salome directory
+aster_root=os.getenv('HOME')+'/salome_meca/V2016/tools/Code_aster_frontend-20160/bin/' # Aster directory
+                                     
+current_directory = os.getcwd()
 tuba_directory = os.environ["TUBA"]
 cmd_script = sys.argv[1].replace(".py", "")   # sys.argv[1]"TUBTUB2.py"
 
-inputFileTuba = my_directory + "/" + cmd_script + ".py"
+#try:
+#    os.stat(current_directory + "/" + cmd_script)
+#except:
+#    os.mkdir(current_directory + "/" + cmd_script)                     
+                                                             
+inputFileTuba = current_directory + '/'+cmd_script+".py"
 
 # File used in Salome to generate the Geometry and Meshing
-outputFile_Salome = my_directory + "/" + cmd_script + "_salome" + ".py"
+outputFile_Salome = current_directory + "/"+ cmd_script + "_salome" + ".py"
 
 # File used in Code Aster to define Simulation parameters
-outputFile_Comm = my_directory + "/" + cmd_script + "_aster" + ".comm"
+outputFile_Comm = current_directory +"/"  + cmd_script + "_aster" + ".comm"
 
 # File used in Code Aster to define Simulation parameters
-outputFile_ParaPost = my_directory + "/" + cmd_script + "_post" + ".py"
+outputFile_ParaPost = current_directory +"/" + cmd_script + "_post" + ".py"
 
 
 
-def Main():
+def Main(argv):
   
 #    simulation=tuba.define_simulation.Simulation() 
 
@@ -89,44 +103,44 @@ def Main():
     completed_dict_tubavectors = tub.dict_tubavectors
     completed_dict_tubapoints = tub.dict_tubapoints
     
-    print("\n------------------------")
-    print("  print point and vector lists with piping properties")
-    print("------------------------\n")
-
-    printall_tuba_points_vectors(completed_dict_tubapoints, completed_dict_tubavectors)
+#    print("\n------------------------")
+#    print("  print point and vector lists with piping properties")
+#    print("------------------------\n")
+#
+#    printall_tuba_points_vectors(completed_dict_tubapoints, completed_dict_tubavectors)
 
 #==============================================================================
 # Create Code Salome Object and translate dict_tubavectors,dict_tubapoints-
 # Code Salome File --> Python Script to build Geometry/Mesh
 # ==============================================================================
-    code_salome=tuba.write_Salome_file.Salome(my_directory)
+    code_salome=tuba.write_Salome_file.Salome(current_directory)
     code_salome.write(completed_dict_tubavectors, completed_dict_tubapoints)
     try:
         f = open(outputFile_Salome, 'w')
         f.write('\n'.join(code_salome.lines))
         f.close()
     except:
-        print("Error")
+        print("Error while writing the Saolme Script")
 
 # ==============================================================================
 # Create Code Aster Object and translate dict_tubavectors,dict_tubapoints-
 # Code Aster File --> .Comm script to load into Aster Module and run Simulation
 # ==============================================================================
     code_aster=tuba.write_Aster_file.CodeAster(tuba_directory)
-    code_aster.write(completed_dict_tubavectors, completed_dict_tubapoints)
+    code_aster.write(completed_dict_tubavectors, completed_dict_tubapoints,cmd_script)
     
     try:
        f = open(outputFile_Comm, 'w')
        f.write('\n'.join(code_aster.lines))
        f.close()
     except:
-        print("Error")
+        print("Error while writing the Aster Comm-File")
 
 # ==============================================================================
 # Create Code Aster Object and translate dict_tubavectors,dict_tubapoints-
 # Code Aster File --> .Comm script to load into Aster Module and run Simulation
 # ==============================================================================
-    paraview=tuba.write_ParaPost_file.ParaPost(my_directory)
+    paraview=tuba.write_ParaPost_file.ParaPost(current_directory)
     
     paraview.write(completed_dict_tubavectors, completed_dict_tubapoints)
     
@@ -135,7 +149,7 @@ def Main():
        f.write('\n'.join(paraview.lines))
        f.close()
     except:
-        print("Error")        
+        print("Error while writing the PostProssesing Script")        
         
         
 #==============================================================================
@@ -148,19 +162,43 @@ def Main():
     print("------------------------")
     print
 
-#==============================================================================
-#Plots the constructed Points and Vectors to control the constructed network before loading into Salome
-    import plot_points_and_vectors
-#==============================================================================
-
-
+    
     time_end = time.time()
     dtime = time_end - time_start
     print("------------------------")
     print("Execution time :"+str(round(dtime,2)) + "s")
-    
-    
 
+    
+    
+#==============================================================================
+# Check for additional arguments
+# -plot  --> launches the matplotlib visualization of the created geometry
+# -salome --> launches Salome, using the jut created salome script.
+#==============================================================================
+       
+    
+    try:
+        if sys.argv[2] =='-plot':
+            import plot_points_and_vectors
+        if sys.argv[2] =='-salome':
+        #Launch Salome    
+            salome_stop = Popen(salome_root + ' killall',shell='True')
+            salome_stop.wait()
+            salome_run = Popen(salome_root + ' ' + outputFile_Salome, shell='True')
+            salome_run.wait()
+        if sys.argv[2] =='-aster':  # still not working properly
+            EXPORT_FILE='Test2.export' # Filename of aster settings
+            salome_stop = Popen(salome_root + ' killall',shell='True')
+            salome_stop.wait()
+            salome_run = Popen(salome_root + ' -t ' + outputFile_Salome, shell='True')
+            salome_run.wait()
+            
+            aster_run = Popen(aster_root + 'as_run ' + EXPORT_FILE, shell='True')
+            aster_run.wait()# -*- coding: utf-8 -*-         
+            
+    except:
+        pass
+  
 #==============================================================================
 #==============================================================================
 def printall_tuba_points_vectors(dict_tubapoints,dict_tubavectors):
@@ -183,8 +221,11 @@ def printall_tuba_points_vectors(dict_tubapoints,dict_tubavectors):
         logging.info(str(tubapoint.__dict__))
     logging.info("==============================")
 
+#==============================================================================
+#==============================================================================    
+if __name__ == "__main__":
+   Main(sys.argv[1:])
 
-Main()
 
 
 

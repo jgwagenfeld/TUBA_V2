@@ -11,13 +11,13 @@ import logging
 
 import tuba_vars_and_funcs as tub
 import tuba.define_geometry as tuba_geom
-import library_material
+#import library_material
 
 
 class Salome:
 
-    def __init__(self, my_directory):
-        self.my_directory=my_directory
+    def __init__(self, current_directory):
+        self.current_directory=current_directory
         self.lines=[]
         logging.debug("Now in writeSalomeFile \n ====")
 
@@ -46,17 +46,87 @@ class Salome:
                 self._visualize_ddl(tubapoint,section)
                 self._visualize_stiffness(tubapoint,section)
                 self._visualize_force(tubapoint,section)
-                
-                
+                self._visualize_mass(tubapoint,section)                
+            if not tubapoint.stiffness==[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
+                self._stiffness_mesh(tubapoint)
+            if not tubapoint.friction_coefficient == 0.0:  
+                self._friction_mesh(tubapoint)
                 
         for tubavector in dict_tubavectors:
+            print('Turbavector',tubavector.__class__.__name__)
             logging.debug("Processing TubaVector: "+tubavector.name+ " \n ====")
             self._vector(tubavector)
             self._visualize_Pipe_1D(tubavector)
 
         self._create_paravis_geometry_compound()
-        self._create_mesh_compound(dict_tubavectors)
+        self._create_mesh_compound(dict_tubavectors,dict_tubapoints)
         self._finalize()
+
+
+#==============================================================================
+    def _initialize(self):
+        self.lines=self.lines+(
+"""#!/usr/bin/python 3
+# -*- coding: iso-8859-1 -*-
+
+import time
+time1=time.time()
+import sys
+sys.path.append(' """+self.current_directory+""" ')
+
+import salome
+import GEOM
+import math
+import SMESH
+from salome.smesh import smeshBuilder
+import SALOMEDS
+import StdMeshers
+import NETGENPlugin
+
+salome.salome_init()
+study   = salome.myStudy
+studyId = salome.myStudyId
+
+from salome.geom import geomBuilder
+geompy = geomBuilder.New(salome.myStudy)
+
+smesh = smeshBuilder.New(salome.myStudy)
+
+from salome.geom import geomtools
+geompy = geomtools.getGeompy(studyId)
+
+from salome.kernel.studyedit import getStudyEditor
+studyEditor = getStudyEditor(studyId)
+
+#from  salome.geom.structelem import StructuralElementManager
+#structElemManager = StructuralElementManager()
+#commandList=[]
+
+gst = geomtools.GeomStudyTools(studyEditor)
+gg = salome.ImportComponentGUI("GEOM")
+
+def Project():
+    O = geompy.MakeVertex(0,0,0)
+    O_id = geompy.addToStudy(O,"O")
+    Vx= geompy.MakeVectorDXDYDZ(1,0,0)
+    gst.addShapeToStudy(Vx,"Vx")
+    Vy= geompy.MakeVectorDXDYDZ(0,1,0)
+    geompy.addToStudy(Vy,"Vy")
+    Vz= geompy.MakeVectorDXDYDZ(0,0,1)
+    geompy.addToStudy(Vz,"Vz")
+    # List of elements which are added to the study
+    Liste=[]
+    List_Visualization=[]
+    List_ParaVis_Visualization=[]
+    L1=[]
+    L2=[]
+    List_id=[]
+    ERREUR=False
+
+            """).split("\n")
+
+
+
 
 #==============================================================================
     def _point(self,tubapoint):
@@ -77,8 +147,58 @@ class Salome:
     geompy.addToStudyInFather("""+name_point+",Vd2x_"""+name_point+",\"Vd2x_"+ name_point+""" " )"""
         ).split("\n")
 
-    
+#==============================================================================
+    def _stiffness_mesh(self,tubapoint):
+        name_point = str(tubapoint.name)
+        
+        self.lines=self.lines+("""  
+    """+name_point+ "K= geompy.MakeVertexWithRef("+name_point+""", 1, 1, 1)
+    Spring"""+name_point+"= geompy.MakeLineTwoPnt("+name_point+", "+name_point+"""K)
+    geompy.addToStudy( """+name_point+ "K, '"+name_point+ """K' )
+    geompy.addToStudy( Spring"""+name_point+", 'Spring"""+name_point+"""' ) 
 
+    try:
+       Spring"""+name_point+"M = smesh.Mesh(Spring"+  name_point +""")
+       Decoupage = Spring"""+ name_point+"""M.Segment()
+       Decoupage.NumberOfSegments("""+str(1)+""")
+       smesh.SetName(Spring"""+ name_point+"M,'Spring"+name_point+"""')
+       Spring"""+name_point+"""M.Compute()
+       Spring"""+name_point+"M.Group("+name_point+""")
+       Spring"""+name_point+"M.Group("+name_point+"""K)
+       Spring"""+name_point+"M.GroupOnGeom(Spring"+name_point+""")
+    except:
+       ERREUR=True
+       print (\"   =>ERROR WHILE GENERATING THE MESH!_\")
+       return        
+""").split("\n")
+            
+#============================================================================== 
+    def _friction_mesh(self,tubapoint):
+        name_point = str(tubapoint.name)
+        
+        self.lines=self.lines+("""  
+    """+name_point+ "_f= geompy.MakeVertexWithRef("+name_point+""", -1, -1, -1)
+    Friction"""+name_point+"= geompy.MakeLineTwoPnt("+name_point+", "+name_point+"""_f)
+    geompy.addToStudy( """+name_point+ "_f, '"+name_point+ """_f' )
+    geompy.addToStudy( Friction"""+name_point+", 'Friction"""+name_point+"""' ) 
+
+    try:
+       Friction"""+name_point+"M = smesh.Mesh(Friction"+  name_point +""")
+       Decoupage = Friction"""+ name_point+"""M.Segment()
+       Decoupage.NumberOfSegments("""+str(1)+""")
+       smesh.SetName(Friction"""+ name_point+"M,'Friction"+name_point+"""')
+       Friction"""+name_point+"""M.Compute()
+       Friction"""+name_point+"M.Group("+name_point+""")
+       Friction"""+name_point+"M.Group("+name_point+"""_f)
+       Friction"""+name_point+"M.GroupOnGeom(Friction"+name_point+""")
+    except:
+       ERREUR=True
+       print (\"   =>ERROR WHILE GENERATING THE MESH!_\ Friction"""+name_point+""" \")
+       return        
+""").split("\n")
+            
+
+           
 #==============================================================================
     def _vector(self,tubavector) :
         """Writes the python code to construct a Vector in Salome"""
@@ -90,7 +210,7 @@ class Salome:
             self._TShape_3D(tubavector)
 
         elif isinstance(tubavector, tuba_geom.TubaVector):
-            if tubavector.model == "3D":
+            if tubavector.model == "VOLUME":
                 exec("self.Ajouter_V_"+self.forme+"_3D(A,nom,lien)")
 
             elif tubavector.model in ["TUBE","TUYAU","BAR"]:
@@ -103,7 +223,7 @@ class Salome:
                 self._vector_pout1D(tubavector)
 
             else:
-                writeError(["Model is not defined"])
+                print("Model is not defined")
 
 #==============================================================================
     def _vector_round_1D(self,tubavector):
@@ -112,14 +232,11 @@ class Salome:
 
         [radius,thickness]=tubavector.section
         model=tubavector.model
-        Vx=tubavector.vector
 
         name_startpoint = tubavector.start_tubapoint.name
         name_endpoint=tubavector.end_tubapoint.name
 
-
         name_vector = str(tubavector.name)
-
 
         self.lines=self.lines+("""
            
@@ -138,7 +255,6 @@ class Salome:
 
             """).split("\n")
 
-
         self.lines=self.lines+("""
     except:
        ERREUR=True
@@ -148,21 +264,17 @@ class Salome:
        """+name_vector+"M = smesh.Mesh("+  name_vector +""")
        Decoupage = """+ name_vector+"M.Segment()").split("\n")
 
-
         if model in ["BARRE","RESSORT"]:
             self.lines=self.lines+(
 "       Decoupage.NumberOfSegments("""+str(1)+")").split("\n")
-
 
         else:
             self.lines=self.lines+(
 "       Decoupage.NumberOfSegments("+str(tub.MeshNbElement)+")").split("\n")
 
-
         if model in ["TUYAU"]:
             self.lines=self.lines+(
 "       Quadratic_Mesh = Decoupage.QuadraticMesh()").split("\n")
-
 
         self.lines=self.lines+("""
        smesh.SetName("""+ name_vector+"M,'"+name_vector+"""')
@@ -186,13 +298,8 @@ class Salome:
         model=tubavector.model
         Vx=tubavector.vector.normalized()
         Vy=tubavector.vd1x
-#        print("NAME",tubavector.name)
-#        print("Vy",Vy)
-#        print("Vx",Vx)
         Vz=Vx.cross(Vy)
-#        print("Vz",Vz)
 
-        
         print("Section",tubavector.section)
         [height_y,height_z,thickness_y,thickness_z]=tubavector.section
         
@@ -211,7 +318,6 @@ class Salome:
         name_startpoint = tubavector.start_tubapoint.name
         name_endpoint=tubavector.end_tubapoint.name
         name_vector = str(tubavector.name)
-
 
         self.lines=self.lines+("""
     try:
@@ -280,7 +386,6 @@ class Salome:
             self.lines=self.lines+(
 "       Decoupage.NumberOfSegments("+str(tub.MeshNbElement)+")").split("\n")
 
-
         self.lines=self.lines+("""
        smesh.SetName("""+ name_vector+"M,'"+name_vector+"""')
        """+name_vector+"""M.Compute()
@@ -297,6 +402,8 @@ class Salome:
 #==============================================================================
     def _visualize_Pipe_1D(self, tubavector):
         model=tubavector.model
+        
+        
         self.lines=self.lines+("""
 
     if List_Visualization!=[]:
@@ -325,8 +432,7 @@ class Salome:
             self.lines=self.lines+("""
 
     Radius="""+str(outerRadius)+"""
-    
-    
+        
     Pna=geompy.MakeVertexWithRef("""+name_point+",Radius*"+str(force_direction[0])+",Radius*"+str(force_direction[1])+",Radius*"+str(force_direction[2])+""")
     Pnb=geompy.MakeVertexWithRef("""+name_point+",1.5*Radius*"+str(force_direction[0])+",1.5*Radius*"+str(force_direction[1])+",1.5*Radius*"+str(force_direction[2])+""")
     Pnc=geompy.MakeVertexWithRef("""+name_point+",10*Radius*"+str(force_direction[0])+",10*Radius*"+str(force_direction[1])+",10*Radius*"+str(force_direction[2])+""") 
@@ -340,19 +446,21 @@ class Salome:
     Arrow.SetColor(SALOMEDS.Color("""+tub.colors["FORCE"]+"""))
     B_id=geompy.addToStudyInFather( """+ name_point +""", Arrow,'"""+name_point+"""_Arrow' )    
 
+    List_ParaVis_Visualization.append(Arrow)
     gg.createAndDisplayGO(B_id)
     gg.setDisplayMode(B_id,1)
             """).split("\n")
 
-#    def _visualize_ddl(self,tubapoint,section):
-#
-#         gg.setTransparency(ID, Value)
 #==============================================================================
 
     def _visualize_ddl(self,tubapoint,section):
+        """Creates a visualization element in the Code Aster GEOM-Module. 
+        The created geometry is not part of the actual simulation"""
         outerRadius=section[0]
         name_point=tubapoint.name
-           
+        
+    
+        
         if tubapoint.ddl==[0,0,0,0,0,0]:
             self.lines=self.lines+("""
                 
@@ -371,18 +479,15 @@ class Salome:
   
     """).split("\n")  	            
       
-        else:    
-        
-            V1s_list=[]        
-            if not tubapoint.ddl[0]=="x":
-                V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0],"x"])
-            if not tubapoint.ddl[1]=="x":
-                V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
-            if not tubapoint.ddl[2]=="x":
-                V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
-    
-            
 
+        else:
+            V1s_list=[]
+            if not tubapoint.ddl[0]=="x" and tubapoint.ddl[0]==0:
+                V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0],"x"])
+            if not tubapoint.ddl[1]=="x" and tubapoint.ddl[1]==0:
+                V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
+            if not tubapoint.ddl[2]=="x" and tubapoint.ddl[2]==0:
+                V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
     
             for V1s in V1s_list:
                 self.lines=self.lines+("""        
@@ -390,6 +495,7 @@ class Salome:
     Radius="""+str(outerRadius)+"""
 
 
+    
     Pna=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[0][0])+","+str(V1s[0][1])+","+str(V1s[0][2])+""")
     Pnb=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[1][0])+","+str(V1s[1][1])+","+str(V1s[1][2])+""")  
     Vp=geompy.MakeVector(Pna,Pnb)  
@@ -408,10 +514,44 @@ class Salome:
     List_ParaVis_Visualization.append(BLOCK_"""+V1s[4]+""")
     gg.createAndDisplayGO(B_id)
     gg.setDisplayMode(B_id,1)
+    """).split("\n")  
 
-    
-    """).split("\n")        
+
+
+            deform = eu.Vector3(0, 0, 0) 
+            if not tubapoint.ddl[0]=="x" and  not tubapoint.ddl[0]==0:
+                deform.x=tubapoint.ddl[0]
+            if not tubapoint.ddl[1]=="x" and  not tubapoint.ddl[1]==0:
+                deform.y=tubapoint.ddl[1]                              
+            if not tubapoint.ddl[2]=="x" and  not tubapoint.ddl[2]==0:
+                deform.z=tubapoint.ddl[2]                
+               
+            print("deform", deform)    
+#            deform=deform.normalized() 
+            if abs(deform):
+                self.lines=self.lines+("""
+
+    """+str(abs(deform))+"""
+    Radius="""+str(outerRadius)+"""
         
+    Pna=geompy.MakeVertexWithRef("""+name_point+","+str(deform.x)+","+str(deform.y)+","+str(deform.z)+""")
+   
+    V_def=geompy.MakeVector("""+name_point+""",Pna)
+
+    Deform_"""+name_point+""" = geompy.MakeCone("""+name_point+""",V_def,1*Radius,0,"""+str(deform.__abs__())+""")
+
+               
+    Deform_"""+name_point+""".SetColor(SALOMEDS.Color("""+tub.colors["BLOCK_DEFORMATION"]+"""))
+    B_id=geompy.addToStudyInFather( """+ name_point +""", Deform_"""+name_point+""",'"""+name_point+"""_Deform' )    
+
+
+    List_ParaVis_Visualization.append(Deform_"""+name_point+""")
+    gg.createAndDisplayGO(B_id)
+    gg.setDisplayMode(B_id,1)
+    """).split("\n")  
+
+
+#==============================================================================
 
     def _visualize_stiffness(self,tubapoint,section):
         outerRadius=section[0]
@@ -424,16 +564,12 @@ class Salome:
             V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
         if not tubapoint.stiffness[2]==0:
             V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
-    
-            
-
-    
+  
         for V1s in V1s_list:
                 self.lines=self.lines+("""        
  
 #    try:
     Radius="""+str(outerRadius)+"""
-
 
     Pna=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[0][0])+","+str(V1s[0][1])+","+str(V1s[0][2])+""")
     Pnb=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[1][0])+","+str(V1s[1][1])+","+str(V1s[1][2])+""")  
@@ -448,95 +584,46 @@ class Salome:
 
     Torus_3 = geompy.MakeTorus(P2a, Vm, Radius, Radius/2) 
     Torus_4 = geompy.MakeTorus(P2b, Vm, Radius, Radius/2)  
-
     
     STIFFNESS_"""+V1s[4]+"""=geompy.MakeCompound([Torus_1,Torus_2,Torus_3,Torus_4])
     STIFFNESS_"""+V1s[4]+""".SetColor(SALOMEDS.Color("""+tub.colors["STIFFNESS"]+"""))
     S_id=geompy.addToStudyInFather( """+ name_point +""", STIFFNESS_"""+str(V1s[4])+",'"+name_point+"_STIFFNESS_"""+str(V1s[4])+"""' )    
 
-
     List_ParaVis_Visualization.append(STIFFNESS_"""+V1s[4]+""")    
     gg.createAndDisplayGO(S_id)
     gg.setDisplayMode(S_id,1)
- 
-    
-       
+        
     """).split("\n") 
 
 #==============================================================================
-    def _initialize(self):
-        self.lines=self.lines+(
-"""#!/usr/bin/python 3
-# -*- coding: iso-8859-1 -*-
-
-import time
-time1=time.time()
-import sys
-sys.path.append('/home/caelinux/TUBAV2')
-sys.path.append(' """+self.my_directory+""" ')
-
-import salome
-import GEOM
-import math
-import SMESH
-from salome.smesh import smeshBuilder
-import SALOMEDS
-import StdMeshers
-import NETGENPlugin
-
-salome.salome_init()
-study   = salome.myStudy
-studyId = salome.myStudyId
-
-from salome.geom import geomBuilder
-geompy = geomBuilder.New(salome.myStudy)
-
-smesh = smeshBuilder.New(salome.myStudy)
-
-from salome.geom import geomtools
-geompy = geomtools.getGeompy(studyId)
-
-from salome.kernel.studyedit import getStudyEditor
-studyEditor = getStudyEditor(studyId)
-
-#from  salome.geom.structelem import StructuralElementManager
-#structElemManager = StructuralElementManager()
-#commandList=[]
-
-
-gst = geomtools.GeomStudyTools(studyEditor)
-gg = salome.ImportComponentGUI("GEOM")
-
-
-
-def Project():
-    O = geompy.MakeVertex(0,0,0)
-    O_id = geompy.addToStudy(O,"O")
-    Vx= geompy.MakeVectorDXDYDZ(1,0,0)
-    gst.addShapeToStudy(Vx,"Vx")
-    Vy= geompy.MakeVectorDXDYDZ(0,1,0)
-    geompy.addToStudy(Vy,"Vy")
-    Vz= geompy.MakeVectorDXDYDZ(0,0,1)
-    geompy.addToStudy(Vz,"Vz")
-    # List of elements which are added to the study
-    Liste=[]
-    List_Visualization=[]
-    List_ParaVis_Visualization=[]
-    L1=[]
-    L2=[]
-    List_id=[]
-    ERREUR=False
-
-            """).split("\n")
-            
-#==============================================================================
-    def _create_mesh_compound(self,dict_tubavectors): 
-
-            
-
+    def _visualize_mass(self,tubapoint,section):
+        """Creates a visualization element in the Code Aster GEOM-Module. 
+        The created geometry is not part of the actual simulation"""
+        outerRadius=section[0]
+        name_point=tubapoint.name
+        
+    
+        
+        if not tubapoint.mass ==0:
+            self.lines=self.lines+("""
                 
-
-
+    """+name_point+"""_MASS=geompy.MakeSpherePntR("""+name_point+""","""+str(2*outerRadius)+""")	
+    """+name_point+"""_MASS.SetColor(SALOMEDS.Color("""+tub.colors["STIFFNESS"]+"""))
+    """+name_point+"""_MASS_id=geompy.addToStudyInFather( """+ name_point +""", """+name_point+"""_MASS,'"""+name_point+"""_MASS' )
+ #   B_id=geompy.addToStudy("""+name_point+"""_MASS,'"""+name_point+"""_MASS' )
+    
+    
+    
+    List_ParaVis_Visualization.append("""+name_point+"""_MASS)
+    objId = geompy.getObjectID("""+name_point+"""_MASS)    
+    gg.createAndDisplayGO(objId)
+    gg.setDisplayMode(objId,1)
+    gg.setColor(objId,218,165,31)
+  
+    """).split("\n")              
+#==============================================================================
+    def _create_mesh_compound(self,dict_tubavectors,dict_tubapoints): 
+        print("Text---------------------------",dict_tubavectors)
         text = "["
         character_count=0
         for tubavector in dict_tubavectors :
@@ -548,6 +635,14 @@ def Project():
                 text += "           "
             text += ""+name_vector+"M.GetMesh() , "
         text = text[:-1]
+        print("Text---------------------------"+text)
+        for tubapoint in dict_tubapoints :           
+            if not tubapoint.stiffness==[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
+                    name_point = str(tubapoint.name)
+                    text += "Spring"+name_point+"M.GetMesh() , "
+            if not tubapoint.friction_coefficient==0.0:
+                    name_point = str(tubapoint.name)
+                    text += "Friction"+name_point+"M.GetMesh() , "
         text += "]"
         
         self.lines=self.lines+("""        
@@ -567,35 +662,13 @@ def Project():
     try:  
 
         compound_paravis=geompy.MakeCompound(List_ParaVis_Visualization)
-        compound_id=geompy.addToStudy(compound_paravis,'compound_paravis')
+     #   compound_id=geompy.addToStudy(compound_paravis,'compound_paravis')
     except:
         print("No compound could be created",str(List_ParaVis_Visualization))
         """).split("\n")
 
 
             
-#==============================================================================
-    def _finalize(self):
-        self.lines=self.lines+("""
-#    elem = structElemManager.createElement(commandList)
-#    elem.display()    
-     
-     
-    geompy.ExportVTK(compound_paravis, '"""+self.my_directory+"""/compound_paravis.vtk', 0.001)     
-     
-     
-     
-    if salome.sg.hasDesktop():
-       salome.sg.updateObjBrowser(0)
-    time2=time.time()
-    dtime = time2 - time1
-    print(\"------------------------\")
-    print(\"Duration of construction:\"+str(round(dtime,2))+\"s\")
-
-    """).split("\n")
-
-
-        self.lines=self.lines+"Project()".split()
 
 #==============================================================================
     def _bent_1D(self,tubavector) :
@@ -775,4 +848,44 @@ def Project():
 
 
 
+#==============================================================================
+    def _finalize(self):
+        self.lines=self.lines+("""
+#    elem = structElemManager.createElement(commandList)
+#    elem.display()    
+
+
+
+#    try:
+#      Completed_Mesh.ExportMED( r'"""+self.current_directory+"""/Completed_Mesh.mmed', 0)
+#    except:
+#      print ('ExportPartToMED() failed')
+
+
+    try:    
+        geompy.ExportVTK(compound_paravis, '"""+self.current_directory+"""/compound_paravis.vtk', 0.001)     
+    except:
+      print ('ExportVTK of the visualization compound failed')
+
+
+
+    if salome.sg.hasDesktop():
+       salome.sg.updateObjBrowser(0)
+    time2=time.time()
+    dtime = time2 - time1
+    print(\"------------------------\")
+    print(\"Duration of construction:\"+str(round(dtime,2))+\"s\")
+
+
+
+    import SalomePyQt
+    sg = SalomePyQt.SalomePyQt()
+    sg.activateModule("Geometry")
+    if salome.sg.hasDesktop():
+      salome.sg.updateObjBrowser(1)
+    sg.activateModule("Aster")
+
+    """).split("\n")
+
+        self.lines=self.lines+"Project()".split()
 

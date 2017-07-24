@@ -2,8 +2,10 @@
 #
 # euclid graphics maths module
 #
-# Copyright (c) 2006 Alex Holkner
-# Alex.Holkner@mail.google.com
+# Copyright (c) 2006 Alex Holkner <Alex.Holkner@mail.google.com>
+# Copyright (c) 2011 Eugen Zagorodniy <https://github.com/ezag/>
+# Copyright (c) 2011 Dov Grobgeld <https://github.com/dov>
+# Copyright (c) 2012 Lorenzo Riano <https://github.com/lorenzoriano>
 #
 # This library is free software; you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published by the
@@ -20,18 +22,22 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 
 '''euclid graphics maths module
-
-Documentation and tests are included in the file "euclid.txt", or online
-at http://code.google.com/p/pyeuclid
+Documentation and tests are included in the file "euclid.rst", or online
+at https://github.com/ezag/pyeuclid/blob/master/euclid.rst
 '''
 
 __docformat__ = 'restructuredtext'
-__version__ = '$Id: euclid.py 37 2011-08-21 22:24:05Z elfnor@gmail.com $'
-__revision__ = '$Revision: 37 $'
+__version__ = '$Id$'
+__revision__ = '$Revision$'
 
 import math
 import operator
 import types
+
+try:
+    long
+except NameError:
+    long = int
 
 # Some magic here.  If _use_slots is True, the classes will derive from
 # object and will define a __slots__ class variable.  If _use_slots is
@@ -47,7 +53,7 @@ _use_slots = True
 # e.g.  v.xyz = (1, 2, 3).  This is much, much slower than the more verbose
 # v.x = 1; v.y = 2; v.z = 3,  and slows down ordinary element setting as
 # well.  Recommended setting is False.
-_enable_swizzle_set = True
+_enable_swizzle_set = False
 
 # Requires class to derive from object.
 if _enable_swizzle_set:
@@ -113,7 +119,7 @@ class Vector2:
         return not self.__eq__(other)
 
     def __nonzero__(self):
-        return self.x != 0 or self.y != 0
+        return bool(self.x != 0 or self.y != 0)
 
     def __len__(self):
         return 2
@@ -134,7 +140,7 @@ class Vector2:
             return tuple([(self.x, self.y)['xy'.index(c)] \
                           for c in name])
         except ValueError:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     if _enable_swizzle_set:
         # This has detrimental performance on ordinary setattr as well
@@ -149,7 +155,7 @@ class Vector2:
                         l['xy'.index(c)] = v
                     self.x, self.y = l
                 except ValueError:
-                    raise AttributeError, name
+                    raise AttributeError(name)
 
     def __add__(self, other):
         if isinstance(other, Vector2):
@@ -337,7 +343,7 @@ class Vector3:
         return not self.__eq__(other)
 
     def __nonzero__(self):
-        return self.x != 0 or self.y != 0 or self.z != 0
+        return bool(self.x != 0 or self.y != 0 or self.z != 0)
 
     def __len__(self):
         return 3
@@ -358,7 +364,7 @@ class Vector3:
             return tuple([(self.x, self.y, self.z)['xyz'.index(c)] \
                           for c in name])
         except ValueError:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     if _enable_swizzle_set:
         # This has detrimental performance on ordinary setattr as well
@@ -373,7 +379,7 @@ class Vector3:
                         l['xyz'.index(c)] = v
                     self.x, self.y, self.z = l
                 except ValueError:
-                    raise AttributeError, name
+                    raise AttributeError(name)
 
 
     def __add__(self, other):
@@ -1160,7 +1166,8 @@ class Matrix4:
       y = z.cross(x)
       
       m = cls.new_rotate_triple_axis(x, y, z)
-      m.d, m.h, m.l = eye.x, eye.y, eye.z
+      m.transpose()
+      m.d, m.h, m.l = -x.dot(eye), -y.dot(eye), -z.dot(eye)
       return m
     new_look_at = classmethod(new_look_at)
     
@@ -1223,6 +1230,48 @@ class Matrix4:
             tmp.p = d * (self.a * (self.f * self.k - self.j * self.g) + self.e * (self.j * self.c - self.b * self.k) + self.i * (self.b * self.g - self.f * self.c));
 
         return tmp;
+
+    def get_quaternion(self):
+        """Returns a quaternion representing the rotation part of the matrix.
+        Taken from:
+        http://web.archive.org/web/20041029003853/http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q55
+        """
+        trace = self.a + self.f + self.k
+
+        if trace > 0.00000001: #avoid dividing by zero
+            s = math.sqrt(1. + trace) * 2
+            x = (self.j - self.g) / s
+            y = (self.c - self.i) / s
+            z = (self.e - self.b) / s
+            w = 0.25 * s
+        else:
+            #this is really convenient to have now
+            mat = (self.a, self.b, self.c, self.d, 
+                   self.e, self.f, self.g, self.h,
+                   self.i, self.j, self.k, self.l,
+                   self.m, self.n, self.o, self.p
+                  )
+            if ( mat[0] > mat[5] and mat[0] > mat[10] ):    #Column 0
+                s  = math.sqrt( 1.0 + mat[0] - mat[5] - mat[10] ) * 2
+                x = 0.25 * s
+                y = (mat[4] + mat[1] ) / s
+                z = (mat[2] + mat[8] ) / s
+                w = (mat[9] - mat[6] ) / s
+            elif ( mat[5] > mat[10] ):                     # Column 1
+                s  = math.sqrt( 1.0 + mat[5] - mat[0] - mat[10] ) * 2
+                x = (mat[4] + mat[1] ) / s
+                y = 0.25 * s
+                z = (mat[9] + mat[6] ) / s
+                w = (mat[2] - mat[8] ) / s
+            else:                                          # Column 2
+                s  = math.sqrt( 1.0 + mat[10] - mat[0] - mat[5] ) * 2
+                x = (mat[2] + mat[8] ) / s
+                y = (mat[9] + mat[6] ) / s
+                z = 0.25 * s
+                w = (mat[4] - mat[1] ) / s
+
+        return Quaternion(w, x, y, z)
+
         
 
 class Quaternion:
@@ -1556,12 +1605,12 @@ class Quaternion:
 
 class Geometry:
     def _connect_unimplemented(self, other):
-        raise AttributeError, 'Cannot connect %s to %s' % \
-            (self.__class__, other.__class__)
+        raise AttributeError('Cannot connect %s to %s' %
+                             (self.__class__, other.__class__))
 
     def _intersect_unimplemented(self, other):
-        raise AttributeError, 'Cannot intersect %s and %s' % \
-            (self.__class__, other.__class__)
+        raise AttributeError('Cannot intersect %s and %s' %
+                             (self.__class__, other.__class__))
 
     _intersect_point2 = _intersect_unimplemented
     _intersect_line2 = _intersect_unimplemented
@@ -1625,6 +1674,10 @@ def _intersect_line2_circle(L, C):
     sq = math.sqrt(det)
     u1 = (-b + sq) / (2 * a)
     u2 = (-b - sq) / (2 * a)
+
+    if u1 * u2 > 0 and not L._u_in(u1) and not L._u_in(u2):
+        return None
+
     if not L._u_in(u1):
         u1 = max(min(u1, 1.0), 0.0)
     if not L._u_in(u2):
@@ -1639,6 +1692,26 @@ def _intersect_line2_circle(L, C):
                                L.p.y + u1 * L.v.y),
                         Point2(L.p.x + u2 * L.v.x,
                                L.p.y + u2 * L.v.y))
+
+def _intersect_circle_circle(A, B):
+    d = abs(A.c - B.c)
+    s = A.r + B.r
+    m = abs(A.r - B.r)
+    if d > s or d < m:
+        return None
+    d2 = d ** 2
+    s2 = s ** 2
+    m2 = m ** 2
+    k = 0.25 * math.sqrt((s2 - d2) * (d2 - m2))
+    dr = (A.r ** 2 - B.r ** 2) / d2
+    kd = 2 * k / d2
+    return (
+      Point2(
+        0.5 * (A.c.x + B.c.x + (B.c.x - A.c.x) * dr) + (B.c.y - A.c.y) * kd,
+        0.5 * (A.c.y + B.c.y + (B.c.y - A.c.y) * dr) - (B.c.x - A.c.x) * kd),
+      Point2(
+        0.5 * (A.c.x + B.c.x + (B.c.x - A.c.x) * dr) - (B.c.y - A.c.y) * kd,
+        0.5 * (A.c.y + B.c.y + (B.c.y - A.c.y) * dr) + (B.c.x - A.c.x) * kd))
 
 def _connect_point2_line2(P, L):
     d = L.v.magnitude_squared()
@@ -1752,18 +1825,18 @@ class Line2(Geometry):
                 self.p = args[0].copy()
                 self.v = args[1].copy()
             else:
-                raise AttributeError, '%r' % (args,)
+                raise AttributeError('%r' % (args,))
         elif len(args) == 1:
             if isinstance(args[0], Line2):
                 self.p = args[0].p.copy()
                 self.v = args[0].v.copy()
             else:
-                raise AttributeError, '%r' % (args,)
+                raise AttributeError('%r' % (args,))
         else:
-            raise AttributeError, '%r' % (args,)
+            raise AttributeError('%r' % (args,))
         
         if not self.v:
-            raise AttributeError, 'Line has zero-length vector'
+            raise AttributeError('Line has zero-length vector')
 
     def __copy__(self):
         return self.__class__(self.p, self.v)
@@ -1865,6 +1938,9 @@ class Circle(Geometry):
     def _intersect_line2(self, other):
         return _intersect_line2_circle(other, self)
 
+    def _intersect_circle(self, other):
+        return _intersect_circle_circle(other, self)
+
     def connect(self, other):
         return other._connect_circle(self)
 
@@ -1878,6 +1954,10 @@ class Circle(Geometry):
 
     def _connect_circle(self, other):
         return _connect_circle_circle(other, self)
+
+    def tangent_points(self, p):
+        m = 0.5 * (self.c + p)
+        return self.intersect(Circle(m, abs(p - m)))
 
 # 3D Geometry
 # -------------------------------------------------------------------------
@@ -2110,19 +2190,19 @@ class Line3:
                 self.p = args[0].copy()
                 self.v = args[1].copy()
             else:
-                raise AttributeError, '%r' % (args,)
+                raise AttributeError('%r' % (args,))
         elif len(args) == 1:
             if isinstance(args[0], Line3):
                 self.p = args[0].p.copy()
                 self.v = args[0].v.copy()
             else:
-                raise AttributeError, '%r' % (args,)
+                raise AttributeError('%r' % (args,))
         else:
-            raise AttributeError, '%r' % (args,)
+            raise AttributeError('%r' % (args,))
         
         # XXX This is annoying.
         #if not self.v:
-        #    raise AttributeError, 'Line has zero-length vector'
+        #    raise AttributeError('Line has zero-length vector')
 
     def __copy__(self):
         return self.__class__(self.p, self.v)
@@ -2270,13 +2350,13 @@ class Plane:
                 self.n = args[0].normalized()
                 self.k = args[1]
             else:
-                raise AttributeError, '%r' % (args,)
+                raise AttributeError('%r' % (args,))
 
         else:
-            raise AttributeError, '%r' % (args,)
+            raise AttributeError('%r' % (args,))
         
         if not self.n:
-            raise AttributeError, 'Points on plane are colinear'
+            raise AttributeError('Points on plane are colinear')
 
     def __copy__(self):
         return self.__class__(self.n, self.k)
@@ -2324,4 +2404,3 @@ class Plane:
 
     def _connect_plane(self, other):
         return _connect_plane_plane(other, self)
-

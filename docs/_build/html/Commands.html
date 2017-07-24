@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Available TUBA commands &mdash; TUBA 1.1 documentation</title>
+    <title>Available TUBA commands &#8212; TUBA 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,13 +17,15 @@
         VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="TUBA 1.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Developper Section" href="development.html" />
     <link rel="prev" title="&lt;no title&gt;" href="Tutorials.html" /> 
   </head>
@@ -39,9 +41,6 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li class="right" >
           <a href="development.html" title="Developper Section"
              accesskey="N">next</a> |</li>
@@ -59,10 +58,10 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Available TUBA commands</a><ul>
-<li><a class="reference internal" href="#module-tuba.define_geometry">Geometry  Commands</a></li>
-<li><a class="reference internal" href="#module-tuba.define_properties">Global Property  Commands</a></li>
+<li><a class="reference internal" href="#geometry-commands">Geometry  Commands</a></li>
+<li><a class="reference internal" href="#global-property-commands">Global Property  Commands</a></li>
 <li><a class="reference internal" href="#local-property-commands">Local Property  Commands</a></li>
-<li><a class="reference internal" href="#module-tuba.define_macros">Macro Commands</a></li>
+<li><a class="reference internal" href="#macro-commands">Macro Commands</a></li>
 </ul>
 </li>
 </ul>
@@ -76,15 +75,15 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/Commands.txt"
+      <li><a href="_sources/Commands.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -100,234 +99,20 @@
             
   <div class="section" id="available-tuba-commands">
 <h1>Available TUBA commands<a class="headerlink" href="#available-tuba-commands" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-tuba.define_geometry">
-<span id="geometry-commands"></span><h2>Geometry  Commands<a class="headerlink" href="#module-tuba.define_geometry" title="Permalink to this headline">¶</a></h2>
-<p>Created on Sun Mar 27 22:05:19 2016</p>
-<dl class="function">
-<dt id="tuba.define_geometry.P">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">P</code><span class="sig-paren">(</span><em>x</em>, <em>y=''</em>, <em>z=''</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#P"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.P" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a tubapoint with the coordinates P(x,y,z,name)</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.V">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">V</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.V" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the
-user input x,y,z.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.Vc">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">Vc</code><span class="sig-paren">(</span><em>length</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Vc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Vc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a colinear vector in direction of the last vector.
-(The information for the colinear vector is contained in current_tubapoint.Vd2x)</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.Vp">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">Vp</code><span class="sig-paren">(</span><em>endpoint_name</em>, <em>startpoint_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Vp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Vp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a vector from start_tubapoint to end_tubapoint. If no start_tubapoint is specified, the 
-current_tubapoint is used as startpoint</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.Bent">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">Bent</code><span class="sig-paren">(</span><em>bending_radius</em>, <em>arg1=''</em>, <em>arg2=''</em>, <em>arg3='intersect'</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Bent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Bent" title="Permalink to this definition">¶</a></dt>
-<dd><p>There are 3 general ways to create a pipe bent:</p>
-<ol class="arabic">
-<li><p class="first">Bent(bending_radius,arg1=Vector3):</p>
-<p>arg1 as a vector defines the new direction after the bent
-With this function, it&#8217;s not possible to create 180°-bents as the bending plane
-would not be defined. A workaround would be to define 2 consecutive 90°-bents</p>
-</li>
-<li><p class="first">Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient):</p>
-<p>With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
-the new direction after the bent can be calculated.</p>
-</li>
-<li><p class="first">Give 2 absolut vectors and make bent in between &#8211; still not implemented</p>
-</li>
-</ol>
-<p>arg3 defines around which point the bent will be created.
-For &#8220;add&#8221; the start_tubapoint of the Bent will be the end_tubapoint of the last vector.</p>
-<p>For &#8220;intersect&#8221; the last vector will be changed. Its end_tubapoint will be defined as
-intersection point of the current and new vector of the piping</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.TShape3D">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">TShape3D</code><span class="sig-paren">(</span><em>incident_radius</em>, <em>incident_thickness</em>, <em>angle_orient</em>, <em>name_incident_end=''</em>, <em>name_main_end=''</em>, <em>incident_halflength=0</em>, <em>main_halflength=0</em>, <em>arg='intersect'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TShape3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TShape3D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a TShape Object. The Main Section continues with the 
-before defines Cross-Section. The branche is defined by the user-arguments</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.gotoP">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">gotoP</code><span class="sig-paren">(</span><em>name_point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#gotoP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.gotoP" title="Permalink to this definition">¶</a></dt>
-<dd><p>The function allowes to changes the current Tubapoint used for the next vector creation</p>
-</dd></dl>
-
+<div class="section" id="geometry-commands">
+<h2>Geometry  Commands<a class="headerlink" href="#geometry-commands" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-tuba.define_properties">
-<span id="global-property-commands"></span><h2>Global Property  Commands<a class="headerlink" href="#module-tuba.define_properties" title="Permalink to this headline">¶</a></h2>
-<p>Created on Tue Apr  5 01:20:46 2016</p>
-<dl class="function">
-<dt id="tuba.define_properties.Model">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Model" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Append a FEM-Model to the defined Vector-Object. The following models are </dt>
-<dd>available at the moment:</dd>
-</dl>
-<ol class="arabic">
-<li><p class="first">&#8220;TUBE&#8221;:</p>
-<p>The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can
-be deformed but not the &#8220;wall&#8221;(cross-section) itself. This theory gives a 
-good approximation for straight pipes but especially for bents this theory is limited.
-As in a bent, flexibility and stress intensity are strongly influenced by the deformation (ovalisation) of the cross-section
-itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to
-correct the model.</p>
-<p>Furthermore, as the crosssection is stiff, the influence of internal pressure can&#8217;t be calculated. Normally pressure is taken into account
-by superposition after solving the calculation.</p>
-<p>Most commercial piping codes and ASME 31.3 work with this model.</p>
-</li>
-<li><p class="first">&#8220;TUYAU&#8221;:</p>
-<p>A more advanced model is the TUYAU model. Along the 1-dimensional mesh,</p>
-</li>
-<li><p class="first">&#8220;RECTANGULAR&#8221;</p>
-</li>
-<li><p class="first">&#8220;BEAM&#8221;</p>
-</li>
-<li><p class="first">&#8220;BAR&#8221;</p>
-<p>A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.</p>
-<p>The following models will be added in the future:</p>
-</li>
-<li><p class="first">&#8220;CABLE&#8221;</p>
-</li>
-<li><p class="first">&#8220;3D?&#8221;</p>
-</li>
-</ol>
-</dd></dl>
-
+<div class="section" id="global-property-commands">
+<h2>Global Property  Commands<a class="headerlink" href="#global-property-commands" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-center" id="tuyau">
 <img alt="_images/TUYAU_results.png" src="_images/TUYAU_results.png" />
 </div>
-<dl class="function">
-<dt id="tuba.define_properties.Temperature">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Temperature</code><span class="sig-paren">(</span><em>T=20</em>, <em>T_ref=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Temperature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.</p>
-<p>At T=T_ref the thermal dilation is set to 0. So if you want to pretension a piping part so that at f.ex. T=300°C 
-the thermal dilation is zero, T_ref has to be set to 300°C</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.Pressure">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Pressure</code><span class="sig-paren">(</span><em>pressure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Pressure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation.</p>
-<p>For TUBE -Elements this pressure is only taken into account for the postprocessing by superposing it with the simulation</p>
-<p>results.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.Material">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Material</code><span class="sig-paren">(</span><em>material</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Material"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Material" title="Permalink to this definition">¶</a></dt>
-<dd><p>Appends the choosen material to the following vector elements. The material 
-properties can be defined in library_material.py</p>
-<p>The material properties can be defines constant or as a function of temperature.</p>
-<p>At the moment, the following materials are accessible:</p>
-<p>&#8220;SS304&#8221;   - f(Temperature)</p>
-<p>&#8220;SS316&#8221;   - f(Temperature)</p>
-<p>&#8220;CSA53&#8221;   - f(Temperature)</p>
-<p>&#8220;Ax1&#8221;  - constant</p>
-<p>&#8220;A42&#8221;  - constant</p>
-<p>&#8220;IMS&#8221;  - constant</p>
-<p>&#8220;RIGIDE&#8221;  - constant</p>
-<p>&#8220;ACIER&#8221;  - constant</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Pressure</code><span class="sig-paren">(</span><em>pressure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Pressure"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation.</p>
-<p>For TUBE -Elements this pressure is only taken into account for the postprocessing by superposing it with the simulation</p>
-<p>results.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.RhoFluid">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">RhoFluid</code><span class="sig-paren">(</span><em>density_fluid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#RhoFluid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.RhoFluid" title="Permalink to this definition">¶</a></dt>
-<dd><p>allows to take into account the weight of the fluid in the pipe.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.Insulation">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Insulation</code><span class="sig-paren">(</span><em>insulation_thickness</em>, <em>insulation_density</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Insulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Insulation" title="Permalink to this definition">¶</a></dt>
-<dd><p>by providing insulation thickness and density, this function
-allows to take into account the weight of the pipe insulation.</p>
-</dd></dl>
-
 </div>
 <div class="section" id="local-property-commands">
 <h2>Local Property  Commands<a class="headerlink" href="#local-property-commands" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tuba.define_properties.Block">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Block</code><span class="sig-paren">(</span><em>x='x'</em>, <em>y='x'</em>, <em>z='x'</em>, <em>rx='x'</em>, <em>ry='x'</em>, <em>rz='x'</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Block" title="Permalink to this definition">¶</a></dt>
-<dd><p>The Block function blocks the degree of freedoms of the last created point. Per default all components are set to &#8216;x&#8217; 
-which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, 
-whereas a value != to 0 implies a deflection/torsion of the point.
-There are several ways how to use it:</p>
-<p>Block single compontents by naming &#8211;&gt; B(x=0,rz=0)</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.Spring">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Spring</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>rx=0</em>, <em>ry=0</em>, <em>rz=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Spring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Spring" title="Permalink to this definition">¶</a></dt>
-<dd><p>appends a stiffness matrix to the current tubapoint.</p>
-<p>Multiple stiffness matrixes can be summed up.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.Force">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Force</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Force" title="Permalink to this definition">¶</a></dt>
-<dd><p>appends a force-vector to the current tubapoint</p>
-<p>Multiple force vectors can be summed up.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.Moment">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Moment</code><span class="sig-paren">(</span><em>rx=0</em>, <em>ry=0</em>, <em>rz=0</em>, <em>reference='local'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Moment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Moment" title="Permalink to this definition">¶</a></dt>
-<dd><p>appends a moment to the current tubapoint</p>
-<p>Multiple moments can be summed up.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_properties.LinearForce">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">LinearForce</code><span class="sig-paren">(</span><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>reference='global'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#LinearForce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.LinearForce" title="Permalink to this definition">¶</a></dt>
-<dd><p>appends a linear force-vector to the last created vector.
-[N/mm]</p>
-<p>Multiple force vectors can be summed up.</p>
-</dd></dl>
-
 </div>
-<div class="section" id="module-tuba.define_macros">
-<span id="macro-commands"></span><h2>Macro Commands<a class="headerlink" href="#module-tuba.define_macros" title="Permalink to this headline">¶</a></h2>
-<p>Created on Mon Mar 28 21:31:36 2016</p>
-<dl class="function">
-<dt id="tuba.define_macros.FixPoint">
-<code class="descclassname">tuba.define_macros.</code><code class="descname">FixPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_macros.html#FixPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_macros.FixPoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a fixed Point</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_macros.Joint">
-<code class="descclassname">tuba.define_macros.</code><code class="descname">Joint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_macros.html#Joint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_macros.Joint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restrains all 3 spatial directions but allows rotation around the axis</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_macros.Guide">
-<code class="descclassname">tuba.define_macros.</code><code class="descname">Guide</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_macros.html#Guide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_macros.Guide" title="Permalink to this definition">¶</a></dt>
-<dd><p>A guide only allows movement in coaxial direction</p>
-</dd></dl>
-
+<div class="section" id="macro-commands">
+<h2>Macro Commands<a class="headerlink" href="#macro-commands" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -344,9 +129,6 @@ There are several ways how to use it:</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="development.html" title="Developper Section"
              >next</a> |</li>
         <li class="right" >
@@ -358,8 +140,8 @@ There are several ways how to use it:</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Wagenfeld.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2016, Wagenfeld.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>
 </html>

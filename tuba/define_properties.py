@@ -25,7 +25,10 @@ def Block (x='x',y='x',z='x',rx='x',ry='x',rz='x',reference="global"):
         which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, 
         whereas a value != to 0 implies a deflection/torsion of the point.
         There are several ways how to use it:\n
-        Block single compontents by naming --> B(x=0,rz=0)'''
+        Block single compontents by naming --> B(x=0,rz=0)
+        reference="global" to block in direction of the global base
+        reference="local" to block in directions of the local base of the element      
+        '''
     ddl=[x,y,z,rx,ry,rz]
     tub.current_tubapoint.ddl=ddl
     tub.current_tubapoint.ddl_reference=reference
@@ -40,6 +43,9 @@ def Spring (x=0, y=0, z=0, rx=0, ry=0, rz=0,reference="global"):
     stiffness=[x,y,z,rx,ry,rz]
     tub.current_tubapoint.stiffness=stiffness
     tub.current_tubapoint.stiffness_reference=reference
+ 
+def Mass (mass):  
+    tub.current_tubapoint.mass=mass
     
 def Force(x=0,y=0,z=0,reference="global"):
     """appends a force-vector to the current tubapoint
@@ -57,6 +63,11 @@ def Moment(rx=0,ry=0,rz=0,reference="local"):
     """
     moment = eu.Vector3(rx,ry,rz)
     tub.current_TubaPoint.moment.append(moment)
+
+
+def Friction(mu=0):
+
+    tub.current_tubapoint.friction_coefficient=mu
 
 #==============================================================================
 #==============================================================================
@@ -129,6 +140,9 @@ def Pressure(pressure):
     """
     tub.current_pressure=pressure
 
+
+
+
 def Material(material):
     """Appends the choosen material to the following vector elements. The material 
     properties can be defined in library_material.py \n
@@ -171,4 +185,12 @@ def Insulation(insulation_thickness, insulation_density):
     print("Insulation",insulation_thickness, insulation_density)
     
 def Windload(x,y,z):     
+    pass
+
+
+def SIF_and_FLEX(SIF='',FLEX=''): 
+    if FLEX:
+        tub.dict_tubavectors[-1].cflex=FLEX
+    if SIF:    
+        tub.dict_tubavectors[-1].sif=SIF
     pass

@@ -28,9 +28,10 @@ class TubaPoint:
         self.pos = eu.Point3(x, y, z)              # Position of the Point
         self.ddl = ['x', 'x', 'x', 'x', 'x', 'x']  # Degree of Freedom/Deflection
         self.ddl_reference = "global"      
-        self.stiffness = [0, 0, 0, 0, 0, 0]  # Stiffness-Matrix of the Point
+        self.friction_coefficient=0.0        
+        self.stiffness = [0.0, 0.0, 0.0, 0.0,0.0, 0.0]  # Stiffness-Matrix of the Point
         self.stiffness_reference = "global"   
-        self.mass = 0                        # Discret Mass at the Point
+        self.mass = 0.0                        # Discret Mass at the Point
         self.moment = []           # Sum of Moments applied at the Point
         self.force = []                      # List of Forces applied at the Point
         self.vd1x=tub.vd1x0          # Last noncolinear vector in the piping                
@@ -195,6 +196,10 @@ class TubaBent(TubaVector):
         TubaVector.__init__(self,start_tubapoint,end_tubapoint,
                                 start_tubapoint.vd2x, name_vect)
 
+
+        print("TUBABENT",self.model)
+#        if self.model=='TUBE':
+#            self.model="TUBE_BENT"
     #Overrides the function of TubaVector
 
         self._update_attached_tubapoints()
@@ -210,15 +215,15 @@ class TubaBent(TubaVector):
         print(outerRadius)
         print(self.bending_radius)        
         h=(thickness*self.bending_radius)/math.pow((outerRadius-thickness/2),2)
-        SIF=0.9/(h**0.666666)
-        Cflex=1.65/h
-        if SIF < 1:   
-            SIF = 1           
-        if Cflex < 1:  
-            Cflex = 1
+        sif=0.9/(h**0.666666)
+        cflex=1.65/h
+        if sif < 1:   
+            sif = 1           
+        if cflex < 1:  
+            cflex = 1
                     
-        self.sif=SIF
-        self.cflex=Cflex
+        self.sif=sif
+        self.cflex=cflex
             
         pass
 
@@ -242,7 +247,7 @@ class TubaTShape3D(TubaVector):
         self.incident_section=incident_section
         TubaVector.__init__(self,start_tubapoint,end_tubapoint,
                                 end_tubapoint.pos-start_tubapoint.pos, name_vect)
-        self.model="3D"               
+        self.model="VOLUME"               
                       
         self._update_attached_tubapoints()
         

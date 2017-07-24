@@ -31,24 +31,21 @@ vd2x0 = eu.Vector3(1, 0, 0)
 
 V_gravitation = eu.Vector3(0, 0, -9.8)   # gravitational vector (m/s²)
 
-MeshNbElement = 8
+MeshNbElement = 10
 
 colors = {
-    "BLOCK":"1,1,0",
+    "BLOCK_DEFORMATION":"1,0.5,0",    
+    "BLOCK":"1,1,0",                    #yellow
     "POUTRE_RECTANGLE":"0.8,0.8,0.8",       #grey
     "RECTANGULAR":"0.8,0.8,0.8",            #grey
-    "POUTRE":"0.8,0.8,0.8",                 #grey
     "TUBE":"0.6,0.6,0.6",                   #grey
+    "TUBE_BENT":"0.6,0.6,0.6",                   #grey
     "BAR":"0.4,0.4,0.4",                    #grey
     "CABLE":"0.8,0.8,0.8",                  #grey
     "TUYAU":"0.9,0.9,0.9",                  #grey
-    "STIFFNESS":"0,0,1",
-    "Bute": "0,1,1" ,
-    "3D":"0.5,0.8,0.8",
-    "Bride":"1,0.6,0",
-    "Rigide":"0.3,0.3,0.3",
+    "STIFFNESS":"0,0,1",            #blue
+    "VOLUME":"0.5,0.8,0.8",
     "Masse":"0,0,1",
-    "Vanne":"1,0,0",
     "FORCE":"1,0,0",
 
     }
