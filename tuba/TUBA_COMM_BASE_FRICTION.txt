@@ -171,23 +171,11 @@ CHA_TEMP=CREA_CHAMP(
                 VALE=20,
                 ),
 
-                ##TEMPERATURE
+           ##TEMPERATURE
     ),
 );
 
 #IMPR_RESU(FORMAT='MED',RESU=_F(CHAM_GD=CHA_TEMP));
-
-RES_TEMP=CREA_RESU(
-     OPERATION='AFFE',
-     TYPE_RESU='EVOL_THER',
-     NOM_CHAM='TEMP',
-     AFFE=(
-            _F( CHAM_GD=CHA_TEMP,
-                INST=1,
-                ),
-
-     ),
-);
 
 
 #-------------------------------------------------------------------------------
@@ -209,12 +197,12 @@ CHMATH=AFFE_MATERIAU(
     AFFE=(
     ##ASSIGN_MATERIAL   
     ),
-            
+
+    # Applies temperature field CHA_TEMP, VALE_REF is the reference temperature where thermal dilatation is 0
     AFFE_VARC=(  
             _F( TOUT='OUI',
                 NOM_VARC='TEMP',
-                NOM_CHAM='TEMP',
-                EVOL=RES_TEMP,
+                CHAM_GD=CHA_TEMP,
                 VALE_REF=20,      
            ),
     ),        
@@ -259,11 +247,9 @@ CHMATH=AFFE_MATERIAU(
                 ##SECTION_TUBE
                 ##SECTION_TUYAU3M
                 ##SECTION_TUYAU6M
+                ##SECTION_ELBOW  
             ),
                                                                                                    
-            DEFI_ARC=(
-                ##DEFINE_BENT
-            ),
                       
             DISCRET=(
                 ##STIFFNESS_DISCRET
@@ -272,8 +258,8 @@ CHMATH=AFFE_MATERIAU(
             ),
                       
             ORIENTATION=(
-                ##ORIENTATION
-            ),                                    
+                ##SECTION_ORIENTATION
+            ),
     );
 
 

@@ -129,9 +129,14 @@ def SectionTube(outer_radius,wall_thickness):
     tub.current_section=[outer_radius, wall_thickness]
 
 def SectionRectangular(height_y,height_z=0,thickness_y=0,thickness_z=0):
-    """Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n
-       Additional cross-sections will be added later on"""   
+    """Global Function: Defines the cross-section of the beam with rectangular crosssection.
+       height_y and height_z are the dimensions in the local coordinate system."""   
     tub.current_section=[height_y,height_z,thickness_y,thickness_z]
+
+def SectionOrientation(degree):
+    """Global Function: Lets you define an rotationangle (in degree) for your section
+    """
+    tub.current_section_orientation=degree
 
 def Pressure(pressure):
     """Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation. \n
@@ -141,10 +146,8 @@ def Pressure(pressure):
     tub.current_pressure=pressure
 
 
-
-
 def Material(material):
-    """Appends the choosen material to the following vector elements. The material 
+    """Global Function: Appends the choosen material to the following vector elements. The material 
     properties can be defined in library_material.py \n
     The material properties can be defines constant or as a function of temperature.    
     

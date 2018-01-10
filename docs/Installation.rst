@@ -40,11 +40,11 @@ An other option is to go to your desired directory (e.g. your home directory) an
 
 Set Bash command
 ---------------------------
-Make ``TUBA.py`` (located in the main tuba-folder) executable.
+Make ``TUBA`` (located in the main tuba-folder) executable.
 
 ::
 
-    chmod a+x TUBA.py
+    chmod a+x TUBA
 
 
 

@@ -15,6 +15,7 @@ class ParaPost:
     def __init__(self,my_directory):
         self.my_directory=my_directory
         self.lines=[]
+        self.BAR_flag=False
         self.TUBE_flag=False
         self.TUYAU_flag=False
         self.VOLUME_flag=False        
@@ -22,17 +23,20 @@ class ParaPost:
         self.SPRING_flag=False
         self.FRICTION_flag=False
 
-    def write(self,dict_tubavectors,dict_tubapoints):
+    def write(self,dict_tubavectors,dict_tubapoints,resultfile_aster):
 
-        self._initialize()
+        self._initialize(resultfile_aster)
 
         for tubavector in dict_tubavectors:
             if tubavector.model=="TUYAU":
                  self.TUYAU_flag=True
-            if tubavector.model in ["TUBE","BAR","RECTANGULAR"]:
+            if tubavector.model in ["TUBE","RECTANGULAR"]:
                  self.TUBE_flag=True       
             if tubavector.model in ["VOLUME"]:
                  self.VOLUME_flag=True    
+            if tubavector.model in ["BAR"]:
+                 self.BAR_flag=True    
+
 
         for tubapoint in dict_tubapoints:
             if not tubapoint.friction_coefficient==0.0:
@@ -41,104 +45,132 @@ class ParaPost:
                  self.SPRING_flag=True
                  
                  
-        print ("Flafgs:",self.SPRING_flag,self.FRICTION_flag)                 
+        print ("Flags:",self.SPRING_flag,self.FRICTION_flag)                 
+
+
+        self.lines=self.lines+("""
+#Flags set by TUBA                               
+#  BAR_flag="""+str(self.BAR_flag)+"""
+#  TUBE_flag="""+str(self.TUBE_flag)+"""
+#  TUYAU_flag="""+str(self.TUYAU_flag)+"""
+#  VOLUME_flag="""+str(self.VOLUME_flag)+"""        
+#  SPRING_flag="""+str(self.SPRING_flag)+"""
+#  FRICTION_flag="""+str(self.FRICTION_flag)+"""                              
+ """).split("\n") 
+        
+        timestep=1
         if self.TUBE_flag and not self.VOLUME_flag:
             if self.SPRING_flag and not self.FRICTION_flag :
-                self._base("new_casermed_0","\'ComSup0\'")                
-                self._base("new_casermed_1","\'ComSup3\'")               
+                self._base("new_casermed_0","\'ComSup0\'",timestep)              
+                self._base("new_casermed_1","\'ComSup3\'",timestep)
                 self._ELNO_Mesh("Stress","new_casermed_0",'RESU____SIPO_ELNO')
                 self._deformation_Warp("Deformation_Warp","new_casermed_1")
                 self._deformation_Vector("Deformation_Vectors","new_casermed_1")
                 self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
             elif self.FRICTION_flag:    
-                self._base("new_casermed_0","\'ComSup0\'")                
-                self._base("new_casermed_1","\'ComSup2\'")               
+                self._base("new_casermed_0","\'ComSup0\'",timestep)                
+                self._base("new_casermed_1","\'ComSup2\'",timestep)               
                 self._ELNO_Mesh("Stress","new_casermed_0",'RESU____SIPO_ELNO')
                 self._deformation_Warp("Deformation_Warp","new_casermed_1")
                 self._deformation_Vector("Deformation_Vectors","new_casermed_1")
                 self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')                 
             else:
-                self._base("new_casermed_0","\'ComSup0\'")                
+                self._base("new_casermed_0","\'ComSup0\'",timestep)                
                 self._ELNO_Mesh("Stress","new_casermed_0",'RESU____SIPO_ELNO')
                 self._deformation_Warp("Deformation_Warp","new_casermed_0")
                 self._deformation_Vector("Deformation_Vectors","new_casermed_0")
                 self._force_Vector("Force_Vectors","new_casermed_0",'RESU____FORC_NODA_Vector')
 
         if self.TUYAU_flag and not self.VOLUME_flag:
-            self._base("new_casermed_0","\'ComSup0\'")                
-            self._base("new_casermed_1","\'ComSup1\'")     
+            self._base("new_casermed_0","\'ComSup0\'",timestep)               
+            self._base("new_casermed_1","\'ComSup1\'",timestep)     
             self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')  
             self._deformation_Warp("Deformation_Warp","new_casermed_1")
             self._deformation_Vector("Deformation_Vectors","new_casermed_1")
             self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
 
+        if self.BAR_flag:
+            self._base("new_casermed_0","\'ComSup0\'",timestep)               
+            self._deformation_Warp("Deformation_Warp","new_casermed_0")
+            self._deformation_Vector("Deformation_Vectors","new_casermed_0")
+            self._force_Vector("Force_Vectors","new_casermed_0",'RESU____FORC_NODA_Vector')
+
+
+
 
            
         if self.VOLUME_flag and self.TUBE_flag and self.SPRING_flag :        
-            self._base("new_casermed_0","\'ComSup0\'")                
-            self._base("new_casermed_4","\'ComSup4\'")  
-            self._base("new_casermed_5","\'ComSup5\'")  
+            self._base("new_casermed_0","\'ComSup0\'",timestep)                
+            self._base("new_casermed_4","\'ComSup4\'",timestep)  
+            self._base("new_casermed_5","\'ComSup5\'",timestep)  
             self._ELNO_Mesh("Stress","new_casermed_0",'RESU____SIPO_ELNO')
             self._deformation_Warp("Deformation_Warp","new_casermed_5")
             self._deformation_Vector("Deformation_Vectors","new_casermed_5")
             self._force_Vector("Force_Vectors","new_casermed_5",'RESU____FORC_NODA_Vector')
             self._ELNO_Mesh_3D("VonMise","new_casermed_4",'RESU____SIEQ_ELNO')  
         elif self.VOLUME_flag and self.TUBE_flag and not self.SPRING_flag :
-            self._base("new_casermed_0","\'ComSup0\'")                
-            self._base("new_casermed_4","\'ComSup2\'")  
-            self._base("new_casermed_5","\'ComSup3\'")  
+            self._base("new_casermed_0","\'ComSup0\'",timestep)                
+            self._base("new_casermed_4","\'ComSup2\'",timestep)  
+            self._base("new_casermed_5","\'ComSup3\'",timestep)  
             self._ELNO_Mesh("Stress","new_casermed_0",'RESU____SIPO_ELNO')
             self._deformation_Warp("Deformation_Warp","new_casermed_5")
             self._deformation_Vector("Deformation_Vectors","new_casermed_5")
             self._force_Vector("Force_Vectors","new_casermed_5",'RESU____FORC_NODA_Vector')
             self._ELNO_Mesh_3D("VonMise","new_casermed_4",'RESU____SIEQ_ELNO')  
         elif self.VOLUME_flag and self.TUYAU_flag and not self.SPRING_flag :
-            self._base("new_casermed_0","\'ComSup0\'")  
-            self._base("new_casermed_1","\'ComSup1\'")  
+            self._base("new_casermed_0","\'ComSup0\'",timestep)  
+            self._base("new_casermed_1","\'ComSup1\'",timestep)  
             self._deformation_Warp("Deformation_Warp","new_casermed_1")
             self._deformation_Vector("Deformation_Vectors","new_casermed_1")
             self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
             self._ELNO_Mesh_3D("VonMise","new_casermed_1",'RESU____SIEQ_ELNO')  
             self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO') 
         elif self.VOLUME_flag and self.TUYAU_flag and self.SPRING_flag:
-            self._base("new_casermed_0","\'ComSup0\'")  
-            self._base("new_casermed_2","\'ComSup2\'")  
-            self._base("new_casermed_3","\'ComSup3\'") 
+            self._base("new_casermed_0","\'ComSup0\'",timestep)  
+            self._base("new_casermed_2","\'ComSup2\'",timestep)  
+            self._base("new_casermed_3","\'ComSup3\'",timestep) 
             self._deformation_Warp("Deformation_Warp","new_casermed_3")
             self._deformation_Vector("Deformation_Vectors","new_casermed_3")
             self._force_Vector("Force_Vectors","new_casermed_3",'RESU____FORC_NODA_Vector')
             self._ELNO_Mesh_3D("VonMise","new_casermed_2",'RESU____SIEQ_ELNO')  
             self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')            
        
-        
-                        
+        timestep=timestep+1 
+        self._visualize_local_base("LocalCoordinates",timestep)               
         self._finalize()
                
 #==============================================================================
 #  Write PostBase
 #==============================================================================
-    def _initialize(self):
+    def _initialize(self,resultfile_aster):
         self.lines=self.lines+("""
         
 # ======== Select a file for opening:
 import Tkinter,tkFileDialog
 
-root = Tkinter.Tk()
-file = tkFileDialog.askopenfilename(parent=root,
-                                    initialdir='"""+self.my_directory+ """',
-                                    filetypes=[("Result Files","*.rmed")])                     
-root.destroy()
+#root = Tkinter.Tk()
+#file = tkFileDialog.askopenfilename(parent=root,
+#                                    initialdir='"""+self.my_directory+ """',
+#                                    filetypes=[("Result Files","*.rmed")])                     
+#root.destroy()
         
 import pvsimple
 pvsimple.ShowParaviewView()
 #### import the simple module from the paraview
 from pvsimple import *
+
+#Modules to create ParaVis-representation
+#from smeca_utils import macro_post
+#import presentations
+
 #### disable automatic camera reset on 'Show'
 pvsimple._DisableFirstRenderCameraReset()
 
+file=\""""+resultfile_aster+"""\"
+
        """).split("\n")        
         
-    def _base(self,file_rmed,comsup):
+    def _base(self,file_rmed,comsup,timestep):
         self.lines=self.lines+("""      
 
 #------------------------------------------------------------------------------       
@@ -147,20 +179,21 @@ pvsimple._DisableFirstRenderCameraReset()
 
 """+file_rmed+""" = MEDReader(FileName=file)
 
-RenameSource('Results', """+file_rmed+""")
+RenameSource('Results',"""+file_rmed+""")
 keys="""+file_rmed+""".GetProperty("FieldsTreeInfo")[::2]
 #Get all the fields contained in the ResultFile
 arr_name_with_dis=[elt.split("/") for elt in keys]
+
+print (arr_name_with_dis)
+#        sep = str(self.MEDfile.GetProperty("Separator")[0])
+#        self.fieldList = [elt.split(sep)[0] for elt in arrs_with_dis]
+
 newlist=[]
 
 comfield="""+comsup+"""
-#for arr in arr_name_with_dis:	
-#    if arr[2]=='ComSup1':
-#          comfield='ComSup0'
-
         
 for arr in arr_name_with_dis:	
-	if arr[0]=="TS1" and arr[2]==comfield :
+	if arr[0]=="TS"""+str(timestep)+"""\" and arr[2]==comfield :
 		newlist.append("/".join(arr)) 
 	
 """+file_rmed+""".AllArrays = newlist       
@@ -171,13 +204,6 @@ renderView1 = GetActiveViewOrCreate('RenderView')
 # Guess an absolute scale factor form the bounding box dimensions
  
        """).split("\n")
-
-#scale_factor=1/10.
-
-#bounds = """+file_rmed+""".GetDataInformation().DataInformation.GetBounds()
-#side = [bounds[1] - bounds[0], bounds[3] - bounds[2], bounds[5] - bounds[4]]
-#length = min(side) 
-#adapted_scale = length*scale_factor  
 
        
     def _deformation_Warp(self,name_warp,file_rmed): 
@@ -191,6 +217,8 @@ SetActiveSource("""+file_rmed+""")
 
 """+name_warp+"""= WarpByVector(Input="""+file_rmed+""")
 """+name_warp+""".Vectors = ['POINTS', 'RESU____DEPL_Vector']
+"""+name_warp+""".ScaleFactor = 1
+
 
 """+name_warp+"""_Display = Show("""+name_warp+""", renderView1)
 """+name_warp+"""_Display.LineWidth = 4.0
@@ -288,7 +316,7 @@ Force_PWF = GetOpacityTransferFunction('"""+fieldName.replace('_','')+"""')
 # create a new 'ELNO Mesh'       
 #------------------------------------------------------------------------------ 
 SetActiveSource("""+file_rmed+""")
-"""+name_elno+""" = ELNOMesh(Input="""+file_rmed+""")        
+"""+name_elno+""" = ELNOfieldToSurface(Input="""+file_rmed+""")        
 
 
 """+name_elno+"""_Display = Show("""+name_elno+""", renderView1)
@@ -322,7 +350,7 @@ RenameSource('Stress (ELNO-Field)', """+name_elno+""")
 # create a new 'ELNO Mesh'       
 #------------------------------------------------------------------------------ 
 SetActiveSource("""+file_rmed+""")
-"""+name_elno+""" = ELNOMesh(Input="""+file_rmed+""")        
+"""+name_elno+""" = ELNOfieldToSurface(Input="""+file_rmed+""")        
 
 
 """+name_elno+"""_Display = Show("""+name_elno+""", renderView1)
@@ -356,7 +384,7 @@ RenameSource('MaxVonMise (ELNO-Field)', """+name_elno+""")
 # create a new 'ELNO Mesh'       
 #------------------------------------------------------------------------------ 
 SetActiveSource("""+file_rmed+""")
-"""+name_elno+""" = ELNOMesh(Input="""+file_rmed+""")        
+"""+name_elno+""" = ELNOfieldToSurface(Input="""+file_rmed+""")        
 
 
 """+name_elno+"""_Display = Show("""+name_elno+""", renderView1)
@@ -382,10 +410,48 @@ RenameSource('VonMise (ELNO-Field)', """+name_elno+""")
      """).split("\n")        
         
 
-    def _visualize_local_base(self): 
+    def _visualize_local_base(self,file_rmed,timestep): 
         self.lines=self.lines+("""
+#------------------------------------------------------------------------------       
+# Visualize Local Base   X,Y,Z  (red, yellow, green)
+#------------------------------------------------------------------------------
+print("Create Visualization of local coordinates: X,Y,Z  (red, yellow, green) ")
 
+"""+file_rmed+""" = MEDReader(FileName=file)
+
+RenameSource('Local Base', """+file_rmed+""")
+keys="""+file_rmed+""".GetProperty("FieldsTreeInfo")[::2]
+#Get all the fields contained in the ResultFile
+arr_name_with_dis=[elt.split("/") for elt in keys]
+newlist=[]
+
+comfield='ComSup0'
+        
+for arr in arr_name_with_dis:	
+    if arr[0]=="TS"""+str(timestep)+"""\" and arr[2]==comfield :
+        newlist.append("/".join(arr)) 
+        
+"""+file_rmed+""".AllArrays = newlist       
+"""+file_rmed+""".GenerateVectors = 1   
+
+renderView1 = GetActiveViewOrCreate('RenderView')
+ 
 #Script by cbourcier
+# Scale factor for glyphs, factor of the bounding box dimensions
+scale_factor = 1./10
+
+source = GetActiveSource()
+
+# Pass cell data to cell centers, since glyphs can only be applyed on points
+
+ELNOMesh1 = ELNOfieldToSurface(Input=LocalCoordinates)
+
+# Guess an absolute scale factor form the bounding box dimensions
+bounds = source.GetDataInformation().DataInformation.GetBounds()
+side = [bounds[1] - bounds[0], bounds[3] - bounds[2], bounds[5] - bounds[4]]
+length = min(side) 
+scale = length*scale_factor
+
 
 # Colors of each glyph, same colors as the global base in Paraview 3D viewer
 d_colors = {1: [1.0, 0.0, 0.0], # X: red
@@ -394,20 +460,22 @@ d_colors = {1: [1.0, 0.0, 0.0], # X: red
 
 
 # For each 3 directions
+direction=["X","Y","Z"]
 for i in xrange(1, 4):
-  # Find the field for the i-th direction
-  for name, array in CellCenters1.PointData.items():
-    if name.endswith("REPLO_%i"%i):
-      # Create glyphs (that are vectors) and set their scale factor
-      Glyph1 = Glyph(Input=CellCenters1, Vectors = ['POINTS', name], ScaleMode = 'off', SetScaleFactor = scale)
+    # Find the field for the i-th direction
+    for name, array in ELNOMesh1.PointData.items():
+        if name.endswith("RepLocal_"+direction[i-1]):
+            # Create glyphs (that are vectors) and set their scale factor
+            Glyph1 = Glyph(Input=ELNOMesh1, Vectors = ['POINTS', name], ScaleMode = 'off')    
+            SetActiveSource(Glyph1)   
+            Glyph1.Scalars = ['POINTS', 'None']
+            Glyph1.GlyphMode = 'All Points'
+            # Show the glyphs with the right colors
+            color = d_colors[i]
+            GlyphRepresentation = Show(DiffuseColor = color)
+            RenameSource("LocalAxis_"+direction[i-1], Glyph1)
 
-      # Show the glyphs with the right colors
-      color = d_colors[i]
-      GlyphRepresentation = Show(DiffuseColor = color)
-      
-      RenameSource("Glyph_%s"%name, Glyph1)
-
-      Render()
+            Render()
 
       """).split("\n")
 
@@ -434,8 +502,10 @@ except:
     print("GEOM compound couldn't be loaded")
 
         
-if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser(1)
+import SalomePyQt
+sg = SalomePyQt.SalomePyQt()
+sg.activateModule("ParaViS")  
+
       """).split("\n")      
       
    

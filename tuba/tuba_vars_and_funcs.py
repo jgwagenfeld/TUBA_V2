@@ -13,6 +13,7 @@ current_ref_temperature = 20
 current_pressure = ""
 current_model = "TUBE"
 current_section = []
+current_section_orientation = 0
 current_material = "SS316"
 
 current_rho_fluid=0
@@ -29,9 +30,9 @@ current_tubavector = []
 vd1x0 = eu.Vector3(0, 1, 0)              # default dihedral vector 1
 vd2x0 = eu.Vector3(1, 0, 0)
 
-V_gravitation = eu.Vector3(0, 0, -9.8)   # gravitational vector (m/s²)
-
-MeshNbElement = 10
+Mesh_NbElement1D = 10
+Mesh_NbElement3D = 10
+Mesh_NbElement3D_thickness = 3
 
 colors = {
     "BLOCK_DEFORMATION":"1,0.5,0",    
@@ -44,7 +45,7 @@ colors = {
     "CABLE":"0.8,0.8,0.8",                  #grey
     "TUYAU":"0.9,0.9,0.9",                  #grey
     "STIFFNESS":"0,0,1",            #blue
-    "VOLUME":"0.5,0.8,0.8",
+    "VOLUME":"0.5,0.8,0.8",             #silverblue
     "Masse":"0,0,1",
     "FORCE":"1,0,0",
 

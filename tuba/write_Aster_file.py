@@ -18,6 +18,7 @@ import library_material
 import write_Aster_friction
 
 class CodeAster:
+
     def __init__(self,tuba_directory):
         self.lines=[]
         self.TUYAU_flag=False
@@ -28,6 +29,7 @@ class CodeAster:
         self.CABLE_flag=False
         self.FRICTION_flag=False
         self.tuba_directory=tuba_directory
+
 
     def write(self,dict_tubavectors,dict_tubapoints,cmd_script):
 
@@ -50,10 +52,13 @@ class CodeAster:
         self._pressure(dict_tubavectors)
         self._material(dict_tubavectors)
         self._temperature(dict_tubavectors)
-        self._section(dict_tubavectors)
-        self._TShape3D(dict_tubavectors)
-        self._sif_flexibility(dict_tubavectors)
 
+        self._section(dict_tubavectors)
+        self._section_orientation(dict_tubavectors)
+        self._elbow_sif_flexibility(dict_tubavectors)
+ 
+        self._Pipe3D(dict_tubavectors)
+        self._TShape3D(dict_tubavectors)
         
         #Simulation
         if not self.FRICTION_flag:
@@ -463,10 +468,19 @@ class CodeAster:
 
 
                     newlines=[
+                    "R_"+material+"=DEFI_CONSTANTE(VALE="+str(F_Mat_Prop[2])+")",
+                    "",]
+
+                    
+                    insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
+
+
+                    newlines=[
                     material + "=DEFI_MATERIAU(    ",
                     "     ELAS_FO=_F(  E= E_"+material+",",              
                     "               NU=   NU_"+material+",",  
-                    "               RHO="   + str(F_Mat_Prop[2])+",",      
+#                    "               RHO="   + str(F_Mat_Prop[2])+",",    
+                    "               RHO=  R_"+material+",",      
                     "               ALPHA=   A_"+material+",",    
                     "               TEMP_DEF_ALPHA= 20 ,     ",
                     "           ),",
@@ -551,13 +565,12 @@ class CodeAster:
         grouped_attributes=extract_group_attributes_from_list("section","name",dict_tubavectors)
 
         for item in grouped_attributes:
-            #Delete all elements from the List which dont have TUBE as model
             new_item=[]
 #------------------------------------------------------------------------------            
             for name in item[1]:
                 item_tubavector=([tubavector for tubavector in dict_tubavectors
                                             if tubavector.name == name][0])                                
-                if item_tubavector.model in ["TUBE" ,"TUYAU","BAR"]: 
+                if item_tubavector.model in ["TUBE" ,"TUYAU"]: 
                     new_item.append(name)                           
              
             if new_item:        
@@ -634,12 +647,83 @@ class CodeAster:
                                 str(thickness_y)+", "+str(thickness_z)+"),",
                     "),",
                     ])
-                insert_lines_at_string(self.lines,"##SECTION_POUTRE",newlines)            
+                insert_lines_at_string(self.lines,"##SECTION_RECTANGULARBEAM",newlines)            
+
+
+            for name in item[1]:
+                item_tubavector=([tubavector for tubavector in dict_tubavectors
+                                            if tubavector.name == name][0])                                
+                if item_tubavector.model == "BAR": 
+                    new_item.append(name)                           
+            
+            if new_item:        
+                newlines=[]
+                newlines.extend([
+                "    _F(",
+                "        GROUP_MA=(",
+                ])
+    
+                character_count=0
+                text="           "
+                for name in new_item :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+    
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="           "
+                        character_count=0
+                newlines.append(text)
+                newlines.append("        ),")
+                
+                newlines.extend([
+                "        SECTION ='CERCLE',",
+                "        CARA=('R','EP',),",
+                "        VALE=("+ str(item[0].strip("[],")) +"),",
+                "    ),",
+                ])
+                insert_lines_at_string(self.lines,"##SECTION_BAR",newlines)                
+
+
 
           
 #------------------------------------------------------------------------------            
+    def _section_orientation(self,dict_tubavectors):
+        newlines=[]
+        grouped_attributes=extract_group_attributes_from_list("section_orientation","name",dict_tubavectors)
 
-       
+        print("orientation",grouped_attributes)
+        for item in grouped_attributes:
+            print(item[0],item[1])
+    
+            if not item[0]=="0":                    
+                newlines.extend([
+                "_F(",
+                "    GROUP_MA=(",
+                ])
+    
+                character_count=0
+                text="    "
+                for name in item[1] :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+    
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="    "
+                        character_count=0
+                newlines.append(text)
+                newlines.append("    ),")
+
+
+            
+                newlines.extend([
+                "    CARA='ANGL_VRIL',",
+                "    VALE="+item[0]+",),",
+                ])
+
+
+        insert_lines_at_string(self.lines,"##SECTION_ORIENTATION",newlines)           
 #==============================================================================      
          
     def _model(self,dict_tubavectors):      
@@ -682,45 +766,7 @@ class CodeAster:
                 ]
                 
                 insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
-
-#            if item[0] == "TUBE_BENT":
-#                newlines=[]
-#                newlines.extend([
-#                "    _F(",
-#                "        NOM='GTUBE_C',",
-#                "        TYPE_MAILLE = '1D',",
-#                "        UNION=(",
-#                ]) 
-# 
-#                character_count=0
-#                text="    "
-#                for name in item[1] :
-#
-#                    character_count+=len(name)+4
-#                    text += "'"+name+"', "
-#    
-#                    if character_count > 50:
-#                        newlines.append(text)
-#                        text="    "
-#                        character_count=0
-#                newlines.append(text)
-#
-#
-#                newlines.append("       ),")
-#                newlines.append("),")
-#                insert_lines_at_string(self.lines,"##CREA_GROUPE_MAILLE ",newlines)
-#                
-#                newlines=[
-#                "    _F(",
-#                "        GROUP_MA='GTUBE_C',",
-#                "        PHENOMENE='MECANIQUE',",
-#                "        MODELISATION='POU_C_T',",
-#                "    ),",
-#                ]
-#                
-#                insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
-
-                
+              
             if item[0] == "TUYAU":
                 newlines=[]
                 newlines.extend([
@@ -753,9 +799,9 @@ class CodeAster:
                 "        PHENOMENE='MECANIQUE',",
                 "        MODELISATION='TUYAU_3M',",
                 "    ),",
-                ]
-                
+                ]                
                 insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)                
+
              
              
             if item[0] == "BAR":
@@ -795,85 +841,109 @@ class CodeAster:
                 
                 insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
              
-             
-            if item[0] == "VOLUME":  
-                pass
+        for tubavector in dict_tubavectors:
+            if tubavector.model == "TUYAU" and tubavector.start_tubapoint.is_element_start():
+                print("GENE_INTRODUCTION:", tubavector.vd1x, tubavector.start_tubapoint.is_element_start())
+
+                newlines=[                           
+                "_F(	GROUP_NO='"+tubavector.start_tubapoint.name+"',",
+                "		CARA='GENE_TUYAU',",
+                "    VALE=("+str(tubavector.vd1x.x)+","+str(tubavector.vd1x.y)+","+str(tubavector.vd1x.z)+",),",
+                "),",]
+
+                insert_lines_at_string(self.lines,"##SECTION_ORIENTATION" ,newlines)
                 
 #==============================================================================             
-    def _TShape3D(self,dict_tubavectors):
+    def _Pipe3D(self,dict_tubavectors):                                   
 
         for tubavector in dict_tubavectors:
-            if tubavector.model=="VOLUME":
+            if tubavector.model=="VOLUME" and not isinstance(tubavector,tuba_geom.TubaTShape3D):
+                    
                 newlines=[
                 "_F(",
                 "   GROUP_MA=(",
-                "  '" + tubavector.name +"', '"+tubavector.name+"StartFace', '"+
-                tubavector.name+"IncidentFace', '"+tubavector.name+"EndFace'),",
+                "  '" +  tubavector.name +"', '"+tubavector.name+"_StartFace','"+tubavector.name+"_EndFace'),",
                 "   PHENOMENE='MECANIQUE',",
                 "   MODELISATION='3D',",
                 "),",
                 ]
                 
                 insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)        
-                
-
-                
+                              
                 # Définition des liaisons 3D-TUBE",
                 newlines=("""_F(               
     OPTION='3D_POU',
-    GROUP_MA_1 ='"""+str(tubavector.name)+"""StartFace',
+    GROUP_MA_1 ='"""+str(tubavector.name)+"""_StartFace',
+    GROUP_NO_2 ='"""+str(tubavector.start_tubapoint.name)+"""',
+    ),""").split("\n")
+                                    
+                newlines=newlines+("""_F(
+    OPTION='3D_POU',
+    GROUP_MA_1 ='"""+tubavector.name+"""_EndFace',
+    GROUP_NO_2 ='"""+tubavector.end_tubapoint.name+"""',
+    ),""").split("\n")                  
+                                             
+                insert_lines_at_string(self.lines,"##LIAISON_3D_TUBE" ,newlines)
+#==============================================================================                                        
+    def _TShape3D(self,dict_tubavectors):
+
+        for tubavector in dict_tubavectors:
+            if isinstance(tubavector,tuba_geom.TubaTShape3D):
+                newlines=[
+                "_F(",
+                "   GROUP_MA=(",
+                "  '" + tubavector.name +"', '"+tubavector.name+"_StartFace', '"+
+                tubavector.name+"_IncidentFace', '"+tubavector.name+"_EndFace'),",
+                "   PHENOMENE='MECANIQUE',",
+                "   MODELISATION='3D',",
+                "),",
+                ]
+                
+                insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)        
+                              
+                # Définition des liaisons 3D-TUBE",
+                newlines=("""_F(               
+    OPTION='3D_POU',
+    GROUP_MA_1 ='"""+str(tubavector.name)+"""_StartFace',
     GROUP_NO_2 ='"""+str(tubavector.start_tubapoint.name)+"""',
     ),""").split("\n")
                 
                 newlines=newlines+("""_F(          
     OPTION='3D_POU',
-    GROUP_MA_1 ='"""+str(tubavector.name)+"""IncidentFace',
+    GROUP_MA_1 ='"""+str(tubavector.name)+"""_IncidentFace',
     GROUP_NO_2 ='"""+str(tubavector.incident_end_tubapoint.name)+"""',
     ),""").split("\n")      
                 
                 newlines=newlines+("""_F(
     OPTION='3D_POU',
-    GROUP_MA_1 ='"""+tubavector.name+"""EndFace',
+    GROUP_MA_1 ='"""+tubavector.name+"""_EndFace',
     GROUP_NO_2 ='"""+tubavector.end_tubapoint.name+"""',
     ),""").split("\n")                  
                 
                              
                 insert_lines_at_string(self.lines,"##LIAISON_3D_TUBE" ,newlines)
 
- 
 
-#char=AFFE_CHAR_MECA(
-#MODELE=model,
-#LIAISON_ELEM=_F(
-#OPTION='COQ_TUYAU',
-#GROUP_MA_1='CERCL2',
-#GROUP_NO_2='NOPOU1',
-#CARA_ELEM=CAREL1,
-#AXE_POUTRE=(COS30,0.5,0.0,),
-#),);
-
-           
 #==============================================================================
 
-    def _sif_flexibility(self,dict_tubavectors):
+    def _elbow_sif_flexibility(self,dict_tubavectors):
         
         for tubavector in dict_tubavectors:
-            
-            if tubavector.model=="TUBE_BENT":
-
-                newlines=[
-                "_F(",
-                "   GROUP_MA='"+tubavector.name + "',",
-                "   CENTRE=("+str(tubavector.center_tubapoint.pos.x)+","+str(tubavector.center_tubapoint.pos.y)+","+str(tubavector.center_tubapoint.pos.z)+"),",
-                "   COEF_FLEX="+str(tubavector.cflex)+",",
-                "   INDI_SIGM="+str(tubavector.sif)+",",
-                "   PRECISION=0.001,",
-                "),"
-                ]
-                
-                insert_lines_at_string(self.lines,"##DEFINE_BENT" ,newlines)
-
-
+            newlines=[]
+            if tubavector.model=="TUBE" and isinstance(tubavector,tuba_geom.TubaBent):
+                newlines.extend([
+                "    _F(",
+                "        GROUP_MA=('"+tubavector.name+"'),",
+                ])                
+                newlines.extend([
+                "        SECTION = 'COUDE',",
+                "        COEF_FLEX_XY = "+str(tubavector.cflex)+",",
+                "        COEF_FLEX_XZ = "+str(tubavector.cflex)+",",
+                "        INDI_SIGM_XY = "+str(tubavector.sif)+", ",
+                "        INDI_SIGM_XZ = "+str(tubavector.sif)+",", 
+                "    ),",
+                    ])
+            insert_lines_at_string(self.lines,"##SECTION_ELBOW",newlines)  
 
 
 #==============================================================================
@@ -914,8 +984,6 @@ RESU=MECA_STATIQUE(
             list_contraintes.extend(('\'SIGM_ELNO\'','\'SIGM_ELGA\''))
             list_criteres.append('\'SIEQ_ELNO\'')
 
-
-
         list_contraintes=list(set(list_contraintes))   #removes dublicates
         list_contraintes = ",".join(list_contraintes )       
         list_criteres = ",".join(list_criteres ) 
@@ -926,20 +994,43 @@ RESU=MECA_STATIQUE(
         print("VOLUME_flag:",self.VOLUME_flag)
         print("list_contraintes:",list_contraintes)        
         print("list_criteres:",list_criteres) 
-        newlines=("""
 
+        newlines=("""
 # Calculate Reaction Forces from obtained results
 #---------------------------------------------------
+
 RESU=CALC_CHAMP(reuse =RESU,
      RESULTAT=RESU,
-     FORCE=('REAC_NODA','FORC_NODA'),     
-     CONTRAINTE=('SIEF_ELNO',"""+list_contraintes+"""),""").split("\n")   
-     
+     FORCE=('REAC_NODA','FORC_NODA'),""").split("\n")
+        if list_contraintes: 
+            newlines.append("     CONTRAINTE=("+list_contraintes+"),")
         if list_criteres: 
             newlines.append("     CRITERES=("+list_criteres+"),")  
-            
-            
+
         newlines.append(");")
+
+#        newlines=newlines+("""
+#RESU=CALC_CHAMP(reuse =RESU,
+#     RESULTAT=RESU,
+#     GROUP_MA='GTUBE_D',     
+#     CONTRAINTE=("""+list_contraintes+"""),   
+#     );                  
+#         """).split("\n")            
+
+        if self.TUBE_flag:
+            newlines=newlines+("""
+MFlex = FORMULE(
+    NOM_PARA=('SMT','SMFY', 'SMFZ', ),
+    VALE=\"\"\"sqrt(SMFY**2 + SMFZ**2 +2*SMT**2)\"\"\")  
+
+RES_MPP = CALC_CHAMP(
+    RESULTAT=RESU,
+    CHAM_UTIL=_F(
+        NOM_CHAM='SIPO_ELNO',
+        FORMULE=(MFlex),
+        NUME_CHAM_RESU=2,
+    ),
+);  """).split("\n")   
 
 
         if self.TUYAU_flag:
@@ -963,25 +1054,6 @@ MAX_VMIS=POST_CHAMP(
     ),
 );
         """).split("\n")     
-    
-        if self.TUBE_flag:
-            newlines=newlines+("""
-MFlex = FORMULE(
-    NOM_PARA=('SMT','SMFY', 'SMFZ', ),
-    VALE=\"\"\"sqrt(SMFY**2 + SMFZ**2 +2*SMT**2)\"\"\")  
-
-RES_MPP = CALC_CHAMP(
-    RESULTAT=RESU,
-    CHAM_UTIL=_F(
-        NOM_CHAM='SIPO_ELNO',
-        FORMULE=(MFlex),
-        NUME_CHAM_RESU=2,
-    ),
-);  """).split("\n")   
-    
- 
-            
-            
 #include Formula ASME 31.3  319.4.4.   
         insert_lines_at_string(self.lines, "##CALCULATE_FIELDS", newlines)
 
@@ -992,23 +1064,29 @@ RES_MPP = CALC_CHAMP(
 # PRINT RESULTS  to  .MED  ->  Salome
 #---------------------------------------------------    
    
-IMPR_RESU(FORMAT='MED',RESU=(
+IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
         _F(RESULTAT=RESU),
-        _F(CHAM_GD=CHA_TEMP),""").split("\n")
+        _F(CHAM_GD=CHA_TEMP)
+
+        ,""").split("\n")
 
         if self.TUBE_flag:
             newlines=newlines+("""    
         _F(RESULTAT=RES_MPP,GROUP_MA=('GTUBE_D'),NOM_CHAM='UT02_ELNO',NOM_CHAM_MED='Flexibiliy Stress',),
 """).split("\n") 
-    
+
         if self.TUYAU_flag:
             newlines=newlines+(""" 
         _F(RESULTAT=MAX_VMIS),
  """).split("\n")        
-        
         newlines.append("));")          
 
-#IMPR_RESU( FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM, REPERE_LOCAL='OUI', MODELE=MODMECA), )
+        if self.FRICTION_flag:     
+            newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CAP[-1], REPERE_LOCAL='ELNO', MODELE=MODMECA), )")
+        else:    
+            newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM, REPERE_LOCAL='ELNO', MODELE=MODMECA), )")
+
+
 
         insert_lines_at_string(self.lines, "##RESULTS_TO_SALOME", newlines)
         
@@ -1052,13 +1130,13 @@ else:
     var_reac=var_reac['NOM_CHAM','NOEUD','COOR_X','COOR_Y','DX','DY','DZ']                        
     var_forc=var_forc['NOM_CHAM','NOEUD','COOR_X','COOR_Y','DX','DY','DZ']    
                          
-mass=POST_ELEM(
-    RESULTAT =RESU ,
-    MASS_INER=_F(TOUT='OUI' ),
-    TITRE= 'mass',
-    ) ;
-var_mass=mass.EXTR_TABLE();
-var_mass=var_mass['LIEU','MASSE']        
+#mass=POST_ELEM(
+#    RESULTAT =RESU ,
+#    MASS_INER=_F(TOUT='OUI' ),
+#    TITRE= 'mass',
+#    ) ;
+#var_mass=mass.EXTR_TABLE();
+#var_mass=var_mass['LIEU','MASSE']        
 
 
                                   
@@ -1070,7 +1148,7 @@ fileOutput = current_directory + OUTPUT_FILE # Define output file
                     
 try:
    f = open(fileOutput, 'w')    #'a' opens the file for appending , 'w' opens file and erases
-   f.write(str(var_depl)+str(var_reac)+str(var_forc)+'\\n'+'Total Mass in tons \\n'+str(var_mass))
+   f.write(str(var_depl)+str(var_reac)+str(var_forc))#+'\\n'+'Total Mass in tons \\n'+str(var_mass))
    f.close()
    
 except:

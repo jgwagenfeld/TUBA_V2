@@ -6,7 +6,7 @@ How to start
 Assuming you followed the installation steps in the last chapter (`Installation`_), you can now run TUBA in your terminal with
 the bash-command::
 
-$ TUBA.py  command_script.py
+$ TUBA  command_script.py
 
 The command_script as argument is your list of commands defining your geometry, your simulation and output. Executing TUBA will trigger the following actions:
 
@@ -15,13 +15,20 @@ The command_script as argument is your list of commands defining your geometry, 
 #. generating ``command_script_aster.comm`` which then has to be loaded into the Code Aster Module. The file defines the simulation in Code Aster. Find more informations concerning the structure of comm-files under :ref:code_aster
 
 #. generating ``command_script_post.py`` which then has to be loaded after a successful simulation. This file will start the post processing tool ParaVis and effect some standard plots. It is possible to adapt these plots or add new ones later on.
+
+#. generating ``command_script_export.py`` .This file is used when using the argument ``-aster`` to run an automatic Aster-Calculation
 	
-You have two optional arguments
+You have three optional arguments
 
 #. ``-plot`` generates a 3D-Plot of your defined geometry. The purpose of this plot is to get an immediate visualization of your geometry. 
    If needed, then your command list can be adapted before you start the import into Salome-Meca.
 
 #. ``-salome`` launches directly Salome-Meca using the generated command_script_salome.py to generate the geometry and mesh.  
+
+#. ``-aster`` the commfile is updated, CodeAster calculates the results and finally ParaVis is launched to visualize the results. This mode is useful when mesh and geometry where already created and are not affected by editing the command_script-file (editing DOFs, different temperatures eg.)
+
+#. ``-all`` runs the full simulation. First Salome-Meca generates mesh and geometry, CodeAster calculates the results and finally ParaVis is launched to visualize the results using the  ``command_script_post.py`` script.
+
 
 Writing the command script
 ---------------------------------

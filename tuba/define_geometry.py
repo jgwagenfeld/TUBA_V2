@@ -56,13 +56,13 @@ class TubaPoint:
 
         same_names=[tubavectors for tubavectors in tub.dict_tubavectors
                     if tubavectors.end_tubapoint.name == self.name]  #Points with the same name
-        print ("is element start",self.name, same_names)            
-        if same_names==[]:
-            return True
+        print ("Test element Start",self.name, same_names==[])           
+        if same_names==[]:            
             logging.debug(str(self.name)+" is a start point as there is no Vector-end_tubapoint with the same name")
+            return True
         else:
-            return False
             logging.debug(str(self.name)+" is not a Pipingstart as it's as well end_tubapoint of "+str(same_names[0].name))
+            return False
 #------------------------------------------------------------------------------
     def is_element_end(self):
         '''checks if the given tubapoint is a end_tubapoint and as well start_tubapoint of a vector.
@@ -120,6 +120,7 @@ class TubaVector:
         self.vector = vector
         self.vd1x=start_tubapoint.vd1x
         self.section = tub.current_section
+        self.section_orientation = tub.current_section_orientation
         self.material = tub.current_material
         self.temperature = tub.current_temperature
         self.pressure = tub.current_pressure
@@ -127,6 +128,10 @@ class TubaVector:
         self.model = tub.current_model
         self.sif = 1
         self.cflex = 1
+
+#        self.local_x
+#        self.local_y
+#        self.local_z
 
         tub.tubavector_counter += 1
         tub.dict_tubavectors.append(self)
@@ -481,7 +486,7 @@ intersection point of the current and new vector of the piping
 
         #Create the BendObject and add it to the tub.dic_Vectors list  with (Tubastart_tubapoint,Tubaend_tubapoint,TubaCenterPoint)
         #TubaBent(TubaVector): __init__(self,start_tubapoint,end_tubapoint,CenterPoint,bending_radius,VdN,name_vect):
-        name_vect = "V_Bent"+str(tub.tubavector_counter)
+        name_vect = "V"+str(tub.tubavector_counter)+"_Bent"
      
         #------------------------------------------------------------------------------
         name_vect = TubaBent(start_tubapoint,name_end_tubapoint,name_center_tubapoint
@@ -572,7 +577,7 @@ def TShape3D(incident_radius,incident_thickness,angle_orient,
 
     incident_section = [incident_radius,incident_thickness]
     
-    name = "TShape"    
+    name = "V"+str(tub.tubavector_counter)+"_TShape"
 #------------------------------------------------------------------------------
     TubaTShape3D(start_tubapoint,main_end_tubapoint,incident_end_tubapoint,
                  vector_center_incidentend,incident_section,name)

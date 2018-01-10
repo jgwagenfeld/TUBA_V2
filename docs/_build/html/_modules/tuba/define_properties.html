@@ -1,32 +1,30 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>tuba.define_properties &mdash; TUBA 1.1 documentation</title>
-    
+    <title>tuba.define_properties &#8212; TUBA 1.1 documentation</title>
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
         VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="TUBA 1.1 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head>
-  <body role="document">
+  <body>
 
 <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
 <a href="../../index.html"><h1 style="font-size: 3em;">TUBA Piping Tool</h1></a>
@@ -44,7 +42,7 @@
         <li><a href="../../index.html">home</a>|&nbsp;</li>
         <li><a href="../../search.html">search</a>|&nbsp;</li>
 
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
 
@@ -53,8 +51,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -75,13 +73,13 @@
 <span class="sd">Created on Tue Apr  5 01:20:46 2016</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">external.euclid</span> <span class="kn">as</span> <span class="nn">eu</span>
+<span class="kn">import</span> <span class="nn">external.euclid</span> <span class="k">as</span> <span class="nn">eu</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
-<span class="kn">import</span> <span class="nn">tuba_vars_and_funcs</span> <span class="kn">as</span> <span class="nn">tub</span>
+<span class="kn">import</span> <span class="nn">tuba_vars_and_funcs</span> <span class="k">as</span> <span class="nn">tub</span>
 
-<span class="kn">from</span> <span class="nn">external.UnitCalculator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">external.UnitCalculator</span> <span class="k">import</span> <span class="o">*</span>
 <span class="n">auto_converter</span><span class="p">(</span><span class="n">mmNS</span><span class="p">)</span>
 
 <span class="c1">#==============================================================================</span>
@@ -96,11 +94,14 @@
 <span class="sd">        which equals to no restriction on the DOF for the respective component. Setting a real value applies a restriction, </span>
 <span class="sd">        whereas a value != to 0 implies a deflection/torsion of the point.</span>
 <span class="sd">        There are several ways how to use it:\n</span>
-<span class="sd">        Block single compontents by naming --&gt; B(x=0,rz=0)&#39;&#39;&#39;</span>
+<span class="sd">        Block single compontents by naming --&gt; B(x=0,rz=0)</span>
+<span class="sd">        reference=&quot;global&quot; to block in direction of the global base</span>
+<span class="sd">        reference=&quot;local&quot; to block in directions of the local base of the element      </span>
+<span class="sd">        &#39;&#39;&#39;</span>
     <span class="n">ddl</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl</span><span class="o">=</span><span class="n">ddl</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl_reference</span><span class="o">=</span><span class="n">reference</span>
-    <span class="k">print</span> <span class="p">(</span><span class="n">ddl</span><span class="p">)</span></div>
+    <span class="nb">print</span> <span class="p">(</span><span class="n">ddl</span><span class="p">)</span></div>
  
 
 <div class="viewcode-block" id="Spring"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Spring">[docs]</a><span class="k">def</span> <span class="nf">Spring</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
@@ -111,6 +112,9 @@
     <span class="n">stiffness</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">stiffness</span><span class="o">=</span><span class="n">stiffness</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">stiffness_reference</span><span class="o">=</span><span class="n">reference</span></div>
+ 
+<span class="k">def</span> <span class="nf">Mass</span> <span class="p">(</span><span class="n">mass</span><span class="p">):</span>  
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">mass</span><span class="o">=</span><span class="n">mass</span>
     
 <div class="viewcode-block" id="Force"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Force">[docs]</a><span class="k">def</span> <span class="nf">Force</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a force-vector to the current tubapoint</span>
@@ -128,6 +132,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">moment</span> <span class="o">=</span> <span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">)</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_TubaPoint</span><span class="o">.</span><span class="n">moment</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moment</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">Friction</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">friction_coefficient</span><span class="o">=</span><span class="n">mu</span>
 
 <span class="c1">#==============================================================================</span>
 <span class="c1">#==============================================================================</span>
@@ -189,9 +198,14 @@
     <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">outer_radius</span><span class="p">,</span> <span class="n">wall_thickness</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">SectionRectangular</span><span class="p">(</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">thickness_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">thickness_z</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
-<span class="sd">       Additional cross-sections will be added later on&quot;&quot;&quot;</span>   
+    <span class="sd">&quot;&quot;&quot;Global Function: Defines the cross-section of the beam with rectangular crosssection.</span>
+<span class="sd">       height_y and height_z are the dimensions in the local coordinate system.&quot;&quot;&quot;</span>   
     <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="p">,</span><span class="n">thickness_y</span><span class="p">,</span><span class="n">thickness_z</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">SectionOrientation</span><span class="p">(</span><span class="n">degree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Global Function: Lets you define an rotationangle (in degree) for your section</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_section_orientation</span><span class="o">=</span><span class="n">degree</span>
 
 <div class="viewcode-block" id="Pressure"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Pressure">[docs]</a><span class="k">def</span> <span class="nf">Pressure</span><span class="p">(</span><span class="n">pressure</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Defines the internal Pressure of the piping system. For 3D and TUYAU models, this pressure is part of the simulation. \n</span>
@@ -200,8 +214,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_pressure</span><span class="o">=</span><span class="n">pressure</span></div>
 
+
 <div class="viewcode-block" id="Material"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Material">[docs]</a><span class="k">def</span> <span class="nf">Material</span><span class="p">(</span><span class="n">material</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Appends the choosen material to the following vector elements. The material </span>
+    <span class="sd">&quot;&quot;&quot;Global Function: Appends the choosen material to the following vector elements. The material </span>
 <span class="sd">    properties can be defined in library_material.py \n</span>
 <span class="sd">    The material properties can be defines constant or as a function of temperature.    </span>
 <span class="sd">    </span>
@@ -231,7 +246,7 @@
     <span class="sd">&quot;&quot;&quot;allows to take into account the weight of the fluid in the pipe. &quot;&quot;&quot;</span>
     
     <span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span><span class="o">=</span><span class="n">density_fluid</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;density_fluid&quot;</span><span class="p">,</span><span class="n">density_fluid</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;density_fluid&quot;</span><span class="p">,</span><span class="n">density_fluid</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Insulation"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Insulation">[docs]</a><span class="k">def</span> <span class="nf">Insulation</span><span class="p">(</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">):</span>
@@ -239,9 +254,17 @@
 <span class="sd">    allows to take into account the weight of the pipe insulation. &quot;&quot;&quot;</span>
     
     <span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span><span class="o">=</span><span class="p">[</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">]</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Insulation&quot;</span><span class="p">,</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Insulation&quot;</span><span class="p">,</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">)</span></div>
     
 <span class="k">def</span> <span class="nf">Windload</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>     
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">SIF_and_FLEX</span><span class="p">(</span><span class="n">SIF</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">FLEX</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span> 
+    <span class="k">if</span> <span class="n">FLEX</span><span class="p">:</span>
+        <span class="n">tub</span><span class="o">.</span><span class="n">dict_tubavectors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cflex</span><span class="o">=</span><span class="n">FLEX</span>
+    <span class="k">if</span> <span class="n">SIF</span><span class="p">:</span>    
+        <span class="n">tub</span><span class="o">.</span><span class="n">dict_tubavectors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sif</span><span class="o">=</span><span class="n">SIF</span>
     <span class="k">pass</span>
 </pre></div>
 
@@ -262,12 +285,12 @@
         <li><a href="../../index.html">home</a>|&nbsp;</li>
         <li><a href="../../search.html">search</a>|&nbsp;</li>
 
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Wagenfeld.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
+        &#169; Copyright 2016, Wagenfeld.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

@@ -1,0 +1,52 @@
+                                                                                
+                                                                                
+              -- CODE_ASTER -- VERSION : EXPLOITATION (stable) --               
+                                                                                
+                     Version 13.4.0 modifiée le 24/10/2017                      
+                     révision d3b9d70df6c4 - branche 'v13'                      
+                         Copyright EDF R&D 1991 - 2018                          
+                                                                                
+                    Exécution du : Wed Jan 10 17:19:34 2018                     
+                    Nom de la machine : jangeorg-VirtualBox                     
+                              Architecture : 64bit                              
+                          Type de processeur : x86_64                           
+      Système d'exploitation : Linux debian stretch/sid  4.4.0-101-generic      
+                        Langue des messages : en (UTF-8)                        
+                                                                                
+                           Version de Python : 2.7.10                           
+                            Version de NumPy : 1.9.2                            
+                           Parallélisme MPI : inactif                           
+                          Parallélisme OpenMP : actif                           
+                        Nombre de processus utilisés : 2                        
+                     Version de la librairie HDF5 : 1.8.14                      
+                      Version de la librairie MED : 3.2.1                       
+                     Version de la librairie MFront : 3.0.0                     
+                     Version de la librairie MUMPS : 5.1.1                      
+                        Librairie PETSc : non disponible                        
+                     Version de la librairie SCOTCH : 6.0.4                     
+                  Mémoire limite pour l'exécution : 2000.00 Mo                  
+                   consommée par l'initialisation : 549.52 Mo                   
+                  par les objets du jeu de commandes : 0.00 Mo                  
+                 reste pour l'allocation dynamique : 1448.80 Mo                 
+                Taille limite des fichiers d'échange : 12.00 Go                 
+                                                                                
+   
+   !------------------------------------------------------------------------------------!
+   ! <A> <SUPERVIS_1>                                                                   !
+   !                                                                                    !
+   !  L'utilisation du mot-clé PAR_LOT='NON' permet d'accéder en lecture et en écriture !
+   !  au contenu des concepts Aster. De ce fait, votre étude est exclue du périmètre    !
+   !  qualifié de Code_Aster puisque toutes ses étapes ne peuvent être certifiées.      !
+   !                                                                                    !
+   !  Conseils :                                                                        !
+   !    - Il n'y a pas particulièrement de risque de résultat faux... sauf si votre     !
+   !      programmation l'introduit.                                                    !
+   !    - Distinguez le calcul lui-même (qui doit sans doute passer en PAR_LOT='OUI')   !
+   !      des post-traitements (qui nécessiteraient le mode PAR_LOT='NON') qui peuvent  !
+   !      être réalisés en POURSUITE.                                                   !
+   !                                                                                    !
+   !                                                                                    !
+   ! Ceci est une alarme. Si vous ne comprenez pas le sens de cette                     !
+   ! alarme, vous pouvez obtenir des résultats inattendus !                             !
+   !------------------------------------------------------------------------------------!
+   

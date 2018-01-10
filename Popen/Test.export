@@ -1,0 +1,50 @@
+P profastk jangeorg@jangeorg-VirtualBox:/home/jangeorg/Popen/new_case.astk
+P serveur localhost
+P username jangeorg
+P aster_root /home/jangeorg/salome_meca/V2016/tools/Code_aster_frontend-20160
+P platform Linux64
+P protocol_exec asrun.plugins.server.SSHServer
+P protocol_copyto asrun.plugins.server.SCPServer
+P protocol_copyfrom asrun.plugins.server.SCPServer
+P proxy_dir /tmp
+P noeud localhost
+P mclient jangeorg-VirtualBox
+P uclient jangeorg
+P version stable
+P lang en
+P debug nodebug
+P mode interactif
+P ncpus 1
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P classe 
+P depart 
+P after_job 
+P distrib 
+P exectool 
+P multiple 
+P nomjob new_case
+P origine ASTK 2016.0
+P display jangeorg-VirtualBox:0.0
+A ORBInitRef NameService=corbaname::jangeorg-VirtualBox:2890
+A args -interact
+A memjeveux 64.0
+A tpmax 600
+P memjob 524288.0
+P tpsjob 10
+P follow_output yes
+P nbmaxnook 5
+P cpresok RESNOOK
+P only_nook 
+P facmtps 1
+P corefilesize unlimited
+F comm /home/jangeorg/Popen/Tutorial_001_aster_friction.comm D 1
+F mmed /home/jangeorg/Popen/new_case.mmed D 20
+F mess /home/jangeorg/Popen/new_case.mess R 6
+F resu /home/jangeorg/Popen/new_case.resu R 8
+F rmed /home/jangeorg/Popen/new_case.rmed R 80
+R base /home/jangeorg/Popen/new_case.base RC 0
+P consbtc oui
+P soumbtc oui
+P actions make_etude
+
