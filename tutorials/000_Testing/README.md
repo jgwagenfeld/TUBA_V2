@@ -1,9 +1,16 @@
-000_TUBE
-001_TUBE_M_K_F         #M=Mass,   K=Stiffness,    F=Force 
-002_TUBE_FRICTION
-003_TUYAU
-TUYAU_M_K_F
-3D
-3D_M_K_F
-TUBE_3D_MKF
+ *000_TUBE
+
+ *001_TUBE_M_K_F         #M=Mass,   K=Stiffness,    F=Force 
+
+ *002_TUBE_FRICTION
+
+ *003_TUYAU
+
+ *TUYAU_M_K_F
+
+ *3D
+
+ *3D_M_K_F
+
+ *TUBE_3D_MKF
 
