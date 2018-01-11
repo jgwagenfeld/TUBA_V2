@@ -20,13 +20,8 @@ Salome-Meca is the platform on which geometry and mesh generation is effected. T
 To download here: 
 `Salome-Meca <http://code-aster.org/V2/spip.php?article303>`_
 
-Tested Versions:
-
-#. Salome-Meca 2015.2
-#. Salome-Meca 2016
-
-
-Older Versions before 2014 probably won't work as the synthax for the salome-script has changed.
+The SM2017 branch only works with the Salome-Meca2017 version,
+Older Versions won't work as the synthax for the salome-script has changed.
 
 
 Download TUBA from Github
@@ -61,6 +56,19 @@ Last step, source ``.bashrc``  in your terminal.
 ::
 
     source ~/.bashrc
+
+
+In case, you installed SalomeMeca2017.0.2 in your HOME-directory you are finished now. In case,you have another version or another installation path please update the salome_root and aster_root variable in the TUBA.py script (Line 67-68)
+
+
+::
+
+	# ------------------------------------------------------------------------------
+	# Definition where to read and write the input/output-files
+	# --------------------------------------------------------------------------
+	salome_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome' # Salome directory
+	aster_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome shell -- as_run' # Aster directory
+
 
 
 Your workspace is now prepared. Go to the next chapter to get a step by step introduction in TUBA functionality.

@@ -602,6 +602,7 @@ class CodeAster:
                 insert_lines_at_string(self.lines,"##SECTION_TUBE",newlines)    
 #------------------------------------------------------------------------------
             new_item=[]
+
             for name in item[1]:
                 item_tubavector=([tubavector for tubavector in dict_tubavectors
                                             if tubavector.name == name][0])                                
@@ -627,8 +628,8 @@ class CodeAster:
                         character_count=0
                 newlines.append(text)
                 newlines.append("),")
-                item=eval(item[0])
-                [height_y,height_z,thickness_y,thickness_z]=item
+                item_0=eval(item[0])
+                [height_y,height_z,thickness_y,thickness_z]=item_0
                 solid_crosssection=False
                 if thickness_y==0 and thickness_z==0 : solid_crosssection=True
                 
@@ -649,8 +650,9 @@ class CodeAster:
                     ])
                 insert_lines_at_string(self.lines,"##SECTION_RECTANGULARBEAM",newlines)            
 
-
+            new_item=[]
             for name in item[1]:
+                print(name)                
                 item_tubavector=([tubavector for tubavector in dict_tubavectors
                                             if tubavector.name == name][0])                                
                 if item_tubavector.model == "BAR": 

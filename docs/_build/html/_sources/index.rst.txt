@@ -22,6 +22,12 @@ The development section is intended for people who wish to understand the underl
 .. figure::  _static/ExampleTUBA.png
    :align:   center
 
+.. figure::  _static/ExampleTUBA2.png
+   :align:   center
+
+.. figure::  _static/ExampleTUBA3.png
+   :align:   center
+
 Contents:
 
 .. toctree::

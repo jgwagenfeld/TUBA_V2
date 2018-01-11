@@ -113,12 +113,8 @@ Anaconda is a Python distribution including the most popular packages.</p>
 <p>Salome-Meca is the platform on which geometry and mesh generation is effected. The FEM simulation is run with the  included Code Aster Module. Furthermore, the ParaVis Module will be used for postprocessing.</p>
 <p>To download here:
 <a class="reference external" href="http://code-aster.org/V2/spip.php?article303">Salome-Meca</a></p>
-<p>Tested Versions:</p>
-<ol class="arabic simple">
-<li>Salome-Meca 2015.2</li>
-<li>Salome-Meca 2016</li>
-</ol>
-<p>Older Versions before 2014 probably won’t work as the synthax for the salome-script has changed.</p>
+<p>The SM2017 branch only works with the Salome-Meca2017 version,
+Older Versions won’t work as the synthax for the salome-script has changed.</p>
 </div>
 <div class="section" id="download-tuba-from-github">
 <h2>Download TUBA from Github<a class="headerlink" href="#download-tuba-from-github" title="Permalink to this headline">¶</a></h2>
@@ -142,6 +138,14 @@ export TUBA
 </div>
 <p>Last step, source <code class="docutils literal"><span class="pre">.bashrc</span></code>  in your terminal.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">~/.</span><span class="n">bashrc</span>
+</pre></div>
+</div>
+<p>In case, you installed SalomeMeca2017.0.2 in your HOME-directory you are finished now. In case,you have another version or another installation path please update the salome_root and aster_root variable in the TUBA.py script (Line 67-68)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1"># Definition where to read and write the input/output-files</span>
+<span class="c1"># --------------------------------------------------------------------------</span>
+<span class="n">salome_root</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/salome_meca/appli_V2017.0.2/salome&#39;</span> <span class="c1"># Salome directory</span>
+<span class="n">aster_root</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;/salome_meca/appli_V2017.0.2/salome shell -- as_run&#39;</span> <span class="c1"># Aster directory</span>
 </pre></div>
 </div>
 <p>Your workspace is now prepared. Go to the next chapter to get a step by step introduction in TUBA functionality.</p>

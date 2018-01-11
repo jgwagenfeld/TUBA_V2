@@ -6,4 +6,4 @@ TUBA prepares the scripts for SalomeMeca, CodeAster and ParaVis which then have 
 
 Even without further knowledge of SalomeMeca, TUBA allows to quickly and easily create piping-geometries and effect the targeted calculation and analysis.
 
-Check http://tuba-v2.readthedocs.io/en/new_dev/ for more informatios
+Check http://tuba-v2.readthedocs.io/en/latest/ for more informatios
