@@ -406,9 +406,9 @@ intersection point of the current and new vector of the piping
 
    #TO DO: when intersection problem arises (no vector before bent to move old end_tubapoint)--> switch automatically to add and bring a warning
 
-    if arg3=="intersect":
+    if arg3=="intersect" and arg1!="":
         tub.current_tubapoint.pos=tub.current_tubapoint.pos - \
-                                     tub.current_tubapoint.vd2x*bending_radius
+                                     tub.current_tubapoint.vd2x*bending_radius*math.sin(arg1 * math.pi / 180)
         start_tubapoint=tub.current_tubapoint
     elif arg3=="add":
 # The end_tubapoint of the last vector is as well the start_tubapoint of the bent.
