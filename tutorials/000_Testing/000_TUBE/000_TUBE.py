@@ -5,7 +5,6 @@ auto_converter(mmNS)
 outerRadius=35.0   #in mm
 WallThickness=4.0   #in mm
 
-Model("TUBE")   #Model("TUYAU")
 SectionTube(outerRadius,WallThickness)
 Material("SS304")  #Check the material library or autodoc for a complete list of available material properties.
 
@@ -17,15 +16,29 @@ Temperature(550,T_ref=20)
 Pressure(2*bar())
 
 
+P(x=0,y=0,z=0,name="a") 								#equivalent to P(0,0,0,"a)
+FixPoint()     											#equivalent to Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)
+V(2*m(),0,0)
+Bent(radius=400,angle_deg=45,orientation=90,mode="add")
+Vc(length=500)
 
-P(x=0,y=0,z=0)  
+P(x=0,y=100,z=0)
+FixPoint()     											#equivalent to Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)
+V(2*m(),0,0)    														
+Bent(radius=400,angle_deg=45,orientation=90,mode="intersect")
+Vc(length=500)
+
+P(0,1000,0,name="c")  
 FixPoint()
-V(x=1000,y=0,z=0)
-V(1000,0,0)
-Block(z=0)
-V(1000,0,0)
-Mass(5*kg())
-Bent(150,90,90)
-Vc(length=1000)
+P(2000,1000,0,name="d")
+Vp("d","c")
+Bent(radius=200,vector=(0,0,1),mode="intersect")
+Vc(length=500)
+Force(x=0,y=100,z=100)
+
+gotoP("c")
+for i in range(0,5):
+	V(0,0,100)
+
 
 Calculate("Statique_Linear")

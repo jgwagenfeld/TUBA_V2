@@ -38,7 +38,7 @@ MAIL=DEFI_GROUP(
                 
             _F(  NOM='GPOINTS',
                  UNION=(
-                 'P0', 'P1', 'P2', 'P3', 
+                 'P0', 'top', 'P2', 'P3', 'P4', 'P5', 
                 ),
             ),
         ),
@@ -46,11 +46,10 @@ MAIL=DEFI_GROUP(
         CREA_GROUP_MA=(
             _F(NOM='ALL',TOUT='OUI',),  #Creates a group for all element
                 
-            _F(
-                NOM='GBAR',
+            _F( NOM='GTUBE_D',
                 TYPE_MAILLE = '1D',
                 UNION=(
-                    'V0', 'V1', 'V2', 
+                  'V0', 'V1', 'V2', 'V3', 'V4', 
                 ),
             ),
         ),                 
@@ -72,9 +71,9 @@ MODMECA=AFFE_MODELE(
 
         AFFE=(
             _F(
-                GROUP_MA='GBAR',
-                PHENOMENE = 'MECANIQUE',
-                MODELISATION = 'BARRE',
+                GROUP_MA='GTUBE_D',
+                PHENOMENE='MECANIQUE',
+                MODELISATION='POU_D_T',
             ),
         ),
 );
@@ -173,18 +172,45 @@ BLOCAGE=AFFE_CHAR_MECA(
                    DX=0,
                    DY=0,
                    DZ=0,
-                   ANGL_NAUT=(0.0,0.0,0),
-            ),
-            _F(GROUP_NO='P1',
-                   DX=0,
-                   DY=0,
-                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
                    ANGL_NAUT=(0.0,0.0,0),
             ),
             _F(GROUP_NO='P2',
                    DX=0,
                    DY=0,
                    DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
+                   ANGL_NAUT=(0.0,0.0,0),
+            ),
+            _F(GROUP_NO='P3',
+                   DX=0,
+                   DY=0,
+                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
+                   ANGL_NAUT=(0.0,0.0,0),
+            ),
+            _F(GROUP_NO='P4',
+                   DX=0,
+                   DY=0,
+                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
+                   ANGL_NAUT=(0.0,0.0,0),
+            ),
+            _F(GROUP_NO='P5',
+                   DX=0,
+                   DY=0,
+                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
                    ANGL_NAUT=(0.0,0.0,0),
             ),
         ),
@@ -205,20 +231,20 @@ CARAELEM=AFFE_CARA_ELEM(
         MODELE=MODMECA,
 
         BARRE=(
-            _F(
-                GROUP_MA=(
-                   'V0', 'V1', 'V2', 
-                ),
-                SECTION ='CERCLE',
-                CARA=('R','EP',),
-                VALE=(35.0, 4.0),
-            ),
         ),
 
         CABLE=(
         ),
 
         POUTRE=(
+            _F(
+                GROUP_MA=(
+                   'V0', 'V1', 'V2', 'V3', 'V4', 
+                ),
+                SECTION ='CERCLE',
+                CARA=('R','EP',),
+                VALE=(35.0, 4.0),
+            ),
         ),
                                                                                                
                   
@@ -272,10 +298,10 @@ CHA_TEMP=CREA_CHAMP(
 
             _F(
                GROUP_MA=(
-                'V0', 'V1', 'V2', 
+                'V0', 'V1', 'V2', 'V3', 'V4', 
                ),
                NOM_CMP='TEMP',
-               VALE=550,
+               VALE=20,
             ),
     ),
 );
@@ -316,7 +342,7 @@ CH_MAT=AFFE_MATERIAU(
     AFFE=(
         _F(
             GROUP_MA=(
-                'V0', 'V1', 'V2', 
+                'V0', 'V1', 'V2', 'V3', 'V4', 
             ),
             MATER=SS304,
         ),
@@ -371,7 +397,21 @@ RESU=MECA_STATIQUE(
 RESU=CALC_CHAMP(reuse =RESU,
      RESULTAT=RESU,
      FORCE=('REAC_NODA','FORC_NODA'),
+     CONTRAINTE=('SIPO_NOEU','SIPM_ELNO','SIPO_ELNO'),
 );
+
+MFlex = FORMULE(
+    NOM_PARA=('SMT','SMFY', 'SMFZ', ),
+    VALE="""sqrt(SMFY**2 + SMFZ**2 +2*SMT**2)""")  
+
+RES_MPP = CALC_CHAMP(
+    RESULTAT=RESU,
+    CHAM_UTIL=_F(
+        NOM_CHAM='SIPO_ELNO',
+        FORMULE=(MFlex),
+        NUME_CHAM_RESU=2,
+    ),
+);  
 
 
 # PRINT RESULTS  to  .MED  ->  Salome
@@ -382,6 +422,9 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
         _F(CHAM_GD=CHA_TEMP)
 
         ,
+    
+        _F(RESULTAT=RES_MPP,GROUP_MA=('GTUBE_D'),NOM_CHAM='UT02_ELNO',NOM_CHAM_MED='Flexibiliy Stress',),
+
 ));
 IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM, REPERE_LOCAL='ELNO', MODELE=MODMECA), )
 
@@ -408,8 +451,16 @@ Tab_FORC=CREA_TABLE(RESU=_F(RESULTAT=RESU,
 						 NOM_CMP=('DX','DY','DZ'),
 						 PRECISION=0.1,                         
 						 ),
-                );    
-    
+                );
+                
+IMPR_TABLE(
+        TABLE=Tab_REAC,
+        TITLE=test,
+        FILTRE= (_F(NOM_PARA='NODE',VALE_K=('N1','N2'),),),
+        NOM_PARA=('LIEU','DX'),
+        FORMAT_R='1PE12.3',
+);
+
 var_depl=Tab_DEPL.EXTR_TABLE();
 var_reac=Tab_REAC.EXTR_TABLE();
 var_forc=Tab_FORC.EXTR_TABLE();                            
@@ -434,14 +485,14 @@ else:
 
                                   
 import os
-current_directory ='/home/jangeorg/TUBA/tutorials/000_Testing/009_BAR'
+current_directory ='/home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE'
 
-OUTPUT_FILE='/009_BAR_Tables.output' # Filename of the output file
+OUTPUT_FILE='/011_CABLE_Tables.output' # Filename of the output file
 fileOutput = current_directory + OUTPUT_FILE # Define output file                    
                     
 try:
    f = open(fileOutput, 'w')    #'a' opens the file for appending , 'w' opens file and erases
-   f.write(str(var_depl)+str(var_reac)+str(var_forc)+'\n'+'Total Mass in tons \n'+str(var_mass))
+   f.write(str(var_depl)+str(var_reac)+str(var_forc))#+'\n'+'Total Mass in tons \n'+str(var_mass))
    f.close()
    
 except:

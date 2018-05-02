@@ -1,6 +1,12 @@
 Developper Section
 ======================
 
+Program Sturcture
+-----------------------
+
+.. figure::  _static/development_TUBA.jpg
+   :align:   center
+
 Create a Macro Command
 -----------------------
 An easy way to start with the underlying Python code is to create a Macro command for TUBA. A macro is just a sequence of already existing TUBA commands. The best example is the macro ``FixPoint()`` which calls ``Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)``.

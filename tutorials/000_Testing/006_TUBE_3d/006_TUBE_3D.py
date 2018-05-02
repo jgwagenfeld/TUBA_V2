@@ -5,7 +5,6 @@ auto_converter(mmNS)
 outerRadius=35.0   #in mm
 WallThickness=4.0   #in mm
 
-Model("TUBE")   #Model("TUYAU")
 SectionTube(outerRadius,WallThickness)
 Material("SS304")  #Check the material library or autodoc for a complete list of available material properties.
 
@@ -21,16 +20,12 @@ Pressure(2*bar())
 P(0,0,0)  
 FixPoint()
 V(1000,0,0)
-Model("VOLUME") 
-V(1000,0,0)
+V_3D(1000,0,0)
 Block(z=0)
-Model("TUBE") 
 V(1000,0,0)
-Model("VOLUME")
-Bent(150,90,90)
-Model("TUBE") 
+Bent_3D(150,90,90)
 Vc(1000)
-TShape3D(20,WallThickness,90,"a","b",100,100)
+TShape_3D(20,WallThickness,90,"a","b",100,100)
 Vc(1000)
 Block(x=-100)
 gotoP("a")

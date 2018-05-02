@@ -5,7 +5,6 @@ auto_converter(mmNS)
 outerRadius=35.0   #in mm
 WallThickness=4.0   #in mm
 
-Model("TUBE")   #Model("TUYAU")
 SectionTube(outerRadius,WallThickness)
 Material("SS304")  #Check the material library or autodoc for a complete list of available material properties.
 
@@ -22,7 +21,7 @@ P(0,0,0)
 FixPoint()
 
 V(1000,0,0)
-Force(0,50,0)
+Force(x=0,y=50,z=0)
 
 V(1000,0,0)
 Block(z=0)
@@ -34,7 +33,7 @@ V(1000,0,0)
 Mass(5*kg())
 
 Vc(1000)
-Block(y=-5)
+Block(y=-0.5*m())
 
 Vc(1000)
 Bent(150,90,90)

@@ -12,3 +12,14 @@ TUBA 0.1
 2017/6/28:  added table output of species (at the moment, just generic - plan is to print a complete simulation report with all important informations)
 
 2017/7/08:  added Command Mass(mass=2) to add a discret element
+
+2018/1/01:  new TUBA-arguments  -all,-aster
+
+2018/1/01:  3D Pipe and 3D Bent elements
+-----------------------------------------------
+
+2018/1/12:  Removal of Model (is now handled with section commands)
+
+2018/4/29:  Bugfixing, Rework of Bent-Function
+
+2018/4/29:  Restructering TUBA-Mainfunction, cleaning of scripts

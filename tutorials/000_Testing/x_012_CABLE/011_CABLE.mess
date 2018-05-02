@@ -41,7 +41,7 @@ MAIL=DEFI_GROUP(
                 
             _F(  NOM='GPOINTS',
                  UNION=(
-                 'P0', 'P1', 'P2', 'P3', 
+                 'P0', 'top', 'P2', 'P3', 'P4', 'P5', 
                 ),
             ),
         ),
@@ -49,11 +49,10 @@ MAIL=DEFI_GROUP(
         CREA_GROUP_MA=(
             _F(NOM='ALL',TOUT='OUI',),  #Creates a group for all element
                 
-            _F(
-                NOM='GBAR',
+            _F( NOM='GTUBE_D',
                 TYPE_MAILLE = '1D',
                 UNION=(
-                    'V0', 'V1', 'V2', 
+                  'V0', 'V1', 'V2', 'V3', 'V4', 
                 ),
             ),
         ),                 
@@ -75,9 +74,9 @@ MODMECA=AFFE_MODELE(
 
         AFFE=(
             _F(
-                GROUP_MA='GBAR',
-                PHENOMENE = 'MECANIQUE',
-                MODELISATION = 'BARRE',
+                GROUP_MA='GTUBE_D',
+                PHENOMENE='MECANIQUE',
+                MODELISATION='POU_D_T',
             ),
         ),
 );
@@ -176,18 +175,45 @@ BLOCAGE=AFFE_CHAR_MECA(
                    DX=0,
                    DY=0,
                    DZ=0,
-                   ANGL_NAUT=(0.0,0.0,0),
-            ),
-            _F(GROUP_NO='P1',
-                   DX=0,
-                   DY=0,
-                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
                    ANGL_NAUT=(0.0,0.0,0),
             ),
             _F(GROUP_NO='P2',
                    DX=0,
                    DY=0,
                    DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
+                   ANGL_NAUT=(0.0,0.0,0),
+            ),
+            _F(GROUP_NO='P3',
+                   DX=0,
+                   DY=0,
+                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
+                   ANGL_NAUT=(0.0,0.0,0),
+            ),
+            _F(GROUP_NO='P4',
+                   DX=0,
+                   DY=0,
+                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
+                   ANGL_NAUT=(0.0,0.0,0),
+            ),
+            _F(GROUP_NO='P5',
+                   DX=0,
+                   DY=0,
+                   DZ=0,
+                   DRX=0,
+                   DRY=0,
+                   DRZ=0,
                    ANGL_NAUT=(0.0,0.0,0),
             ),
         ),
@@ -208,20 +234,20 @@ CARAELEM=AFFE_CARA_ELEM(
         MODELE=MODMECA,
 
         BARRE=(
-            _F(
-                GROUP_MA=(
-                   'V0', 'V1', 'V2', 
-                ),
-                SECTION ='CERCLE',
-                CARA=('R','EP',),
-                VALE=(35.0, 4.0),
-            ),
         ),
 
         CABLE=(
         ),
 
         POUTRE=(
+            _F(
+                GROUP_MA=(
+                   'V0', 'V1', 'V2', 'V3', 'V4', 
+                ),
+                SECTION ='CERCLE',
+                CARA=('R','EP',),
+                VALE=(35.0, 4.0),
+            ),
         ),
                                                                                                
                   
@@ -275,10 +301,10 @@ CHA_TEMP=CREA_CHAMP(
 
             _F(
                GROUP_MA=(
-                'V0', 'V1', 'V2', 
+                'V0', 'V1', 'V2', 'V3', 'V4', 
                ),
                NOM_CMP='TEMP',
-               VALE=550,
+               VALE=20,
             ),
     ),
 );
@@ -319,7 +345,7 @@ CH_MAT=AFFE_MATERIAU(
     AFFE=(
         _F(
             GROUP_MA=(
-                'V0', 'V1', 'V2', 
+                'V0', 'V1', 'V2', 'V3', 'V4', 
             ),
             MATER=SS304,
         ),
@@ -374,7 +400,21 @@ RESU=MECA_STATIQUE(
 RESU=CALC_CHAMP(reuse =RESU,
      RESULTAT=RESU,
      FORCE=('REAC_NODA','FORC_NODA'),
+     CONTRAINTE=('SIPO_NOEU','SIPM_ELNO','SIPO_ELNO'),
 );
+
+MFlex = FORMULE(
+    NOM_PARA=('SMT','SMFY', 'SMFZ', ),
+    VALE="""sqrt(SMFY**2 + SMFZ**2 +2*SMT**2)""")  
+
+RES_MPP = CALC_CHAMP(
+    RESULTAT=RESU,
+    CHAM_UTIL=_F(
+        NOM_CHAM='SIPO_ELNO',
+        FORMULE=(MFlex),
+        NUME_CHAM_RESU=2,
+    ),
+);  
 
 
 # PRINT RESULTS  to  .MED  ->  Salome
@@ -385,6 +425,9 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
         _F(CHAM_GD=CHA_TEMP)
 
         ,
+    
+        _F(RESULTAT=RES_MPP,GROUP_MA=('GTUBE_D'),NOM_CHAM='UT02_ELNO',NOM_CHAM_MED='Flexibiliy Stress',),
+
 ));
 IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM, REPERE_LOCAL='ELNO', MODELE=MODMECA), )
 
@@ -411,8 +454,16 @@ Tab_FORC=CREA_TABLE(RESU=_F(RESULTAT=RESU,
 						 NOM_CMP=('DX','DY','DZ'),
 						 PRECISION=0.1,                         
 						 ),
-                );    
-    
+                );
+                
+IMPR_TABLE(
+        TABLE=Tab_REAC,
+        TITLE=test,
+        FILTRE= (_F(NOM_PARA='NODE',VALE_K=('N1','N2'),),),
+        NOM_PARA=('LIEU','DX'),
+        FORMAT_R='1PE12.3',
+);
+
 var_depl=Tab_DEPL.EXTR_TABLE();
 var_reac=Tab_REAC.EXTR_TABLE();
 var_forc=Tab_FORC.EXTR_TABLE();                            
@@ -437,14 +488,14 @@ else:
 
                                   
 import os
-current_directory ='/home/jangeorg/TUBA/tutorials/000_Testing/009_BAR'
+current_directory ='/home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE'
 
-OUTPUT_FILE='/009_BAR_Tables.output' # Filename of the output file
+OUTPUT_FILE='/011_CABLE_Tables.output' # Filename of the output file
 fileOutput = current_directory + OUTPUT_FILE # Define output file                    
                     
 try:
    f = open(fileOutput, 'w')    #'a' opens the file for appending , 'w' opens file and erases
-   f.write(str(var_depl)+str(var_reac)+str(var_forc)+'\n'+'Total Mass in tons \n'+str(var_mass))
+   f.write(str(var_depl)+str(var_reac)+str(var_forc))#+'\n'+'Total Mass in tons \n'+str(var_mass))
    f.close()
    
 except:
@@ -466,7 +517,7 @@ except:
                      révision d3b9d70df6c4 - branche 'v13'                      
                          Copyright EDF R&D 1991 - 2018                          
                                                                                 
-                    Exécution du : Wed Jan 10 17:19:34 2018                     
+                    Exécution du : Fri Jan 12 15:34:07 2018                     
                     Nom de la machine : jangeorg-VirtualBox                     
                               Architecture : 64bit                              
                           Type de processeur : x86_64                           
@@ -486,9 +537,9 @@ except:
                      Version de la librairie SCOTCH : 6.0.4                     
 
                   Mémoire limite pour l'exécution : 2000.00 Mo                  
-                   consommée par l'initialisation : 549.52 Mo                   
+                   consommée par l'initialisation : 549.54 Mo                   
                   par les objets du jeu de commandes : 0.00 Mo                  
-                 reste pour l'allocation dynamique : 1448.80 Mo                 
+                 reste pour l'allocation dynamique : 1448.76 Mo                 
                 Taille limite des fichiers d'échange : 12.00 Go                 
                                                                                 
 
@@ -566,9 +617,9 @@ except:
 
   Relecture des catalogues des éléments faite.
 
-  Fin de lecture (durée  0.072237  s.) 
+  Fin de lecture (durée  0.042917  s.) 
   # Mémoire (Mo) :   596.25 /   588.57 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0001   user+syst:        0.09s (syst:        0.06s, elaps:        0.11s)
+  # Fin commande No : 0001   user+syst:        0.09s (syst:        0.06s, elaps:        0.09s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -586,28 +637,32 @@ Vérification du maillage.
 
 ------------ MAILLAGE MAIL0    - IMPRESSIONS NIVEAU  1 ------------
 
-ME-10-JANV-2018 17:19:34                                                        
+VE-12-JANV-2018 15:34:07                                                        
 
-NOMBRE DE NOEUDS                           3
+NOMBRE DE NOEUDS                          51
 
-NOMBRE DE MAILLES                          3
-                              SEG2                    3
+NOMBRE DE MAILLES                         50
+                              SEG2                   50
 
-NOMBRE DE GROUPES DE NOEUDS                4
-                              P1                                   1
+NOMBRE DE GROUPES DE NOEUDS                6
+                              top                                  1
                               P2                                   1
-                              P0                                   1
+                              P4                                   1
                               P3                                   1
+                              P0                                   1
+                              P5                                   1
 
-NOMBRE DE GROUPES DE MAILLES               3
-                              V0                                   1
-                              V1                                   1
-                              V2                                   1
+NOMBRE DE GROUPES DE MAILLES               5
+                              V1                                  10
+                              V2                                  10
+                              V0                                  10
+                              V4                                  10
+                              V3                                  10
 
 --------------------------------------------------------------------------------
 
-  # Mémoire (Mo) :   596.25 /   589.23 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0002   user+syst:        0.04s (syst:        0.00s, elaps:        0.04s)
+  # Mémoire (Mo) :   596.25 /   589.25 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0002   user+syst:        0.02s (syst:        0.00s, elaps:        0.02s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -619,29 +674,33 @@ NOMBRE DE GROUPES DE MAILLES               3
 
 ------------ MAILLAGE MAIL     - IMPRESSIONS NIVEAU  1 ------------
 
-ASTER 13.04.00 CONCEPT MAIL CALCULE LE 10/01/2018 A 17:19:34 DE TYPE            
+ASTER 13.04.00 CONCEPT MAIL CALCULE LE 12/01/2018 A 15:34:07 DE TYPE            
 MAILLAGE_SDASTER                                                                
 
-NOMBRE DE NOEUDS                           3
+NOMBRE DE NOEUDS                          51
 
-NOMBRE DE MAILLES                          3
-                              SEG2                    3
+NOMBRE DE MAILLES                         50
+                              SEG2                   50
 
-NOMBRE DE GROUPES DE NOEUDS                4
-                              P1                                   1
+NOMBRE DE GROUPES DE NOEUDS                6
+                              top                                  1
                               P2                                   1
-                              P0                                   1
+                              P4                                   1
                               P3                                   1
+                              P0                                   1
+                              P5                                   1
 
-NOMBRE DE GROUPES DE MAILLES               3
-                              V0                                   1
-                              V1                                   1
-                              V2                                   1
+NOMBRE DE GROUPES DE MAILLES               5
+                              V1                                  10
+                              V2                                  10
+                              V0                                  10
+                              V4                                  10
+                              V3                                  10
 
 --------------------------------------------------------------------------------
 
-  # Mémoire (Mo) :   596.25 /   589.23 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0003   user+syst:        0.01s (syst:        0.00s, elaps:        0.00s)
+  # Mémoire (Mo) :   596.25 /   589.25 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0003   user+syst:        0.01s (syst:        0.00s, elaps:        0.02s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -650,14 +709,14 @@ NOMBRE DE GROUPES DE MAILLES               3
   MAIL = DEFI_GROUP(reuse=MAIL,
                     MAILLAGE=MAIL,
                     CREA_GROUP_NO=(_F(TOUT_GROUP_MA='OUI',),
-                                   _F(UNION=('P0', 'P1', 'P2', 'P3'),
+                                   _F(UNION=('P0', 'top', 'P2', 'P3', 'P4', 'P5'),
                                       NOM='GPOINTS',),
                                    ),
                     CREA_GROUP_MA=(_F(NOM='ALL',
                                       TOUT='OUI',
                                       TYPE_MAILLE='TOUT',),
-                                   _F(NOM='GBAR',
-                                      UNION=('V0', 'V1', 'V2'),
+                                   _F(NOM='GTUBE_D',
+                                      UNION=('V0', 'V1', 'V2', 'V3', 'V4'),
                                       TYPE_MAILLE='1D',),
                                    ),
                     ALARME='OUI',)
@@ -671,29 +730,31 @@ NOMBRE  DE GROUPES DE MAILLES CREES :      2
                !         NOM DU GROUPE         ! NBRE DE MAILLES DU !
                !            MAILLES            !     GROUPE_MA      !
                ------------------------------------------------------
-               !  ALL                          !         3          !
-               !  GBAR                         !         3          !
+               !  ALL                          !        50          !
+               !  GTUBE_D                      !        50          !
                ------------------------------------------------------
 
 
 
-NOMBRE  DE GROUPES DE NOEUDS CREES :      6
+NOMBRE  DE GROUPES DE NOEUDS CREES :      8
 =======================================
 
                ------------------------------------------------------
                !         NOM DU GROUPE         ! NBRE DE NOEUDS DU  !
                !            NOEUDS             !      GROUPE_NO     !
                ------------------------------------------------------
-               !  V0                           !         2          !
-               !  V1                           !         2          !
-               !  V2                           !         2          !
-               !  ALL                          !         3          !
-               !  GBAR                         !         3          !
-               !  GPOINTS                      !         3          !
+               !  V1                           !        11          !
+               !  V2                           !        11          !
+               !  V0                           !        11          !
+               !  V4                           !        11          !
+               !  V3                           !        11          !
+               !  ALL                          !        51          !
+               !  GTUBE_D                      !        51          !
+               !  GPOINTS                      !         6          !
                ------------------------------------------------------
 
-  # Mémoire (Mo) :   596.25 /   589.38 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0004   user+syst:        0.02s (syst:        0.00s, elaps:        0.01s)
+  # Mémoire (Mo) :   596.25 /   589.39 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0004   user+syst:        0.01s (syst:        0.01s, elaps:        0.00s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -701,24 +762,30 @@ NOMBRE  DE GROUPES DE NOEUDS CREES :      6
   # ------------------------------------------------------------------------------------------
   MODMECA = AFFE_MODELE(INFO=2,
                         MAILLAGE=MAIL,
-                        AFFE=_F(GROUP_MA=('GBAR', ),
+                        AFFE=_F(GROUP_MA=('GTUBE_D', ),
                                 PHENOMENE='MECANIQUE',
-                                MODELISATION=('BARRE', ),),
+                                MODELISATION=('POU_D_T', ),),
                         VERI_JACOBIEN='OUI',
                         DISTRIBUTION=_F(PARTITIONNEUR='METIS',
                                         METHODE='SOUS_DOMAINE',),
                         )
 
 
-Sur les 3 mailles du maillage MAIL, on a demandé l'affectation de 3, on a pu en affecter 3
+Sur les 50 mailles du maillage MAIL, on a demandé l'affectation de 50, on a pu en affecter 50
  Modélisation     Type maille  Élément fini     Nombre
- BARRE            SEG2         MECA_BARRE       3
+ POU_D_T          SEG2         MECA_POU_D_T     50
 Liste des mailles affectées pour la modélisation:
- BARRE            SEG2         MECA_BARRE       3
-M1       M2       M3                                                   
+ POU_D_T          SEG2         MECA_POU_D_T     50
+M1       M2       M3       M4       M5       M6       M7       M8      
+M9       M10      M11      M12      M13      M14      M15      M16     
+M17      M18      M19      M20      M21      M22      M23      M24     
+M25      M26      M27      M28      M29      M30      M31      M32     
+M33      M34      M35      M36      M37      M38      M39      M40     
+M41      M42      M43      M44      M45      M46      M47      M48     
+M49      M50                                                           
 #2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.00
-  # Mémoire (Mo) :   622.74 /   622.74 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0005   user+syst:        0.03s (syst:        0.01s, elaps:        0.03s)
+  # Mémoire (Mo) :   622.75 /   622.75 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0005   user+syst:        0.01s (syst:        0.01s, elaps:        0.01s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -733,8 +800,8 @@ M1       M2       M3
                           NOM_RESU='TOUTRESU',
                           VERIF='CROISSANT',)
 
-  # Mémoire (Mo) :   622.74 /   622.74 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0006   user+syst:        0.01s (syst:        0.00s, elaps:        0.00s)
+  # Mémoire (Mo) :   622.75 /   622.75 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0006   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -749,8 +816,8 @@ M1       M2       M3
                            NOM_RESU='TOUTRESU',
                            VERIF='CROISSANT',)
 
-  # Mémoire (Mo) :   622.74 /   622.74 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0007   user+syst:        0.02s (syst:        0.01s, elaps:        0.01s)
+  # Mémoire (Mo) :   622.75 /   622.75 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0007   user+syst:        0.01s (syst:        0.01s, elaps:        0.01s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -765,8 +832,8 @@ M1       M2       M3
                           NOM_RESU='TOUTRESU',
                           VERIF='CROISSANT',)
 
-  # Mémoire (Mo) :   622.74 /   622.74 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0008   user+syst:        0.00s (syst:        0.00s, elaps:        0.01s)
+  # Mémoire (Mo) :   622.75 /   622.75 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0008   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -775,8 +842,8 @@ M1       M2       M3
   R_SS304 = DEFI_CONSTANTE(VALE=8.027E-09,
                            NOM_RESU='TOUTRESU',)
 
-  # Mémoire (Mo) :   622.74 /   622.74 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0009   user+syst:        0.01s (syst:        0.00s, elaps:        0.00s)
+  # Mémoire (Mo) :   622.75 /   622.75 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0009   user+syst:        0.00s (syst:        0.00s, elaps:        0.01s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -798,25 +865,50 @@ M1       M2       M3
  RELATION DE COMPORTEMENT: ELAS                            
 
 
-  # Mémoire (Mo) :   622.74 /   622.74 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0010   user+syst:        0.02s (syst:        0.00s, elaps:        0.02s)
+  # Mémoire (Mo) :   622.88 /   622.88 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0010   user+syst:        0.01s (syst:        0.00s, elaps:        0.01s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
   # Commande No :  0011            Concept de type : char_meca
   # ------------------------------------------------------------------------------------------
   BLOCAGE = AFFE_CHAR_MECA(MODELE=MODMECA,
-                           LIAISON_OBLIQUE=(_F(GROUP_NO=('P0', ),
+                           LIAISON_OBLIQUE=(_F(DRY=0,
+                                               DRX=0,
+                                               DRZ=0,
+                                               GROUP_NO=('P0', ),
                                                DZ=0,
                                                DX=0,
                                                DY=0,
                                                ANGL_NAUT=(0.0, 0.0, 0),),
-                                            _F(GROUP_NO=('P1', ),
+                                            _F(DRY=0,
+                                               DRX=0,
+                                               DRZ=0,
+                                               GROUP_NO=('P2', ),
                                                DZ=0,
                                                DX=0,
                                                DY=0,
                                                ANGL_NAUT=(0.0, 0.0, 0),),
-                                            _F(GROUP_NO=('P2', ),
+                                            _F(DRY=0,
+                                               DRX=0,
+                                               DRZ=0,
+                                               GROUP_NO=('P3', ),
+                                               DZ=0,
+                                               DX=0,
+                                               DY=0,
+                                               ANGL_NAUT=(0.0, 0.0, 0),),
+                                            _F(DRY=0,
+                                               DRX=0,
+                                               DRZ=0,
+                                               GROUP_NO=('P4', ),
+                                               DZ=0,
+                                               DX=0,
+                                               DY=0,
+                                               ANGL_NAUT=(0.0, 0.0, 0),),
+                                            _F(DRY=0,
+                                               DRX=0,
+                                               DRZ=0,
+                                               GROUP_NO=('P5', ),
                                                DZ=0,
                                                DX=0,
                                                DY=0,
@@ -825,26 +917,30 @@ M1       M2       M3
                            INFO=1,
                            VERI_NORM='OUI',)
 
-  # Mémoire (Mo) :   623.03 /   622.87 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0011   user+syst:        0.02s (syst:        0.00s, elaps:        0.03s)
+  # Mémoire (Mo) :   623.33 /   623.16 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0011   user+syst:        0.07s (syst:        0.04s, elaps:        0.04s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
   # Commande No :  0012            Concept de type : cara_elem
   # ------------------------------------------------------------------------------------------
   CARAELEM = AFFE_CARA_ELEM(MODELE=MODMECA,
-                            BARRE=_F(GROUP_MA=('V0', 'V1', 'V2'),
-                                     SECTION='CERCLE',
-                                     CARA=('R', 'EP'),
-                                     VALE=(35.0, 4.0),),
+                            POUTRE=_F(SECTION='CERCLE',
+                                      GROUP_MA=('V0', 'V1', 'V2', 'V3', 'V4'),
+                                      CARA=('R', 'EP'),
+                                      VALE=(35.0, 4.0),
+                                      TUYAU_NSEC=16,
+                                      TUYAU_NCOU=3,
+                                      MODI_METRIQUE='NON',
+                                      VARI_SECT='CONSTANT',),
                             INFO=1,)
 
 
      LE MODELE MODMECA  CONTIENT : 
-                                        3 ELEMENT(S) BARRE           
+                                       50 ELEMENT(S) POUTRE          
 #2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.00
-  # Mémoire (Mo) :   623.41 /   623.38 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0012   user+syst:        0.02s (syst:        0.01s, elaps:        0.01s)
+  # Mémoire (Mo) :   623.68 /   623.68 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0012   user+syst:        0.04s (syst:        0.01s, elaps:        0.03s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -856,8 +952,8 @@ M1       M2       M3
                         INFO=1,
                         VERI_NORM='OUI',)
 
-  # Mémoire (Mo) :   623.41 /   623.38 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0014   user+syst:        0.01s (syst:        0.00s, elaps:        0.01s)
+  # Mémoire (Mo) :   623.68 /   623.68 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0014   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -869,14 +965,14 @@ M1       M2       M3
                         AFFE=(_F(NOM_CMP=('TEMP', ),
                                  VALE=(20, ),
                                  TOUT='OUI',),
-                              _F(GROUP_MA=('V0', 'V1', 'V2'),
+                              _F(GROUP_MA=('V0', 'V1', 'V2', 'V3', 'V4'),
                                  NOM_CMP=('TEMP', ),
-                                 VALE=(550, ),),
+                                 VALE=(20, ),),
                               ),
                         INFO=1,)
 
-  # Mémoire (Mo) :   623.53 /   623.53 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0015   user+syst:        0.01s (syst:        0.00s, elaps:        0.02s)
+  # Mémoire (Mo) :   623.68 /   623.68 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0015   user+syst:        0.01s (syst:        0.00s, elaps:        0.00s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -888,11 +984,11 @@ M1       M2       M3
                                       TOUT='OUI',
                                       VALE_REF=20,),
                          AFFE=_F(MATER=(SS304, ),
-                                 GROUP_MA=('V0', 'V1', 'V2'),),
+                                 GROUP_MA=('V0', 'V1', 'V2', 'V3', 'V4'),),
                          INFO=1,
                          )
 
-  # Mémoire (Mo) :   623.53 /   623.53 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
+  # Mémoire (Mo) :   623.68 /   623.68 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
   # Fin commande No : 0016   user+syst:        0.04s (syst:        0.01s, elaps:        0.03s)
   # ------------------------------------------------------------------------------------------
 
@@ -918,20 +1014,20 @@ M1       M2       M3
                        )
 
 
-Le système linéaire à résoudre a 27 degrés de liberté:
-   - 9 sont des degrés de liberté physiques
-     (ils sont portés par 3 noeuds du maillage)
-   - 18 sont les couples de paramètres de Lagrange associés
-     aux 9 relations linéaires dualisées.
+Le système linéaire à résoudre a 366 degrés de liberté:
+   - 306 sont des degrés de liberté physiques
+     (ils sont portés par 51 noeuds du maillage)
+   - 60 sont les couples de paramètres de Lagrange associés
+     aux 30 relations linéaires dualisées.
 
-La matrice est de taille 27 équations.
-Elle contient 126 termes non nuls si elle est symétrique et 225 termes non nuls si elle n'est pas symétrique.
-Soit un taux de remplissage de  30.864 %.
+La matrice est de taille 366 équations.
+Elle contient 3321 termes non nuls si elle est symétrique et 6276 termes non nuls si elle n'est pas symétrique.
+Soit un taux de remplissage de   4.685 %.
    CHAMP STOCKE :             DEPL INSTANT :  1.00000E+00  NUMERO D'ORDRE :     1
-#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      0.02      0.00      0.01
-#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.01      0.00      0.01
-  # Mémoire (Mo) :   635.48 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0017   user+syst:        0.07s (syst:        0.01s, elaps:        0.06s)
+#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      0.01      0.01      0.01
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.01
+  # Mémoire (Mo) :   635.80 /   635.50 /    44.66 /    33.94 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0017   user+syst:        0.04s (syst:        0.01s, elaps:        0.04s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
@@ -941,22 +1037,50 @@ Soit un taux de remplissage de  30.864 %.
                     FORCE=('REAC_NODA', 'FORC_NODA'),
                     RESULTAT=RESU,
                     PRECISION=1.E-06,
+                    CONTRAINTE=('SIPO_NOEU', 'SIPM_ELNO', 'SIPO_ELNO'),
                     INFO=1,
                     CRITERE='RELATIF',)
 
 
-Le système linéaire à résoudre a 27 degrés de liberté:
-   - 9 sont des degrés de liberté physiques
-     (ils sont portés par 3 noeuds du maillage)
-   - 18 sont les couples de paramètres de Lagrange associés
-     aux 9 relations linéaires dualisées.
-#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.02      0.01      0.02
-  # Mémoire (Mo) :   635.48 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0018   user+syst:        0.11s (syst:        0.05s, elaps:        0.06s)
+Le système linéaire à résoudre a 366 degrés de liberté:
+   - 306 sont des degrés de liberté physiques
+     (ils sont portés par 51 noeuds du maillage)
+   - 60 sont les couples de paramètres de Lagrange associés
+     aux 30 relations linéaires dualisées.
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.03      0.01      0.01
+  # Mémoire (Mo) :   635.80 /   635.50 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0018   user+syst:        0.07s (syst:        0.01s, elaps:        0.04s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
-  # Commande No :  0019            Concept de type : -
+  # Commande No :  0019            Concept de type : formule
+  # ------------------------------------------------------------------------------------------
+  MFlex = FORMULE(VALE='sqrt(SMFY**2 + SMFZ**2 +2*SMT**2)',
+                  NOM_PARA=('SMT', 'SMFY', 'SMFZ'),)
+
+  # Mémoire (Mo) :   635.80 /   635.50 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0019   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
+  # ------------------------------------------------------------------------------------------
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0020            Concept de type : evol_elas
+  # ------------------------------------------------------------------------------------------
+  RES_MPP = CALC_CHAMP(RESULTAT=RESU,
+                       CHAM_UTIL=_F(FORMULE=(MFlex, ),
+                                    NOM_CHAM='SIPO_ELNO',
+                                    NUME_CHAM_RESU=2,),
+                       PRECISION=1.E-06,
+                       INFO=1,
+                       CRITERE='RELATIF',)
+
+
+    Numéro d'ordre    1 : 50 mailles ont été affectées (50 mailles dans le maillage).
+  # Mémoire (Mo) :   635.80 /   635.50 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0020   user+syst:        0.02s (syst:        0.01s, elaps:        0.01s)
+  # ------------------------------------------------------------------------------------------
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0021            Concept de type : -
   # ------------------------------------------------------------------------------------------
   IMPR_RESU(FORMAT='MED',
             RESU=(_F(RESULTAT=RESU,
@@ -965,17 +1089,23 @@ Le système linéaire à résoudre a 27 degrés de liberté:
                   _F(CHAM_GD=CHA_TEMP,
                      INFO_MAILLAGE='NON',
                      IMPR_NOM_VARI='OUI',),
+                  _F(GROUP_MA=('GTUBE_D', ),
+                     RESULTAT=RES_MPP,
+                     NOM_CHAM_MED=('Flexibiliy Stress', ),
+                     NOM_CHAM=('UT02_ELNO', ),
+                     INFO_MAILLAGE='NON',
+                     IMPR_NOM_VARI='OUI',),
                   ),
             UNITE=80,
             INFO=1,
             PROC0='OUI',)
 
-  # Mémoire (Mo) :   635.70 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0019   user+syst:        0.18s (syst:        0.10s, elaps:        0.14s)
+  # Mémoire (Mo) :   636.16 /   635.63 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0021   user+syst:        0.12s (syst:        0.05s, elaps:        0.11s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
-  # Commande No :  0020            Concept de type : -
+  # Commande No :  0022            Concept de type : -
   # ------------------------------------------------------------------------------------------
   IMPR_RESU(FORMAT='MED',
             CONCEPT=_F(CARA_ELEM=CARAELEM,
@@ -986,12 +1116,12 @@ Le système linéaire à résoudre a 27 degrés de liberté:
             PROC0='OUI',)
 
 #2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.00
-  # Mémoire (Mo) :   635.70 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0020   user+syst:        0.07s (syst:        0.04s, elaps:        0.04s)
+  # Mémoire (Mo) :   636.16 /   635.63 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0022   user+syst:        0.07s (syst:        0.04s, elaps:        0.04s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
-  # Commande No :  0021            Concept de type : table_sdaster
+  # Commande No :  0023            Concept de type : table_sdaster
   # ------------------------------------------------------------------------------------------
   Tab_DEPL = CREA_TABLE(RESU=_F(NOM_CMP=('DX', 'DY', 'DZ'),
                                 GROUP_NO=('GPOINTS', ),
@@ -1001,12 +1131,12 @@ Le système linéaire à résoudre a 27 degrés de liberté:
                                 CRITERE='RELATIF',),
                         TYPE_TABLE='TABLE',)
 
-  # Mémoire (Mo) :   635.70 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0021   user+syst:        0.01s (syst:        0.01s, elaps:        0.01s)
+  # Mémoire (Mo) :   636.16 /   635.63 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0023   user+syst:        0.01s (syst:        0.01s, elaps:        0.00s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
-  # Commande No :  0022            Concept de type : table_sdaster
+  # Commande No :  0024            Concept de type : table_sdaster
   # ------------------------------------------------------------------------------------------
   Tab_REAC = CREA_TABLE(RESU=_F(NOM_CMP=('DX', 'DY', 'DZ'),
                                 GROUP_NO=('GPOINTS', ),
@@ -1016,12 +1146,12 @@ Le système linéaire à résoudre a 27 degrés de liberté:
                                 CRITERE='RELATIF',),
                         TYPE_TABLE='TABLE',)
 
-  # Mémoire (Mo) :   635.70 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0022   user+syst:        0.01s (syst:        0.01s, elaps:        0.00s)
+  # Mémoire (Mo) :   636.16 /   635.63 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0024   user+syst:        0.01s (syst:        0.00s, elaps:        0.01s)
   # ------------------------------------------------------------------------------------------
 
   # ------------------------------------------------------------------------------------------
-  # Commande No :  0023            Concept de type : table_sdaster
+  # Commande No :  0025            Concept de type : table_sdaster
   # ------------------------------------------------------------------------------------------
   Tab_FORC = CREA_TABLE(RESU=_F(NOM_CMP=('DX', 'DY', 'DZ'),
                                 GROUP_NO=('GPOINTS', ),
@@ -1031,9 +1161,18 @@ Le système linéaire à résoudre a 27 degrés de liberté:
                                 CRITERE='RELATIF',),
                         TYPE_TABLE='TABLE',)
 
-  # Mémoire (Mo) :   635.70 /   635.19 /    44.66 /    33.91 (VmPeak / VmSize / Optimum / Minimum)
-  # Fin commande No : 0023   user+syst:        0.00s (syst:        0.00s, elaps:        0.01s)
+  # Mémoire (Mo) :   636.16 /   635.63 /    44.66 /    34.11 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0025   user+syst:        0.04s (syst:        0.03s, elaps:        0.03s)
   # ------------------------------------------------------------------------------------------
-Error
---- Fin de l'exécution
-EXECUTION_CODE_ASTER_EXIT_10728=0
+ERREUR A L'INTERPRETATION DANS ACCAS - INTERRUPTION
+>> JDC.py : DEBUT RAPPORT
+CR phase d'initialisation
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   ! erreur de syntaxe,  Erreur de nom: name 'test' is not defined ligne 458 !
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+fin CR phase d'initialisation
+
+>> JDC.py : FIN RAPPORT
+EXECUTION_CODE_ASTER_EXIT_23188=1
+
+ <I>_EXIT_CODE = 1

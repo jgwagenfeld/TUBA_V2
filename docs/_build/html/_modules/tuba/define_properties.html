@@ -100,13 +100,11 @@
 <span class="sd">        &#39;&#39;&#39;</span>
     <span class="n">ddl</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl</span><span class="o">=</span><span class="n">ddl</span>
-    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl_reference</span><span class="o">=</span><span class="n">reference</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="n">ddl</span><span class="p">)</span></div>
- 
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">ddl_reference</span><span class="o">=</span><span class="n">reference</span></div>
 
 <div class="viewcode-block" id="Spring"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Spring">[docs]</a><span class="k">def</span> <span class="nf">Spring</span> <span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a stiffness matrix to the current tubapoint.</span>
-<span class="sd">    </span>
+
 <span class="sd">        Multiple stiffness matrixes can be summed up.    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stiffness</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span>
@@ -118,16 +116,15 @@
     
 <div class="viewcode-block" id="Force"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Force">[docs]</a><span class="k">def</span> <span class="nf">Force</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a force-vector to the current tubapoint</span>
-<span class="sd">            </span>
+
 <span class="sd">       Multiple force vectors can be summed up. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-  
     <span class="n">force</span><span class="o">=</span><span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_tubapoint</span><span class="o">.</span><span class="n">force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">force</span><span class="p">)</span>    </div>
 
 <div class="viewcode-block" id="Moment"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Moment">[docs]</a><span class="k">def</span> <span class="nf">Moment</span><span class="p">(</span><span class="n">rx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">rz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">reference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;appends a moment to the current tubapoint</span>
-<span class="sd">            </span>
+
 <span class="sd">       Multiple moments can be summed up. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">moment</span> <span class="o">=</span> <span class="n">eu</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">)</span>
@@ -143,63 +140,59 @@
 <span class="c1">## Line Properties</span>
 <span class="c1">#==============================================================================</span>
 <span class="c1">#==============================================================================</span>
-<div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Model">[docs]</a><span class="k">def</span> <span class="nf">Model</span> <span class="p">(</span><span class="n">model</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Append a FEM-Model to the defined Vector-Object. The following models are </span>
-<span class="sd">    available at the moment:</span>
-<span class="sd">    </span>
-<span class="sd">#.  &quot;TUBE&quot;: \n      </span>
-<span class="sd">    The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can</span>
-<span class="sd">    be deformed but not the &quot;wall&quot;(cross-section) itself. This theory gives a </span>
-<span class="sd">    good approximation for straight pipes but especially for bents this theory is limited.</span>
-<span class="sd">    As in a bent, flexibility and stress intensity are strongly influenced by the deformation (ovalisation) of the cross-section</span>
-<span class="sd">    itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to</span>
-<span class="sd">    correct the model.\n</span>
-<span class="sd">    Furthermore, as the crosssection is stiff, the influence of internal pressure can&#39;t be calculated. Normally pressure is taken into account</span>
-<span class="sd">    by superposition after solving the calculation.\n</span>
-<span class="sd">    Most commercial piping codes and ASME 31.3 work with this model.</span>
-<span class="sd">    </span>
-<span class="sd">#.  &quot;TUYAU&quot;: \n  </span>
-<span class="sd">    A more advanced model is the TUYAU model. Along the 1-dimensional mesh,       </span>
-<span class="sd">    </span>
-<span class="sd">#.  &quot;RECTANGULAR&quot;  \n</span>
-
-<span class="sd">#.  &quot;BEAM&quot; \n</span>
-<span class="sd">    </span>
-<span class="sd">#.  &quot;BAR&quot;  \n</span>
-<span class="sd">    A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.</span>
-<span class="sd">     </span>
-<span class="sd">     </span>
-<span class="sd">     </span>
-<span class="sd">    The following models will be added in the future:</span>
-
-
-<span class="sd">#.    &quot;CABLE&quot; \n</span>
-
-<span class="sd">#.    &quot;3D?&quot;\n</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>    
-    
-    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="n">model</span></div>
         
 <div class="viewcode-block" id="Temperature"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Temperature">[docs]</a><span class="k">def</span> <span class="nf">Temperature</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">T_ref</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>    
-    <span class="sd">&#39;&#39;&#39;Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.</span>
+    <span class="sd">&#39;&#39;&#39;Global Function:Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.</span>
 <span class="sd">      </span>
 <span class="sd">       At T=T_ref the thermal dilation is set to 0. So if you want to pretension a piping part so that at f.ex. T=300°C </span>
 <span class="sd">       the thermal dilation is zero, T_ref has to be set to 300°C&#39;&#39;&#39;</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_temperature</span><span class="o">=</span><span class="n">T</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_ref_temperature</span><span class="o">=</span><span class="n">T_ref</span>    </div>
     
-<span class="k">def</span> <span class="nf">SectionTube</span><span class="p">(</span><span class="n">outer_radius</span><span class="p">,</span><span class="n">wall_thickness</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
+<span class="k">def</span> <span class="nf">SectionBar</span><span class="p">(</span><span class="n">outer_radius</span><span class="p">,</span><span class="n">wall_thickness</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
 <span class="sd">       Additional cross-sections will be added later on&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">outer_radius</span><span class="p">)</span><span class="o">==</span><span class="nb">str</span><span class="p">:</span>
           <span class="n">a</span><span class="o">=</span><span class="s2">&quot;NPS&quot;</span> 
           <span class="n">b</span><span class="o">=</span><span class="s2">&quot;DN&quot;</span>
+
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="s2">&quot;BAR&quot;</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">outer_radius</span><span class="p">,</span> <span class="n">wall_thickness</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">SectionTube</span><span class="p">(</span><span class="n">outer_radius</span><span class="p">,</span><span class="n">wall_thickness</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
+<span class="sd">       Additional cross-sections will be added later on&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">outer_radius</span><span class="p">)</span><span class="o">==</span><span class="nb">str</span><span class="p">:</span>
+          <span class="n">a</span><span class="o">=</span><span class="s2">&quot;NPS&quot;</span> 
+          <span class="n">b</span><span class="o">=</span><span class="s2">&quot;DN&quot;</span>
+
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="s2">&quot;TUBE&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">outer_radius</span><span class="p">,</span> <span class="n">wall_thickness</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">SectionTuyau</span><span class="p">(</span><span class="n">outer_radius</span><span class="p">,</span><span class="n">wall_thickness</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n</span>
+<span class="sd">       Additional cross-sections will be added later on&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">outer_radius</span><span class="p">)</span><span class="o">==</span><span class="nb">str</span><span class="p">:</span>
+          <span class="n">a</span><span class="o">=</span><span class="s2">&quot;NPS&quot;</span> 
+          <span class="n">b</span><span class="o">=</span><span class="s2">&quot;DN&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="s2">&quot;TUYAU&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">outer_radius</span><span class="p">,</span> <span class="n">wall_thickness</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">SectionCable</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span><span class="n">pretension</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Global Function:Defines the properties of a cable - radius and pretension of the cable. A cable is nonlinear, therefore the simulation</span>
+<span class="sd">    will be nonlinear as well</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="s2">&quot;CABLE&quot;</span>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">radius</span><span class="p">,</span> <span class="n">pretension</span><span class="p">]</span>
+
 
 <span class="k">def</span> <span class="nf">SectionRectangular</span><span class="p">(</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">thickness_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">thickness_z</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Global Function: Defines the cross-section of the beam with rectangular crosssection.</span>
 <span class="sd">       height_y and height_z are the dimensions in the local coordinate system.&quot;&quot;&quot;</span>   
+
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_model</span><span class="o">=</span><span class="s2">&quot;RECTANGULAR&quot;</span>
     <span class="n">tub</span><span class="o">.</span><span class="n">current_section</span><span class="o">=</span><span class="p">[</span><span class="n">height_y</span><span class="p">,</span><span class="n">height_z</span><span class="p">,</span><span class="n">thickness_y</span><span class="p">,</span><span class="n">thickness_z</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">SectionOrientation</span><span class="p">(</span><span class="n">degree</span><span class="p">):</span>
@@ -244,18 +237,14 @@
 
 <div class="viewcode-block" id="RhoFluid"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.RhoFluid">[docs]</a><span class="k">def</span> <span class="nf">RhoFluid</span><span class="p">(</span><span class="n">density_fluid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;allows to take into account the weight of the fluid in the pipe. &quot;&quot;&quot;</span>
-    
-    <span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span><span class="o">=</span><span class="n">density_fluid</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;density_fluid&quot;</span><span class="p">,</span><span class="n">density_fluid</span><span class="p">)</span></div>
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_rho_fluid</span><span class="o">=</span><span class="n">density_fluid</span></div>
 
 
 <div class="viewcode-block" id="Insulation"><a class="viewcode-back" href="../../Commands.html#tuba.define_properties.Insulation">[docs]</a><span class="k">def</span> <span class="nf">Insulation</span><span class="p">(</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;by providing insulation thickness and density, this function</span>
 <span class="sd">    allows to take into account the weight of the pipe insulation. &quot;&quot;&quot;</span>
-    
-    <span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span><span class="o">=</span><span class="p">[</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Insulation&quot;</span><span class="p">,</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">)</span></div>
-    
+    <span class="n">tub</span><span class="o">.</span><span class="n">current_insulation</span><span class="o">=</span><span class="p">[</span><span class="n">insulation_thickness</span><span class="p">,</span> <span class="n">insulation_density</span><span class="p">]</span></div>
+
 <span class="k">def</span> <span class="nf">Windload</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>     
     <span class="k">pass</span>
 

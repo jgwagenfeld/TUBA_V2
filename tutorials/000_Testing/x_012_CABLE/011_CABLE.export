@@ -1,0 +1,19 @@
+P actions make_etude
+P aster_root /home/jangeorg/salome_meca/appli_V2017.0.2/salome shell -- as_run
+P lang en
+P mem_aster 100.0
+P memjob 2048000
+P memory_limit 2000.0
+P mode interactif
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P ncpus 2
+P rep_trav /tmp/jangeorg-jangeorg-VirtualBox-interactif.23188
+P version 13.4
+A memjeveux 250.0
+A tpmax 9000000
+F mmed /home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE/Completed_Mesh.mmed D  20
+F comm /home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE/011_CABLE_aster.comm D  1
+F resu /home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE/011_CABLE.resu.txt R  8
+F mess /home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE/011_CABLE.mess R  6
+F rmed /home/jangeorg/TUBA/tutorials/000_Testing/011_CABLE/011_CABLE-RESULTS_salome.rmed R  80

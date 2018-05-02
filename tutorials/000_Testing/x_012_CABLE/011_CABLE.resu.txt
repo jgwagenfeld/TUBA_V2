@@ -6,7 +6,7 @@
                      révision d3b9d70df6c4 - branche 'v13'                      
                          Copyright EDF R&D 1991 - 2018                          
                                                                                 
-                    Exécution du : Wed Jan 10 17:19:34 2018                     
+                    Exécution du : Fri Jan 12 15:34:07 2018                     
                     Nom de la machine : jangeorg-VirtualBox                     
                               Architecture : 64bit                              
                           Type de processeur : x86_64                           
@@ -25,9 +25,9 @@
                         Librairie PETSc : non disponible                        
                      Version de la librairie SCOTCH : 6.0.4                     
                   Mémoire limite pour l'exécution : 2000.00 Mo                  
-                   consommée par l'initialisation : 549.52 Mo                   
+                   consommée par l'initialisation : 549.54 Mo                   
                   par les objets du jeu de commandes : 0.00 Mo                  
-                 reste pour l'allocation dynamique : 1448.80 Mo                 
+                 reste pour l'allocation dynamique : 1448.76 Mo                 
                 Taille limite des fichiers d'échange : 12.00 Go                 
                                                                                 
    
@@ -50,3 +50,5 @@
    ! alarme, vous pouvez obtenir des résultats inattendus !                             !
    !------------------------------------------------------------------------------------!
    
+
+ <I>_EXIT_CODE = 1

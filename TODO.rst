@@ -1,13 +1,13 @@
 --------------------------------------------------------------------------------------------
 Geometry:
 -Reducer
--Include/Correct local/global coordinate frame
+--done--  Include/Correct local/global coordinate frame
 -Change V1x,V2x to locol coordinat system
 --------------------------------------------------------------------------------------------
 -Bent between two vectors (no bending radius as input - also in TUBA old)
 --------------------------------------------------------------------------------------------
 Properties:
--Include SIF as input and as property of bents (ASME 31.3)
+--done--  Include SIF as input and as property of bents (ASME 31.3)
 -Windload
 
 --------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ General:
 -Correct the Aster_Base_File so that visualization in EFICAS is as well possible
    --Change: included structelem in a developpermode
 
--Run CodeAster directly with popen()
+--done--  -Run CodeAster directly with popen()
 --------------------------------------------------------------------------------------------
 
 Check if it is possible to make TUBA a SalomePlugin

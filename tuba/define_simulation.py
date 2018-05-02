@@ -16,6 +16,11 @@ import tuba_vars_and_funcs as tub
 #        self.table=False
 
 
+
+def Mesh(Elements_per_vector):
+    """Parameter for mesh refinement
+    """ 
+
 def Calculate(calculation):
     """Generates the simulation and PostProcessing-Object. 
     \n

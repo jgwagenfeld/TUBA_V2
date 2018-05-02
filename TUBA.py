@@ -28,11 +28,10 @@ The Comm-File is used when defining a Study in the Code Aster module
 
 import sys
 import os
-import math
 
 import logging
-import unittest
 import time
+import pprint
 
 from subprocess import Popen,PIPE
 
@@ -41,10 +40,15 @@ import tuba
 
 import argument_plot
 
+#Imports needed to process functions in tubascript used exectuetuba
+# -----------------------------------------------------------------------------
 from tuba.define_geometry import *
 from tuba.define_properties import *
 from tuba.define_simulation import *
 from tuba.define_macros import *
+
+from external.UnitCalculator import *
+# -----------------------------------------------------------------------------
 
 import tuba.write_Aster_file 
 import tuba.write_Salome_file 
@@ -53,36 +57,23 @@ import tuba.write_ExportAster_file
 
 import tuba.tuba_vars_and_funcs as tub
 
-##---UnitCalculator to use different input units---
-#from external.UnitCalculator import *
-#
-#auto_converter(mmNS)
-
-
 #logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
-# Track duration of the script
-time_start = time.time()
-# ------------------------------------------------------------------------------
+
+time_start = time.time() # Track duration of the script
+# -----------------------------------------------------------------------------
 # Definition where to read and write the input/output-files
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 salome_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome' # Salome directory
 aster_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome shell -- as_run' # Aster directory
-
 
 #salome_root=os.getenv('HOME')+'/salome_meca/appli_V2016/salome' # Salome directory
 #aster_root=os.getenv('HOME')+'/salome_meca/V2016/tools/Code_aster_testing-1320/bin/aster' # Aster directory
 
-                                     
 current_directory = os.getcwd()
 tuba_directory = os.environ["TUBA"]
 cmd_script = sys.argv[1].replace(".py", "")   # sys.argv[1]"TUBTUB2.py"
 
-#try:
-#    os.stat(current_directory + "/" + cmd_script)
-#except:
-#    os.mkdir(current_directory + "/" + cmd_script)                     
-                                                             
 inputFileTuba = current_directory + '/'+cmd_script+".py"
 
 # File used in Salome to generate the Geometry and Meshing
@@ -99,36 +90,70 @@ outputFile_ExportAster = current_directory +"/" + cmd_script+ ".export"
 
 resultfile_aster=current_directory+"/"+cmd_script+"-RESULTS_salome.rmed"
 
+outputFile_PrintAll=current_directory +"/" + cmd_script+ "_PrintAll.txt"
 
-def Main(argv):
-  
-#    simulation=tuba.define_simulation.Simulation() 
 
-    print("\n------------------------")
-    print("  reading and processing the User-Input")
-    print("------------------------\n")
+def main(argv):
+    write_AllClean(cmd_script)
+    if sys.argv[2] =='-plot':
+        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
 
+        argument_plot.plot_points_and_vectors(completed_dict_tubavectors,completed_dict_tubapoints)
+    elif sys.argv[2] =='-salome':
+        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+
+        salome_stop = Popen(salome_root + ' killall',shell='True')
+        salome_stop.wait()
+        salome_run = Popen(salome_root + ' ' + outputFile_Salome, shell='True', executable="/bin/bash")
+        salome_run.wait()
+    elif sys.argv[2] =='-aster':  # still not working properly
+        aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True', executable="/bin/bash")
+        aster_run.wait()# -*- coding: utf-8 -*-         
+        salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
+        salome_stop.wait()
+        salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
+    elif sys.argv[2] =='-all':  # still not working properly
+        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+
+        salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
+        salome_stop.wait()
+        salome_run = Popen(salome_root + ' -t ' + outputFile_Salome, shell='True', executable="/bin/bash")
+        salome_run.wait()
+        
+        aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True', executable="/bin/bash")
+        aster_run.wait()# -*- coding: utf-8 -*-         
+
+        salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
+        salome_stop.wait()
+        salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
+    elif sys.argv[2] =='-print':
+        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+
+        printall_tuba_points_vectors(completed_dict_tubapoints,completed_dict_tubavectors)          
+    else:
+        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+
+#==============================================================================
+#==============================================================================
+def executetuba(inputFileTuba):
+    logging.info("\n-----------------------------------------")
+    logging.info("  reading and processing the User-Input")
+    logging.info("-----------------------------------------\n")
+
+    logging.info("Input: "+inputFileTuba)
+    logging.info("argv1: "+sys.argv[1])
+    logging.info("argv2: "+sys.argv[2])
     exec(open(inputFileTuba).read())
 
     completed_dict_tubavectors = tub.dict_tubavectors
     completed_dict_tubapoints = tub.dict_tubapoints
-
-    print(completed_dict_tubapoints)
-    print(tub.dict_tubapoints)
-
-#    print("\n------------------------")
-#    print("  print point and vector lists with piping properties")
-#    print("------------------------\n")
-#
-#    printall_tuba_points_vectors(completed_dict_tubapoints, completed_dict_tubavectors)
-
 #==============================================================================
 # Create Code Salome Object and translate dict_tubavectors,dict_tubapoints-
 # Code Salome File --> Python Script to build Geometry/Mesh
 # ==============================================================================
-    print("\n ------------------------")
-    print("        GENERATE SALOME-SCRIPT")
-    print(" ------------------------ \n")
+    logging.info("\n-----------------------------------------")
+    logging.info("        GENERATE SALOME-SCRIPT")
+    logging.info("-----------------------------------------\n")
 
     code_salome=tuba.write_Salome_file.Salome(current_directory)
     code_salome.write(completed_dict_tubavectors, completed_dict_tubapoints)
@@ -137,15 +162,14 @@ def Main(argv):
         f.write('\n'.join(code_salome.lines))
         f.close()
     except:
-        print("Error while writing the Saolme Script")
-
+        logging.error("Error while writing the Saolme Script")
 # ==============================================================================
 # Create Code Aster Object and translate dict_tubavectors,dict_tubapoints-
 # Code Aster File --> .Comm script to load into Aster Module and run Simulation
 # ==============================================================================
-    print("\n ------------------------")
-    print("        GENERATE ASTERCOMM-SCRIPT")
-    print(" ------------------------ \n")
+    logging.info("-----------------------------------------")
+    logging.info("        GENERATE ASTERCOMM-SCRIPT")
+    logging.info("-----------------------------------------\n")
 
     code_aster=tuba.write_Aster_file.CodeAster(tuba_directory)
     code_aster.write(completed_dict_tubavectors,completed_dict_tubapoints,cmd_script)
@@ -155,18 +179,16 @@ def Main(argv):
        f.write('\n'.join(code_aster.lines))
        f.close()
     except:
-        print("Error while writing the Aster Comm-File")
-
+        logging.error("Error while writing the Aster Comm-File")
 # ==============================================================================
 # Create Code Aster Object and translate dict_tubavectors,dict_tubapoints-
 # Code Aster File --> .Comm script to load into Aster Module and run Simulation
 # ==============================================================================
-    print("\n ------------------------")
-    print("        GENERATE PARAVIS-SCRIPT")
-    print(" ------------------------ \n")
+    logging.info("-----------------------------------------")
+    logging.info("        GENERATE PARAVIS-SCRIPT")
+    logging.info("-----------------------------------------\n")
 
     paraview=tuba.write_ParaPost_file.ParaPost(current_directory)
-
     paraview.write(completed_dict_tubavectors, completed_dict_tubapoints,resultfile_aster)
 
     try:
@@ -174,14 +196,13 @@ def Main(argv):
        f.write('\n'.join(paraview.lines))
        f.close()
     except:
-        print("Error while writing the PostProssesing Script")        
-
+        logging.error("Error while writing the PostProssesing Script")
 # ==============================================================================
 # Create the .export-file for an automated run of CodeAster
 # ==============================================================================
-    print("\n ------------------------")
-    print("        GENERATE .EXPORT ASTER FILE")
-    print(" ------------------------ \n")
+    logging.info("-----------------------------------------")
+    logging.info("        GENERATE .EXPORT ASTER FILE")
+    logging.info("-----------------------------------------\n")
 
     tuba.write_ExportAster_file.writeExport(
                                 cmd_script=cmd_script,
@@ -190,86 +211,48 @@ def Main(argv):
                                 aster_root=aster_root,
                                 resultfile_aster=resultfile_aster,
                                 current_directory=current_directory)
-
 #==============================================================================
-    for tubavector in completed_dict_tubavectors:
-            print(tubavector.name)
-            print(tubavector.linear_force)
-    print("\n ------------------------")
-    print("        TUBA-GENERATION FINISHED")
-    print(" ------------------------\n")
+
+    logging.info("-----------------------------------------")
+    logging.info("        TUBA-SCRIPT FINISHED")
+    logging.info("-----------------------------------------")
 
     time_end = time.time()
     dtime = time_end - time_start
-    print("Execution time :"+str(round(dtime,2)) + "s")
-    print("------------------------")
+    logging.info("    Execution time :"+str(round(dtime,2)) + "s")
+    logging.info("-----------------------------------------\n")
 
-#==============================================================================
-# Check for additional arguments
-# -plot  --> launches the matplotlib visualization of the created geometry
-# -salome --> launches Salome, using the jut created salome script.
-#==============================================================================
-    writeAllClean(cmd_script)
-    
-    try:
-        if sys.argv[2] =='-plot':
-            print(completed_dict_tubapoints)
-            argument_plot.plot_points_and_vectors(completed_dict_tubavectors,completed_dict_tubapoints)
-        if sys.argv[2] =='-salome':
-        #Launch Salome    
-            salome_stop = Popen(salome_root + ' killall',shell='True')
-            salome_stop.wait()
-            salome_run = Popen(salome_root + ' ' + outputFile_Salome, shell='True')
-            salome_run.wait()
-        if sys.argv[2] =='-aster':  # still not working properly
-            aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True')
-            aster_run.wait()# -*- coding: utf-8 -*-         
-        if sys.argv[2] =='-all':  # still not working properly
-            salome_stop = Popen(salome_root + ' killall',shell='True')
-            salome_stop.wait()
-            salome_run = Popen(salome_root + ' -t ' + outputFile_Salome, shell='True')
-            salome_run.wait()
-            
-            aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True')
-            aster_run.wait()# -*- coding: utf-8 -*-         
+    return completed_dict_tubapoints,completed_dict_tubavectors
 
-            salome_stop = Popen(salome_root + ' killall',shell='True')
-            salome_stop.wait()
-            salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True')
-
-
-        if sys.argv[2] =='-print':
-            printall_tuba_points_vectors(completed_dict_tubapoints,completed_dict_tubavectors)          
-    except:
-        pass
-#==============================================================================
-#==============================================================================
 def printall_tuba_points_vectors(dict_tubapoints,dict_tubavectors):
-    import pprint
-    for tubavector in dict_tubavectors:
-        print("==============================")
-        print(tubavector.start_tubapoint.name.__str__() +
-                     tubavector.start_tubapoint.pos.__str__())
-        print(tubavector.name.__str__() + tubavector.vector.__str__())
-    if tubavector == dict_tubavectors[-1]:
-        print(tubavector.end_tubapoint.name.__str__() +
-                     tubavector.end_tubapoint.pos.__str__())
-    print("==============================")
+    lines=[]
+    lines.extend(["-----------------------------------------"])
+    lines.extend(["  print point and vector lists with piping properties"])
+    lines.extend(["-----------------------------------------"])
 
     for tubavector in dict_tubavectors:
-        print("")
-        print('--------------'+tubavector.name+'----------------')
-        pprint.pprint(tubavector.__dict__)
-    print("==============================")
+        lines.extend(['--------------'+tubavector.name+'----------------'])
+        lines.extend([tubavector.__dict__])
+        lines.extend([''])
+    lines.extend(["=============================="])
 
     for tubapoint in dict_tubapoints:
-        print("")
-        print('--------------'+tubapoint.name+'---------------')
-        pprint.pprint(tubapoint.__dict__)
-    print("==============================")
+        lines.extend(['--------------'+tubapoint.name+'---------------'])
+        lines.extend([tubapoint.__dict__])
+        lines.extend([''])
+    lines.extend(["=============================="])
+
+    pprint.pprint(lines)
+
+    try:
+       f = open(outputFile_PrintAll, 'w')
+       pprint.pprint(lines, f)
+       f.close()
+    except:
+        logging.error("Error while writing the TubaPrintAll Output")
 #==============================================================================
 
-def writeAllClean(cmd_script):
+def write_AllClean(cmd_script):
     lines=("""
 #!/bin/sh
 cd ${0%/*} || exit 1    # Run from this directory
@@ -282,19 +265,20 @@ echo "--------"
 """).split("\n")
 
     try:
-       f = open("AllClean", 'w')
-       f.write('\n'.join(lines))
-       f.close()
+        f = open("AllClean", 'w')
+        f.write('\n'.join(lines))
+        f.close()
     except:
-        print("Error while writing the PostProssesing Script")        
-        
+        logging.error(("Error while writing the PostProssesing Script"))
+
     bashCommand = "chmod +x AllClean"
     process = Popen(bashCommand.split(), stdout=PIPE)
     output, error = process.communicate()
-
 #==============================================================================    
+
+
 if __name__ == "__main__":
-   Main(sys.argv[1:])
+   main(sys.argv[1:])
 
 
 

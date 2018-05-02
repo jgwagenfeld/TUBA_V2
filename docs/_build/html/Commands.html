@@ -104,20 +104,20 @@
 <p>Created on Sun Mar 27 22:05:19 2016</p>
 <dl class="function">
 <dt id="tuba.define_geometry.P">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">P</code><span class="sig-paren">(</span><em>x</em>, <em>y=''</em>, <em>z=''</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#P"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.P" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_geometry.</code><code class="descname">P</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#P"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.P" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a tubapoint with the coordinates P(x,y,z,name)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="tuba.define_geometry.V">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">V</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.V" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_geometry.</code><code class="descname">V</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.V" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the
 user input x,y,z.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="tuba.define_geometry.Vc">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">Vc</code><span class="sig-paren">(</span><em>length</em>, <em>name_point=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Vc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Vc" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tuba.define_geometry.</code><code class="descname">Vc</code><span class="sig-paren">(</span><em>length</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Vc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Vc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a colinear vector in direction of the last vector.
 (The information for the colinear vector is contained in current_tubapoint.Vd2x)</p>
 </dd></dl>
@@ -131,32 +131,23 @@ current_tubapoint is used as startpoint</p>
 
 <dl class="function">
 <dt id="tuba.define_geometry.Bent">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">Bent</code><span class="sig-paren">(</span><em>bending_radius</em>, <em>arg1=''</em>, <em>arg2=''</em>, <em>arg3='intersect'</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Bent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Bent" title="Permalink to this definition">¶</a></dt>
-<dd><p>There are 3 general ways to create a pipe bent:</p>
+<code class="descclassname">tuba.define_geometry.</code><code class="descname">Bent</code><span class="sig-paren">(</span><em>radius</em>, <em>angle_deg=''</em>, <em>orientation=''</em>, <em>vector=''</em>, <em>mode='intersect'</em>, <em>name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#Bent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.Bent" title="Permalink to this definition">¶</a></dt>
+<dd><p>There are 2 general ways to create a pipe bent:</p>
 <ol class="arabic">
-<li><p class="first">Bent(bending_radius,arg1=Vector3):</p>
+<li><p class="first">Bent(bending_radius,vector=Vector3):</p>
 <p>arg1 as a vector defines the new direction after the bent
 With this function, it’s not possible to create 180°-bents as the bending plane
-would not be defined. A workaround would be to define 2 consecutive 90°-bents</p>
+is not defined. A workaround would be to define 2 consecutive 90°-bents or use the angle+orientaion mode</p>
 </li>
-<li><p class="first">Bent(bending_radius,arg1=ang_Bent,arg2=ang_Orient):</p>
+<li><p class="first">Bent(bending_radius,angle=ang_Bent (in degree),orientation=ang_Orient(in degree) ):</p>
 <p>With the input arg1=bent angle and arg2=orientation angle (defined as a dihedral angle),
 the new direction after the bent can be calculated.</p>
 </li>
-<li><p class="first">Give 2 absolut vectors and make bent in between – still not implemented</p>
-</li>
 </ol>
-<p>arg3 defines around which point the bent will be created.
+<p>mode defines around which point the bent will be created.
 For “add” the start_tubapoint of the Bent will be the end_tubapoint of the last vector.</p>
 <p>For “intersect” the last vector will be changed. Its end_tubapoint will be defined as
 intersection point of the current and new vector of the piping</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tuba.define_geometry.TShape3D">
-<code class="descclassname">tuba.define_geometry.</code><code class="descname">TShape3D</code><span class="sig-paren">(</span><em>incident_radius</em>, <em>incident_thickness</em>, <em>angle_orient</em>, <em>name_incident_end=''</em>, <em>name_main_end=''</em>, <em>incident_halflength=0</em>, <em>main_halflength=0</em>, <em>arg='intersect'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_geometry.html#TShape3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_geometry.TShape3D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a TShape Object. The Main Section continues with the 
-before defines Cross-Section. The branche is defined by the user-arguments</p>
 </dd></dl>
 
 <dl class="function">
@@ -169,50 +160,13 @@ before defines Cross-Section. The branche is defined by the user-arguments</p>
 <div class="section" id="module-tuba.define_properties">
 <span id="global-property-commands"></span><h2>Global Property  Commands<a class="headerlink" href="#module-tuba.define_properties" title="Permalink to this headline">¶</a></h2>
 <p>Created on Tue Apr  5 01:20:46 2016</p>
-<dl class="function">
-<dt id="tuba.define_properties.Model">
-<code class="descclassname">tuba.define_properties.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Model" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Append a FEM-Model to the defined Vector-Object. The following models are </dt>
-<dd>available at the moment:</dd>
-</dl>
-<ol class="arabic">
-<li><p class="first">“TUBE”:</p>
-<p>The tube model uses a circular cross-section along the 1-dimensonal mesh. The neutral fibre can
-be deformed but not the “wall”(cross-section) itself. This theory gives a 
-good approximation for straight pipes but especially for bents this theory is limited.
-As in a bent, flexibility and stress intensity are strongly influenced by the deformation (ovalisation) of the cross-section
-itself, correction factors namely the Stress Intensity Factor (SIF) and Flexibilty Factor have to be introduced to
-correct the model.</p>
-<p>Furthermore, as the crosssection is stiff, the influence of internal pressure can’t be calculated. Normally pressure is taken into account
-by superposition after solving the calculation.</p>
-<p>Most commercial piping codes and ASME 31.3 work with this model.</p>
-</li>
-<li><p class="first">“TUYAU”:</p>
-<p>A more advanced model is the TUYAU model. Along the 1-dimensional mesh,</p>
-</li>
-<li><p class="first">“RECTANGULAR”</p>
-</li>
-<li><p class="first">“BEAM”</p>
-</li>
-<li><p class="first">“BAR”</p>
-<p>A bar is the most simple finite element. These elements transfer loads in their longitudinal direction but will not bend or transfer any torque or bending moment.</p>
-<p>The following models will be added in the future:</p>
-</li>
-<li><p class="first">“CABLE”</p>
-</li>
-<li><p class="first">“3D?”</p>
-</li>
-</ol>
-</dd></dl>
-
 <div class="figure align-center" id="tuyau">
 <img alt="_images/TUYAU_results.png" src="_images/TUYAU_results.png" />
 </div>
 <dl class="function">
 <dt id="tuba.define_properties.Temperature">
 <code class="descclassname">tuba.define_properties.</code><code class="descname">Temperature</code><span class="sig-paren">(</span><em>T=20</em>, <em>T_ref=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tuba/define_properties.html#Temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tuba.define_properties.Temperature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.</p>
+<dd><p>Global Function:Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.</p>
 <p>At T=T_ref the thermal dilation is set to 0. So if you want to pretension a piping part so that at f.ex. T=300°C 
 the thermal dilation is zero, T_ref has to be set to 300°C</p>
 </dd></dl>

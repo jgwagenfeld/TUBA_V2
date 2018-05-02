@@ -28,11 +28,7 @@ class Salome:
             tubapoint.is_element_start()
 
         for tubapoint in dict_tubapoints:
-            logging.debug("Processing TubaPoint: "+ tubapoint.name+ " \n ====")
             self._point(tubapoint)
-            print("DDL", tubapoint.ddl)
-            print("LastVector",str(tubapoint.get_last_vector())) 
-            
             
             if tubapoint.get_last_vector():               
                 section=tubapoint.get_last_vector().section
@@ -51,10 +47,7 @@ class Salome:
                 self._friction_mesh(tubapoint)
                 
         for tubavector in dict_tubavectors:
-            print('Turbavector',tubavector.__class__.__name__)
-            logging.debug("Processing TubaVector: "+tubavector.name+ " \n ====")
             self._vector(tubavector)
-#            self._visualize_Pipe_1D(tubavector)
 
         self._create_paravis_geometry_compound()
         self._create_mesh_compound(dict_tubavectors,dict_tubapoints)
@@ -227,7 +220,7 @@ def Project():
                 self._vector_rectangular_1D(tubavector)
 
             else:
-                print("Model is not defined")
+                logging.error("Model is not defined")
 
 #==============================================================================
     def _vector_round_1D(self,tubavector):
@@ -251,10 +244,6 @@ def Project():
     geompy.addToStudy("""+name_vector+",\""+name_vector+"""\" )
     geompy.PutToFolder("""+name_vector+""", Folder_Vectors)
 
-    _C1 = geompy.MakeCircle("""+name_startpoint+", "+name_vector+","+str(radius)+""")
-    _C2 = geompy.MakeCircle("""+name_startpoint+", "+name_vector+","+str(radius-thickness)+""")
-    FaceTube = geompy.MakeFaceWires([_C1, _C2], 1) 
-           
     ### mesh generation for  """+ name_vector +""" ###
     #----------------------------------------------------    
     """+name_vector+"M = smesh.Mesh("+  name_vector +""")
@@ -290,7 +279,6 @@ def Project():
         Vy=tubavector.vd1x
         Vz=Vx.cross(Vy)
 
-        print("Section",tubavector.section)
         [height_y,height_z,thickness_y,thickness_z]=tubavector.section
         
         solid_crosssection=False
@@ -345,11 +333,7 @@ def Project():
     _W1  = geompy.MakeRotation(_W1,"""+name_vector+""", """+str(tubavector.section_orientation)+"""*math.pi/180.0)
     _W2  = geompy.MakeRotation(_W2,"""+name_vector+""", """+str(tubavector.section_orientation)+"""*math.pi/180.0)      
     FaceTube= geompy.MakeFaceWires([_W1, _W2], 1)   
-
-
- 
             """).split("\n")
-
 
         self.lines=self.lines+("""
     ### mesh generation for  """+ name_vector +""" ###
@@ -449,24 +433,7 @@ def Project():
     """+name_vector+"M.GroupOnGeom("+name_vector+""")
 
            """).split("\n")
-#==============================================================================
-##obsolete
-#    def _visualize_Pipe_1D(self, tubavector):
-#        model=tubavector.model
-#                
-#        self.lines=self.lines+("""
-#    if List_Visualization!=[]:
-#       _W=geompy.MakeWire(List_Visualization,1e-7)
-#       Pipe_"""+tubavector.name+""" = geompy.MakePipe( FaceTube ,_W)
-#       Pipe_"""+tubavector.name+""".SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
-#       Pipe_id=geompy.addToStudyInFather("""+tubavector.name+""",Pipe_"""+tubavector.name+""",\"Pipe_"""+tubavector.name+"""\")
-#       gg.createAndDisplayGO(Pipe_id)
-#       gg.setDisplayMode(Pipe_id,1)
-#
-#       List_ParaVis_Visualization.append(Pipe_"""+tubavector.name+""")
-#       List_Visualization=[]
-#    """).split("\n")
-#obsolete
+
 #==============================================================================
 
     def _visualize_force(self,tubapoint,section):
@@ -474,7 +441,7 @@ def Project():
         name_point=tubapoint.name
         for force in tubapoint.force:
             force_direction=[force.normalized().x,force.normalized().y,force.normalized().z]
-            print("force direction",str(force_direction))
+            logging.info("force direction at"+str(tubapoint.name)+":"+ str(force_direction))
            
             self.lines=self.lines+("""
     # Visualize a forces at point """+name_point+"""
@@ -560,8 +527,6 @@ def Project():
     gg.setDisplayMode(B_id,1)
     """).split("\n")  
 
-
-
             deform = eu.Vector3(0, 0, 0) 
             if not tubapoint.ddl[0]=="x" and  not tubapoint.ddl[0]==0:
                 deform.x=tubapoint.ddl[0]
@@ -569,8 +534,8 @@ def Project():
                 deform.y=tubapoint.ddl[1]                              
             if not tubapoint.ddl[2]=="x" and  not tubapoint.ddl[2]==0:
                 deform.z=tubapoint.ddl[2]                
-               
-            print("deform", deform)    
+
+            logging.info("deform at "+str(tubapoint.name)+": "+str(deform))    
 #            deform=deform.normalized() 
             if abs(deform):
                 self.lines=self.lines+("""
@@ -659,7 +624,6 @@ def Project():
     """).split("\n")              
 #==============================================================================
     def _create_mesh_compound(self,dict_tubavectors,dict_tubapoints): 
-        print("Text---------------------------",dict_tubavectors)
         text = "["
         character_count=0
         for tubavector in dict_tubavectors :
@@ -671,7 +635,8 @@ def Project():
                 text += "           "
             text += ""+name_vector+"M.GetMesh() , "
         text = text[:-1]
-        print("Text---------------------------"+text)
+        logging.info("---------------")
+        logging.info("Created Mesh-Compound:"+text)
         for tubapoint in dict_tubapoints :           
             if not tubapoint.stiffness==[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
                     name_point = str(tubapoint.name)
@@ -693,14 +658,11 @@ def Project():
     smesh.SetName(Completed_Mesh.GetMesh(), 'Completed_Mesh')
         """).split("\n")
 
-
-
 #==============================================================================
     def _bent_1D(self,tubavector) :
         [radius,thickness]=tubavector.section
         name_vector=name_vector = str(tubavector.name)#+tubavector.model[:3]
         model=tubavector.model
-        logging.debug("Bent: "+str(name_vector))
         name_centerpoint=tubavector.center_tubapoint.name
         name_startpoint=tubavector.start_tubapoint.name
         name_endpoint=tubavector.end_tubapoint.name
@@ -719,7 +681,6 @@ def Project():
 
     """+name_vector+"M = smesh.Mesh("+  name_vector +""")
     Regular_1D = """+ name_vector+"M.Segment()").split("\n")
-
         if model in ["BARRE","RESSORT"]:
             self.lines=self.lines+("    Regular_1D.NumberOfSegments("""+str(1)+")").split("\n")
         elif model in ["TUBE"]:
@@ -815,7 +776,6 @@ def Project():
                
         main_halflength=str(tubavector.vector.magnitude()/2)        
         incident_halflength=str(tubavector.incident_vector.magnitude())
-        print(name_vector,type(name_vector))
         self.lines=self.lines+("""
 
     ### geometry generation for  """+ name_vector +""" ###

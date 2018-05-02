@@ -36,16 +36,15 @@ MAIL=DEFI_GROUP(
 
         CREA_GROUP_NO=(
             _F(TOUT_GROUP_MA='OUI',),   #Creates a node group for each element
-    
-                
+
         ##CREA_GROUPE_NOEUD
         ),
-                    
+
         CREA_GROUP_MA=(
             _F(NOM='ALL',TOUT='OUI',),  #Creates a group for all element
-                
-        ##CREA_GROUPE_MAILLE                        
-        ),                 
+
+        ##CREATE_MESH_GROUP
+        ),
 
 );
 
@@ -279,5 +278,5 @@ CH_MAT=AFFE_MATERIAU(
 ##TABLE_OUTPUT
 
 
-
-
+FIN()
+#

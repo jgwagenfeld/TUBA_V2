@@ -5,7 +5,7 @@ import Tkinter,tkFileDialog
 
 #root = Tkinter.Tk()
 #file = tkFileDialog.askopenfilename(parent=root,
-#                                    initialdir='/home/jangeorg/TUBA/tutorials/000_Testing/009_BAR',
+#                                    initialdir='/home/jangeorg/TUBA/tutorials/007_Pyramide',
 #                                    filetypes=[("Result Files","*.rmed")])                     
 #root.destroy()
         
@@ -21,18 +21,18 @@ from pvsimple import *
 #### disable automatic camera reset on 'Show'
 pvsimple._DisableFirstRenderCameraReset()
 
-file="/home/jangeorg/TUBA/tutorials/000_Testing/009_BAR/009_BAR-RESULTS_salome.rmed"
+file="/home/jangeorg/TUBA/tutorials/007_Pyramide/007_Pyramide-RESULTS_salome.rmed"
 
        
 
-#Flags set by TUBA                               
-#  BAR_flag=True
-#  TUBE_flag=False
+#Flags set by TUBA
+#  BAR_flag=False
+#  TUBE_flag=True
 #  TUYAU_flag=False
-#  VOLUME_flag=False        
+#  VOLUME_flag=False
 #  SPRING_flag=False
-#  FRICTION_flag=False                              
- 
+#  FRICTION_flag=False
+
       
 
 #------------------------------------------------------------------------------       
@@ -65,6 +65,35 @@ renderView1 = GetActiveViewOrCreate('RenderView')
 
 # Guess an absolute scale factor form the bounding box dimensions
  
+       
+ 
+#------------------------------------------------------------------------------
+# create a new 'ELNO Mesh'       
+#------------------------------------------------------------------------------ 
+SetActiveSource(new_casermed_0)
+Stress = ELNOfieldToSurface(Input=new_casermed_0)        
+
+
+Stress_Display = Show(Stress, renderView1)
+
+Stress_Display.RescaleTransferFunctionToDataRange(True)
+Stress_Display.SetScalarBarVisibility(renderView1, True)
+Stress_Display.LineWidth = 4.0
+
+ColorBy(Stress_Display, ('POINTS', 'FlexibilityStress'))
+
+RenameSource('Stress (ELNO-Field)', Stress)  
+
+FlexibilityStress_LUT = GetColorTransferFunction('FlexibilityStress')
+
+FlexibilityStress_LUT_ColorBar = GetScalarBar(FlexibilityStress_LUT, renderView1)
+FlexibilityStress_LUT_ColorBar.Title = 'Stress'
+FlexibilityStress_LUT_ColorBar.ComponentTitle = 'Stress(MPa // N/mm**2)'
+
+                                                 
+Stress_Display.RescaleTransferFunctionToDataRange(False)                                                     
+FlexibilityStress_PWF = GetOpacityTransferFunction('FlexibilityStress')
+        
        
 
 #------------------------------------------------------------------------------
@@ -231,7 +260,7 @@ for i in xrange(1, 4):
 
 try:
     # create a new 'Legacy VTK Reader'
-    Visualization_Geom = LegacyVTKReader(FileNames=['//home/jangeorg/TUBA/tutorials/000_Testing/009_BAR/compound_paravis.vtk'])
+    Visualization_Geom = LegacyVTKReader(FileNames=['//home/jangeorg/TUBA/tutorials/007_Pyramide/compound_paravis.vtk'])
 
     # set active source
     SetActiveSource(Visualization_Geom)
