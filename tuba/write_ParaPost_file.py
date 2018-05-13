@@ -17,7 +17,7 @@ class ParaPost:
         self.BAR_flag=False
         self.TUBE_flag=False
         self.TUYAU_flag=False
-        self.VOLUME_flag=False        
+        self.VOLUME_flag=False
         self.SPRING_flag=False
         self.FRICTION_flag=False
 
@@ -29,11 +29,16 @@ class ParaPost:
             if tubavector.model=="TUYAU":
                  self.TUYAU_flag=True
             if tubavector.model in ["TUBE","RECTANGULAR"]:
-                 self.TUBE_flag=True       
+                 self.TUBE_flag=True
             if tubavector.model in ["VOLUME"]:
-                 self.VOLUME_flag=True    
+                 self.VOLUME_flag=True
             if tubavector.model in ["BAR"]:
-                 self.BAR_flag=True    
+                 self.BAR_flag=True
+
+        for tubavector in dict_tubavectors:
+            if not tubavector.start_tubapoint.is_element_start(): 
+                if tubavector.start_tubapoint.get_last_vector().model=="VOLUME" and tubavector.model=="VOLUME":
+                    self.SPRING_flag=True
 
         for tubapoint in dict_tubapoints:
             if not tubapoint.friction_coefficient==0.0:
@@ -57,108 +62,105 @@ class ParaPost:
         timestep=1
         if self.TUBE_flag and not self.VOLUME_flag and not self.TUYAU_flag:
             if self.SPRING_flag and not self.FRICTION_flag :
-                self._base("new_casermed_0","\'ComSup1\'",timestep)              
+                self._base("new_casermed_0","\'ComSup1\'",timestep)
                 self._base("new_casermed_1","\'ComSup3\'",timestep)
                 self._ELNO_Mesh("Stress","new_casermed_0",'FlexibilityStress')
                 self._deformation_Warp("Deformation_Warp","new_casermed_1")
                 self._deformation_Vector("Deformation_Vectors","new_casermed_1")
                 self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
             elif self.FRICTION_flag:    
-                self._base("new_casermed_0","\'ComSup0\'",timestep)                
-                self._base("new_casermed_1","\'ComSup2\'",timestep)               
+                self._base("new_casermed_0","\'ComSup0\'",timestep)
+                self._base("new_casermed_1","\'ComSup2\'",timestep)
                 self._ELNO_Mesh("Stress","new_casermed_0",'FlexibilityStress')
                 self._deformation_Warp("Deformation_Warp","new_casermed_1")
                 self._deformation_Vector("Deformation_Vectors","new_casermed_1")
-                self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')                 
+                self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
             else:
-                self._base("new_casermed_0","\'ComSup0\'",timestep)                
+                self._base("new_casermed_0","\'ComSup0\'",timestep)
                 self._ELNO_Mesh("Stress","new_casermed_0",'FlexibilityStress')
                 self._deformation_Warp("Deformation_Warp","new_casermed_0")
                 self._deformation_Vector("Deformation_Vectors","new_casermed_0")
                 self._force_Vector("Force_Vectors","new_casermed_0",'RESU____FORC_NODA_Vector')
 
         if self.TUYAU_flag and not self.VOLUME_flag and not self.TUBE_flag:
-            self._base("new_casermed_0","\'ComSup0\'",timestep)               
-            self._base("new_casermed_1","\'ComSup1\'",timestep)     
+            self._base("new_casermed_0","\'ComSup0\'",timestep)
+            self._base("new_casermed_1","\'ComSup1\'",timestep)
             self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')  
             self._deformation_Warp("Deformation_Warp","new_casermed_1")
             self._deformation_Vector("Deformation_Vectors","new_casermed_1")
             self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
         elif self.TUYAU_flag and not self.VOLUME_flag and self.TUBE_flag and self.SPRING_flag:
-            self._base("new_casermed_0","\'ComSup0\'",timestep)               
-            self._base("new_casermed_1","\'ComSup4\'",timestep)     
-            self._base("new_casermed_2","\'ComSup3\'",timestep)  
+            self._base("new_casermed_0","\'ComSup0\'",timestep)
+            self._base("new_casermed_1","\'ComSup4\'",timestep)
+            self._base("new_casermed_2","\'ComSup3\'",timestep)
             self._ELNO_Mesh("Stress","new_casermed_2",'FlexibilityStress')
-            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')  
+            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')
             self._deformation_Warp("Deformation_Warp","new_casermed_1")
             self._deformation_Vector("Deformation_Vectors","new_casermed_1")
             self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
 #problem  --> ComSups change if springs/masses are either on a TUYAU or TUBE element 
         elif self.TUYAU_flag and not self.VOLUME_flag and self.TUBE_flag and not self.SPRING_flag:
-            self._base("new_casermed_0","\'ComSup0\'",timestep)               
-            self._base("new_casermed_1","\'ComSup1\'",timestep)     
-            self._base("new_casermed_2","\'ComSup2\'",timestep)  
+            self._base("new_casermed_0","\'ComSup0\'",timestep)
+            self._base("new_casermed_1","\'ComSup1\'",timestep)
+            self._base("new_casermed_2","\'ComSup2\'",timestep)
             self._ELNO_Mesh("Stress","new_casermed_2",'FlexibilityStress')
-            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')  
+            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')
             self._deformation_Warp("Deformation_Warp","new_casermed_1")
             self._deformation_Vector("Deformation_Vectors","new_casermed_1")
             self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
 
 
         if self.BAR_flag:
-            self._base("new_casermed_0","\'ComSup0\'",timestep)               
+            self._base("new_casermed_0","\'ComSup0\'",timestep)
             self._deformation_Warp("Deformation_Warp","new_casermed_0")
             self._deformation_Vector("Deformation_Vectors","new_casermed_0")
             self._force_Vector("Force_Vectors","new_casermed_0",'RESU____FORC_NODA_Vector')
 
 
-
-
-           
-        if self.VOLUME_flag and self.TUBE_flag and self.SPRING_flag :                       
+        if self.VOLUME_flag and self.TUBE_flag and self.SPRING_flag :
             self._base("new_casermed_3","\'ComSup3\'",timestep)
-            self._base("new_casermed_4","\'ComSup2\'",timestep)  
-            self._base("new_casermed_5","\'ComSup4\'",timestep)  
+            self._base("new_casermed_4","\'ComSup2\'",timestep)
+            self._base("new_casermed_5","\'ComSup4\'",timestep)
             self._ELNO_Mesh("Stress","new_casermed_3",'FlexibilityStress')
             self._deformation_Warp("Deformation_Warp","new_casermed_5")
             self._deformation_Vector("Deformation_Vectors","new_casermed_5")
             self._force_Vector("Force_Vectors","new_casermed_5",'RESU____FORC_NODA_Vector')
-            self._ELNO_Mesh_3D("VonMise","new_casermed_4",'R_3D____SIEQ_ELNO')  
+            self._ELNO_Mesh_3D("VonMise","new_casermed_4",'R_3D____SIEQ_ELNO')
 
         elif self.VOLUME_flag and self.TUBE_flag and not self.SPRING_flag :
             self._base("new_casermed_3","\'ComSup2\'",timestep)
-            self._base("new_casermed_4","\'ComSup1\'",timestep)  
-            self._base("new_casermed_5","\'ComSup3\'",timestep)  
+            self._base("new_casermed_4","\'ComSup1\'",timestep)
+            self._base("new_casermed_5","\'ComSup3\'",timestep)
             self._ELNO_Mesh("Stress","new_casermed_3",'FlexibilityStress')
             self._deformation_Warp("Deformation_Warp","new_casermed_5")
             self._deformation_Vector("Deformation_Vectors","new_casermed_5")
             self._force_Vector("Force_Vectors","new_casermed_5",'RESU____FORC_NODA_Vector')
-            self._ELNO_Mesh_3D("VonMise","new_casermed_4",'R_3D____SIEQ_ELNO')  
+            self._ELNO_Mesh_3D("VonMise","new_casermed_4",'R_3D____SIEQ_ELNO')
 
         elif self.VOLUME_flag and self.TUYAU_flag and self.SPRING_flag:
-            self._base("new_casermed_0","\'ComSup0\'",timestep)  
-            self._base("new_casermed_2","\'ComSup2\'",timestep)  
-            self._base("new_casermed_3","\'ComSup3\'",timestep) 
+            self._base("new_casermed_0","\'ComSup0\'",timestep)
+            self._base("new_casermed_2","\'ComSup2\'",timestep)
+            self._base("new_casermed_3","\'ComSup3\'",timestep)
             self._deformation_Warp("Deformation_Warp","new_casermed_3")
             self._deformation_Vector("Deformation_Vectors","new_casermed_3")
             self._force_Vector("Force_Vectors","new_casermed_3",'RESU____FORC_NODA_Vector')
-            self._ELNO_Mesh_3D("VonMise","new_casermed_2",'R_3D____SIEQ_ELNO')  
-            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')            
+            self._ELNO_Mesh_3D("VonMise","new_casermed_2",'R_3D____SIEQ_ELNO')
+            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')
 
         elif self.VOLUME_flag and self.TUYAU_flag and not self.SPRING_flag :
-            self._base("new_casermed_0","\'ComSup0\'",timestep)  
-            self._base("new_casermed_2","\'ComSup2\'",timestep)  
-            self._base("new_casermed_1","\'ComSup1\'",timestep) 
+            self._base("new_casermed_0","\'ComSup0\'",timestep)
+            self._base("new_casermed_2","\'ComSup2\'",timestep)
+            self._base("new_casermed_1","\'ComSup1\'",timestep)
             self._deformation_Warp("Deformation_Warp","new_casermed_1")
             self._deformation_Vector("Deformation_Vectors","new_casermed_1")
             self._force_Vector("Force_Vectors","new_casermed_1",'RESU____FORC_NODA_Vector')
-            self._ELNO_Mesh_3D("VonMise","new_casermed_2",'R_3D____SIEQ_ELNO')  
-            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')  
-       
+            self._ELNO_Mesh_3D("VonMise","new_casermed_2",'R_3D____SIEQ_ELNO')
+            self._ELNO_Mesh_TUYAU("MaxVonMise","new_casermed_0",'MAX_VMISUT01_ELNO')
+
         timestep=timestep+1 
-        self._visualize_local_base("LocalCoordinates",timestep)               
+        self._visualize_local_base("LocalCoordinates",timestep)
         self._finalize()
-               
+
 #==============================================================================
 #  Write PostBase
 #==============================================================================
@@ -171,9 +173,9 @@ import Tkinter,tkFileDialog
 #root = Tkinter.Tk()
 #file = tkFileDialog.askopenfilename(parent=root,
 #                                    initialdir='"""+self.my_directory+ """',
-#                                    filetypes=[("Result Files","*.rmed")])                     
+#                                    filetypes=[("Result Files","*.rmed")])
 #root.destroy()
-        
+
 import pvsimple
 pvsimple.ShowParaviewView()
 #### import the simple module from the paraview
@@ -188,10 +190,10 @@ pvsimple._DisableFirstRenderCameraReset()
 
 file=\""""+resultfile_aster+"""\"
 
-       """).split("\n")        
+       """).split("\n")
         
     def _base(self,file_rmed,comsup,timestep):
-        self.lines=self.lines+("""      
+        self.lines=self.lines+("""
 
 #------------------------------------------------------------------------------       
 # create a new 'MED Reader'
@@ -216,8 +218,8 @@ for arr in arr_name_with_dis:
 	if arr[0]=="TS"""+str(timestep)+"""\" and arr[2]==comfield :
 		newlist.append("/".join(arr)) 
 	
-"""+file_rmed+""".AllArrays = newlist       
-"""+file_rmed+""".GenerateVectors = 1   
+"""+file_rmed+""".AllArrays = newlist
+"""+file_rmed+""".GenerateVectors = 1
 
 renderView1 = GetActiveViewOrCreate('RenderView')
 

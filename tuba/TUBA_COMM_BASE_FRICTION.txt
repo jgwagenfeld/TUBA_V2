@@ -15,41 +15,56 @@ DEBUT(PAR_LOT='NON',INFO=2);
 #Enter the name of your Salome Mesh in b_format_med->NOM_MED
 #--------------------------------------------------------------------------------------
 
-MAIL0=LIRE_MAILLAGE(        
+
+MAIL0=LIRE_MAILLAGE(
         FORMAT='MED',
+        UNITE=20
+);
+#--------------------------------------------------------------------------------------
+#Groupes of Nodes (GROUP_NO) and Shells/Volumes (GROUP_MA) are defined which are later used to apply material, elements, forces and boudary conditions
+#--------------------------------------------------------------------------------------
+
+MAIL0=DEFI_GROUP(
+        reuse =MAIL0,
+        MAILLAGE=MAIL0,
+
+        CREA_GROUP_NO=(
+#            _F(TOUT_GROUP_MA='OUI',),   #Creates a node group for each element
+
+        ##CREA_GROUPE_NOEUD
+        ),
+
+        CREA_GROUP_MA=(
+            _F(NOM='ALL',TOUT='OUI',),  #Creates a group for all element
+
+        ##CREATE_MESH_GROUP
+        ),
+
 );
 
 #--------------------------------------------------------------------------------------
 #Creates additional MESH parts - usually to be used for Discret elements like Springs and additional discret Masses
 #--------------------------------------------------------------------------------------
 
-mesh=CREA_MAILLAGE(       
+MAIL1=CREA_MAILLAGE(
         MAILLAGE=MAIL0,
         CREA_POI1=  ( 
         ##CREA_POI1
         ),
 );
-
-#--------------------------------------------------------------------------------------
-#Groupes of Nodes (GROUP_NO) and Shells/Volumes (GROUP_MA) are defined which are later used to apply material, elements, forces and boudary conditions
-#--------------------------------------------------------------------------------------
-
-mesh=DEFI_GROUP(            
-        reuse =mesh,
-        MAILLAGE=mesh,
-
-        CREA_GROUP_NO=(
-            _F(TOUT_GROUP_MA='OUI',),   #Creates a node group for each element
-    
-                
-        ##CREA_GROUPE_NOEUD
+        
+MAIL2=CREA_MAILLAGE(
+        MAILLAGE=MAIL1,
+        LINE_QUAD=  ( 
+        ##LINE_QUAD
         ),
-                    
-        CREA_GROUP_MA=(
-            _F(NOM='ALL',TOUT='OUI',),  #Creates a group for all element
-                
-        ##CREA_GROUPE_MAILLE                        
-        ), 
+);
+
+MAIL=CREA_MAILLAGE(
+        MAILLAGE=MAIL2,
+        QUAD_LINE=  ( 
+        ##QUAD_LINE
+        ),
 );
 
 #--------------------------------------------------------------------------------------
@@ -128,9 +143,6 @@ BLOCAGE=AFFE_CHAR_MECA(
 );
 
 
-
-
-
 #-------------------------------------------------------------------------------
 # This section specifies external mechanical loads (imposed forces at nodes and line elements)
 #-------------------------------------------------------------------------------
@@ -154,6 +166,11 @@ LOAD=AFFE_CHAR_MECA(
         FORCE_TUYAU=(
         ##FORCE_TUYAU                        
         ),
+
+        PRES_REP=(
+        ##PRES_REP
+        ),
+
 
 );
 

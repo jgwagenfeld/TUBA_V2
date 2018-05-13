@@ -31,7 +31,7 @@ P memjob """+str(JOBmem)+"""
 P memory_limit 3000
 P actions make_etude 
 
-F mmed """+current_directory+"""/Completed_Mesh.mmed D 20
+F mmed """+current_directory+"/"+cmd_script+""".mmed D 20
 F comm """+outputFile_Comm+""" D 1 
 F resu """+current_directory+"/"+cmd_script+""".resu.txt R 8 
 F mess """+current_directory+"/"+cmd_script+""".mess R 6 

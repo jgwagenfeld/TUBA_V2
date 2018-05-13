@@ -107,8 +107,10 @@ def main(argv):
         salome_run = Popen(salome_root + ' ' + outputFile_Salome, shell='True', executable="/bin/bash")
         salome_run.wait()
     elif sys.argv[2] =='-aster':  # still not working properly
-        aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True', executable="/bin/bash")
+        aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True',executable="/bin/bash")
         aster_run.wait()# -*- coding: utf-8 -*-         
+
+        print("aster_run---------------",aster_run.communicate())
         salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
         salome_stop.wait()
         salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
@@ -128,10 +130,7 @@ def main(argv):
         salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
     elif sys.argv[2] =='-print':
         completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
-
-        printall_tuba_points_vectors(completed_dict_tubapoints,completed_dict_tubavectors)          
-    else:
-        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+        printall_tuba_points_vectors(completed_dict_tubapoints,completed_dict_tubavectors)
 
 #==============================================================================
 #==============================================================================
@@ -156,7 +155,7 @@ def executetuba(inputFileTuba):
     logging.info("-----------------------------------------\n")
 
     code_salome=tuba.write_Salome_file.Salome(current_directory)
-    code_salome.write(completed_dict_tubavectors, completed_dict_tubapoints)
+    code_salome.write(completed_dict_tubavectors, completed_dict_tubapoints,cmd_script)
     try:
         f = open(outputFile_Salome, 'w')
         f.write('\n'.join(code_salome.lines))

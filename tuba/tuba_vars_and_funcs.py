@@ -27,15 +27,16 @@ tubavector_counter = 0
 dict_tubavectors = []
 current_tubavector = []
 
-vd1x0 = eu.Vector3(0, 1, 0)              # default dihedral vector 1
-vd2x0 = eu.Vector3(1, 0, 0)
+local_x0 = eu.Vector3(1, 0, 0)
+local_y0 = eu.Vector3(0, 1, 0)              # default dihedral vector 1
+
 
 Mesh_NbElement1D = 10
 Mesh_NbElement3D = 10
 Mesh_NbElement3D_thickness = 3
 
 colors = {
-    "BLOCK_DEFORMATION":"1,0.5,0",    
+    "BLOCK_DEFORMATION":"1,0.5,0",
     "BLOCK":"1,1,0",                    #yellow
     "POUTRE_RECTANGLE":"0.8,0.8,0.8",       #grey
     "RECTANGULAR":"0.8,0.8,0.8",            #grey
@@ -50,5 +51,5 @@ colors = {
     "FORCE":"1,0,0",
 
     }
-    
+
 

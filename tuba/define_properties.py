@@ -29,6 +29,7 @@ def Block (x='x',y='x',z='x',rx='x',ry='x',rz='x',reference="global"):
         reference="global" to block in direction of the global base
         reference="local" to block in directions of the local base of the element      
         '''
+
     ddl=[x,y,z,rx,ry,rz]
     tub.current_tubapoint.ddl=ddl
     tub.current_tubapoint.ddl_reference=reference
@@ -51,7 +52,7 @@ def Force(x=0,y=0,z=0,reference="global"):
        Multiple force vectors can be summed up. 
     """
     force=eu.Vector3(x,y,z)
-    tub.current_tubapoint.force.append(force)    
+    tub.current_tubapoint.force.append(force)
 
 def Moment(rx=0,ry=0,rz=0,reference="local"):
     """appends a moment to the current tubapoint
@@ -78,7 +79,7 @@ def Temperature(T=20,T_ref=20):
        At T=T_ref the thermal dilation is set to 0. So if you want to pretension a piping part so that at f.ex. T=300°C 
        the thermal dilation is zero, T_ref has to be set to 300°C'''
     tub.current_temperature=T
-    tub.current_ref_temperature=T_ref    
+    tub.current_ref_temperature=T_ref
     
 def SectionBar(outer_radius,wall_thickness):
     """Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n
@@ -160,11 +161,11 @@ def Material(material):
 def LinearForce(x=0,y=0,z=0,reference="global"):
     """appends a linear force-vector to the last created vector.
        [N/mm]
-            
+
        Multiple force vectors can be summed up. 
-    """    
+    """
     force=eu.Vector3(x,y,z)
-    tub.dict_tubavectors[-1].linear_force.append(force)    
+    tub.dict_tubavectors[-1].linear_force.append(force)
 
 def RhoFluid(density_fluid):
     """allows to take into account the weight of the fluid in the pipe. """
@@ -176,13 +177,13 @@ def Insulation(insulation_thickness, insulation_density):
     allows to take into account the weight of the pipe insulation. """
     tub.current_insulation=[insulation_thickness, insulation_density]
 
-def Windload(x,y,z):     
+def Windload(x,y,z):
     pass
 
 
-def SIF_and_FLEX(SIF='',FLEX=''): 
+def SIF_and_FLEX(SIF='',FLEX=''):
     if FLEX:
         tub.dict_tubavectors[-1].cflex=FLEX
-    if SIF:    
+    if SIF:
         tub.dict_tubavectors[-1].sif=SIF
     pass

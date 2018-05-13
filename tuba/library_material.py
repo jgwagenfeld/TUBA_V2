@@ -105,13 +105,13 @@ NU_CSA53=(20,0.3)
 
 ##L_
 #-------------------------------------------------------------------------------
-#               E (MPa)         nu             rho [ton/mm³]   alpha        lamb    rhoCp        allowable Stress(Sh)
+#               E (MPa)         nu      rho [ton/mm³]       alpha        lamb    rhoCp        allowable Stress(Sh)-still not implemented
 dict_mat={  
-"ACIER":	 [       210e3,      0.3,          7.8e-9,             10.0,        50.0,    4.0  ,      200      	 ], #Valeurs simplifiées
-"RIGIDE":	 [       20000e3,    0.3,          0.0e-9,             10.9,        54.6,    3.71 ,      200 	      ],
-"IMS":	 [       206e3,      0.29,         7.8e-9,              0.9,        54.6,    3.71 ,      200          ],
-"A42":	 [       204e3,      0.4,          7.8e-9,              0.9,        54.6,    3.71 ,      200          ],
-"Ax1":      [       165.8e3,    0.3,          13.404e-9,         12.88,        54.6,    3.71 ,      200          ],
+"ACIER":	    [  210e3,      0.3,          7.8e-9,             10.0,        50.0,    4.0  ,      200     ], #Valeurs simplifiées
+"RIGIDE":   [  20000e3,    0.3,          0.0e-9,             10.9,        54.6,    3.71 ,      200 	    ],
+"IMS":      [  206e3,      0.29,         7.8e-9,              0.9,        54.6,    3.71 ,      200     ],
+"A42":      [  204e3,      0.4,          7.8e-9,              0.9,        54.6,    3.71 ,      200     ],
+"Ax1":      [  165.8e3,    0.3,          13.404e-9,         12.88,        54.6,    3.71 ,      200     ],
 }
 
 #               E (MPa)         nu             rho [ton/mm³]   alpha        lamb    rhoCp        allowable Stress(Sh)

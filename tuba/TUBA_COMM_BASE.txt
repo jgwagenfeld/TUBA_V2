@@ -10,16 +10,12 @@ DEBUT(PAR_LOT='NON')
 #Enter the name of your Salome Mesh in b_format_med->NOM_MED
 #--------------------------------------------------------------------------------------
 
-MAIL0=LIRE_MAILLAGE(        
+MAIL0=LIRE_MAILLAGE(
         FORMAT='MED',
         UNITE=20
 );
 
-#--------------------------------------------------------------------------------------
-#Creates additional MESH parts - usually to be used for Discret elements like Springs and additional discret Masses
-#--------------------------------------------------------------------------------------
-
-MAIL=CREA_MAILLAGE(       
+MAIL1=CREA_MAILLAGE(
         MAILLAGE=MAIL0,
         CREA_POI1=  ( 
         ##CREA_POI1
@@ -30,12 +26,11 @@ MAIL=CREA_MAILLAGE(
 #Groupes of Nodes (GROUP_NO) and Shells/Volumes (GROUP_MA) are defined which are later used to apply material, elements, forces and boudary conditions
 #--------------------------------------------------------------------------------------
 
-MAIL=DEFI_GROUP(            
-        reuse =MAIL,
-        MAILLAGE=MAIL,
+MAIL1=DEFI_GROUP(
+        reuse =MAIL1,
+        MAILLAGE=MAIL1,
 
         CREA_GROUP_NO=(
-            _F(TOUT_GROUP_MA='OUI',),   #Creates a node group for each element
 
         ##CREA_GROUPE_NOEUD
         ),
@@ -49,6 +44,24 @@ MAIL=DEFI_GROUP(
 );
 
 #--------------------------------------------------------------------------------------
+#Creates additional MESH parts - usually to be used for Discret elements like Springs and additional discret Masses
+#--------------------------------------------------------------------------------------
+
+MAIL2=CREA_MAILLAGE(
+        MAILLAGE=MAIL1,
+        LINE_QUAD=  ( 
+        ##LINE_QUAD
+        ),
+);
+
+MAIL=CREA_MAILLAGE(
+        MAILLAGE=MAIL2,
+        QUAD_LINE=  ( 
+        ##QUAD_LINE
+        ),
+);
+
+#--------------------------------------------------------------------------------------
 #Assigns a physical model to geometric entities.
 #
 #Here we assume that all the geometric entities (TOUT=OUI) are used for mechanical simulation (PHENOMENE=MECANIQUE) with 3D solid elements. 
@@ -57,7 +70,7 @@ MAIL=DEFI_GROUP(
 #you can assign other physics or element types (like shells for example) to some of the elements by replacing TOUT=OUI in AFFE with  GROUP_MA = TheElementGroupYouWantToModel
 #--------------------------------------------------------------------------------------
 
-MODMECA=AFFE_MODELE(        
+MODMECA=AFFE_MODELE(
         MAILLAGE=MAIL,
         INFO=2,
 
@@ -74,7 +87,6 @@ MODMECA=AFFE_MODELE(
 #if necessary Copy/Paste the DEFI_MATERIAU command to add a second material
 #--------------------------------------------------------------------------------------
 
-
 ##DEF_MATERIAU
 
 #--------------------------------------------------------------------------------------
@@ -83,15 +95,15 @@ MODMECA=AFFE_MODELE(
 #This section defines the boundary conditions of the FEA, use DDL_IMPO or LIASION_OBLIQUE on selected groups to impose displacements 
 #--------------------------------------------------------------------------------------
 
-BLOCAGE=AFFE_CHAR_MECA(       
+BLOCAGE=AFFE_CHAR_MECA(
         MODELE=MODMECA,
 
-        DDL_IMPO=(   
+        DDL_IMPO=(
         ##DDL_IMPO
         ),
-               
-        DDL_POUTRE=(  
-        ##DDL_POUTRE                        
+
+        DDL_POUTRE=(
+            ##DDL_POUTRE
         ),
 
         LIAISON_ELEM=(
@@ -99,45 +111,42 @@ BLOCAGE=AFFE_CHAR_MECA(
         ##LIAISON_3D_TUBE
         ##LIAISON_3D_TUYAU
         ),
-                  
+
         LIAISON_GROUP=(
-        ##LIAISON_GROUP       
+        ##LIAISON_GROUP
         ),
-                  
+
         LIAISON_UNIF=(
-        ##LIAISON_UNIF                   
-        ),   
-        
+        ##LIAISON_UNIF
+        ),
+
         LIAISON_SOLIDE=(
         ##LIAISON_SOLIDE
         ),
-                  
+
         LIAISON_OBLIQUE=(
             ##LIAISON_OBLIQUE
         ),
-        
+
         LIAISON_MAIL=(
         ##LIAISON_MAIL
         ),
-                    
-                                      
+
 );
-
-
 
 #--------------------------------------------------------------------------------------
 #Maps element types (mass, beam, shell etc.) onto 0D, 1D, 2D and 3D mesh.
 #--------------------------------------------------------------------------------------
 
-CARAELEM=AFFE_CARA_ELEM(    
+CARAELEM=AFFE_CARA_ELEM(
         MODELE=MODMECA,
 
         BARRE=(
-        ##SECTION_BARRE                            
+        ##SECTION_BARRE
         ),
 
         CABLE=(
-        ##SECTION_CABLE                            
+        ##SECTION_CABLE
         ),
 
         POUTRE=(
@@ -145,28 +154,25 @@ CARAELEM=AFFE_CARA_ELEM(
         ##SECTION_TUBE
         ##SECTION_TUYAU3M
         ##SECTION_TUYAU6M
-        ##SECTION_ELBOW        
+        ##SECTION_ELBOW
         ),
-                                                                                               
-                  
+
         DISCRET=(
         ##STIFFNESS_DISCRET
 
         ##MASS_DISCRET
         ),
-                  
+
         ORIENTATION=(
             ##SECTION_ORIENTATION
-        ),                                    
+        ),
 );
-
-
-
 
 #-------------------------------------------------------------------------------
 # This section specifies external mechanical loads (imposed forces at nodes and line elements)
 #-------------------------------------------------------------------------------
-LOAD=AFFE_CHAR_MECA(      
+
+LOAD=AFFE_CHAR_MECA(
         MODELE=MODMECA,
 
         FORCE_NODALE=(
@@ -180,19 +186,24 @@ LOAD=AFFE_CHAR_MECA(
         ),
 
         FORCE_POUTRE=(
-        ##LINEAR_FORCE                         
+        ##LINEAR_FORCE
         ),
-        
+
         FORCE_TUYAU=(
-        ##FORCE_TUYAU                        
+        ##FORCE_TUYAU
         ),
+
+        PRES_REP=(
+        ##PRES_REP
+        ),
+
 
 );
-
 
 #-------------------------------------------------------------------------------
 # Applies the defined Temperature fields to the different mesh groups
 #-------------------------------------------------------------------------------
+
 CHA_TEMP=CREA_CHAMP(
      OPERATION='AFFE',
      TYPE_CHAM='NOEU_TEMP_R',
@@ -207,13 +218,9 @@ CHA_TEMP=CREA_CHAMP(
     ),
 );
 
-
-
-
 #-------------------------------------------------------------------------------
 # Creates a dummy pressure filed for TUBE-elememts
 #-------------------------------------------------------------------------------
-               
 
 #CHA_PRES=CREA_CHAMP(
 #     OPERATION='AFFE',         #assigns a value on nodes or meshes
@@ -230,37 +237,27 @@ CHA_TEMP=CREA_CHAMP(
 #);
 #IMPR_RESU(FORMAT='MED',RESU=_F(CHAM_GD=CHA_PRES));
 
-
-
 #-------------------------------------------------------------------------------
 # Applies the defined materials to the different meshgroups
 #-------------------------------------------------------------------------------
 
-
-CH_MAT=AFFE_MATERIAU(        
+CH_MAT=AFFE_MATERIAU(
     MAILLAGE=MAIL,
 
     AFFE=(
-    ##ASSIGN_MATERIAL     
+    ##ASSIGN_MATERIAL
     ),
 
     # Applies temperature field CHA_TEMP, VALE_REF is the reference temperature where thermal dilatation is 0
-    AFFE_VARC=(  
+    AFFE_VARC=(
             _F( TOUT='OUI',
                 NOM_VARC='TEMP',
                 CHAM_GD=CHA_TEMP,
-                VALE_REF=20,      
+                VALE_REF=20,
            ),
-    ),        
+    ),
 
 );
-
-
-
-
-
-
-
 
 #------------------------------------------------------------------------------
 # SIMULATION STEP

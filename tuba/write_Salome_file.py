@@ -4,7 +4,6 @@
 Created on Wed Mar 30 02:34:03 2016
 
 """
-import collections
 import numpy as np
 import external.euclid as eu
 import logging
@@ -15,12 +14,11 @@ import tuba.define_geometry as tuba_geom
 
 
 class Salome:
-
     def __init__(self, current_directory):
         self.current_directory=current_directory
         self.lines=[]
 #==============================================================================
-    def write(self,dict_tubavectors,dict_tubapoints):
+    def write(self,dict_tubavectors,dict_tubapoints,cmd_script):
 
         self._initialize()
 
@@ -29,29 +27,29 @@ class Salome:
 
         for tubapoint in dict_tubapoints:
             self._point(tubapoint)
-            
-            if tubapoint.get_last_vector():               
+
+            if tubapoint.get_last_vector():
                 section=tubapoint.get_last_vector().section
             elif tubapoint.get_next_vector():
                 section=tubapoint.get_next_vector().section
             
             if section:
-                self._visualize_stiffness(tubapoint,section)            
+                self._visualize_stiffness(tubapoint,section)
                 self._visualize_ddl(tubapoint,section)
                 self._visualize_stiffness(tubapoint,section)
                 self._visualize_force(tubapoint,section)
-                self._visualize_mass(tubapoint,section)                
+                self._visualize_mass(tubapoint,section)
             if not tubapoint.stiffness==[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
                 self._stiffness_mesh(tubapoint)
-            if not tubapoint.friction_coefficient == 0.0:  
+            if not tubapoint.friction_coefficient == 0.0:
                 self._friction_mesh(tubapoint)
-                
+
         for tubavector in dict_tubavectors:
             self._vector(tubavector)
 
         self._create_paravis_geometry_compound()
         self._create_mesh_compound(dict_tubavectors,dict_tubapoints)
-        self._finalize()
+        self._finalize(cmd_script)
 
 
 #==============================================================================
@@ -131,20 +129,26 @@ def Project():
     geompy.PutToFolder("""+name_point+""", Folder_Points)""").split("\n")
         
         #if not tubapoint.is_element_end():
-        vd2x = str(tubapoint.vd2x.xyz).strip('()')
-        vd1x = str(tubapoint.vd1x.xyz).strip('()')
+        local_x = str(tubapoint.local_x.xyz).strip('()')
+        local_y = str(tubapoint.local_y.xyz).strip('()')
         self.lines=self.lines+("""
-    Vd1x_"""+name_point+" = geompy.MakeVectorDXDYDZ("+vd1x+""")
-    """ +name_point+"_vd1x=    geompy.MakeTranslationVectorDistance("+name_point+",Vd1x_"+name_point+""",1000)
-    Vd1x_"""+name_point+"= geompy.MakeVector("+name_point+","+name_point+"""_vd1x)
-    geompy.addToStudyInFather("""+name_point+",Vd1x_"""+name_point+",\"Vd1x_"+ name_point+""" " )
+    local_y_"""+name_point+" = geompy.MakeVectorDXDYDZ("+local_y+""")
+    """ +name_point+"_local_y=    geompy.MakeTranslationVectorDistance("+name_point+",local_y_"+name_point+""",1000)
+    local_y_"""+name_point+"= geompy.MakeVector("+name_point+","+name_point+"""_local_y)
+    geompy.addToStudyInFather("""+name_point+",local_y_"""+name_point+",\"local_y_"+ name_point+""" " )
        
-    Vd2x_"""+name_point+" = geompy.MakeVectorDXDYDZ("+vd2x+""")
-    """ +name_point+"_vd2x=    geompy.MakeTranslationVectorDistance("+name_point+",Vd2x_"+name_point+""",1000)
-    Vd2x_"""+name_point+"= geompy.MakeVector("+name_point+","+name_point+"""_vd2x)
-    geompy.addToStudyInFather("""+name_point+",Vd2x_"""+name_point+",\"Vd2x_"+ name_point+""" " )"""
+    local_x_"""+name_point+" = geompy.MakeVectorDXDYDZ("+local_x+""")
+    """ +name_point+"_local_x=    geompy.MakeTranslationVectorDistance("+name_point+",local_x_"+name_point+""",1000)
+    local_x_"""+name_point+"= geompy.MakeVector("+name_point+","+name_point+"""_local_x)
+    geompy.addToStudyInFather("""+name_point+",local_x_"""+name_point+",\"local_x_"+ name_point+""" " )
     
-    ).split("\n")
+    """+name_point+"M = smesh.Mesh("+  name_point +""")
+    """+name_point+"""M.Compute()
+    """+name_point+"M.Group("+name_point+""")
+    """+name_point+"M.GroupOnGeom("+name_point+""")
+
+
+    """).split("\n")
 
 #==============================================================================
     def _stiffness_mesh(self,tubapoint):
@@ -174,7 +178,7 @@ def Project():
     def _friction_mesh(self,tubapoint):
         name_point = str(tubapoint.name)
         
-        self.lines=self.lines+("""  
+        self.lines=self.lines+("""
 ##_friction_mesh##
     ### create dummy-gemoetry for a mesh to model a friction-stiffness in CodeAster at """+name_point+"""
     #----------------------------------------------------   
@@ -191,11 +195,8 @@ def Project():
     Friction"""+name_point+"M.Group("+name_point+""")
     Friction"""+name_point+"M.Group("+name_point+"""_f)
     Friction"""+name_point+"M.GroupOnGeom(Friction"+name_point+""")
-    
 """).split("\n")
-            
 
-           
 #==============================================================================
     def _vector(self,tubavector) :
         """Writes the python code to construct a Vector in Salome"""
@@ -203,9 +204,9 @@ def Project():
         if isinstance(tubavector, tuba_geom.TubaBent):
             if tubavector.model in ["VOLUME"]:
                 self._bent_3D(tubavector)
-            else:    
+            else:
                 self._bent_1D(tubavector)
-                
+
         elif isinstance(tubavector, tuba_geom.TubaTShape3D):
             self._TShape_3D(tubavector)
 
@@ -276,20 +277,20 @@ def Project():
 
         model=tubavector.model
         Vx=tubavector.vector.normalized()
-        Vy=tubavector.vd1x
+        Vy=tubavector.local_y
         Vz=Vx.cross(Vy)
 
         [height_y,height_z,thickness_y,thickness_z]=tubavector.section
         
         solid_crosssection=False
         if thickness_y==0 and thickness_z==0 : solid_crosssection=True
-        
+
         L1=height_y/2
         L2=height_z/2
-        
+
         L1s=str(L1)
         L2s=str(L2)
-        
+
         Li1s=str(L1-thickness_y)
         Li2s=str(L2-thickness_z)
 
@@ -313,11 +314,11 @@ def Project():
           [   """+str(tubavector.start_tubapoint.pos.x)+","+str(tubavector.start_tubapoint.pos.y)+","+str(tubavector.start_tubapoint.pos.z)+""",
               """+str(Vy.x)+","+str(Vy.y)+","+str(Vy.z)+""",
               """+str(Vz.x)+","+str(Vz.y)+","+str(Vz.z)+"""])
-      
+
     _W1  = geompy.MakeRotation(_W1,"""+name_vector+""", """+str(tubavector.section_orientation)+"""*math.pi/180.0)
       FaceTube = geompy.MakeFaceWires([_W1], 1)
       Liste.append([_W1 ,\"_W1\"])""").split("\n")
-        
+
         else:
             self.lines=self.lines+("""
     _W1 = geompy.MakeSketcher(\"Sketcher: F """+L1s+" "+L2s+": TT -"+L1s+" "+L2s+": TT -"+L1s+" -"+L2s+": TT "+L1s+" -"+L2s+""": WW\",
@@ -387,37 +388,46 @@ def Project():
 
     """+name_vector+"= geompy.MakeVector("+name_startpoint+","+name_endpoint+""")
 
-    C1 = geompy.MakeCircle("""+name_startpoint+",Vd2x_"+name_startpoint+","+str(radius)+""")                                                    
-    C2 = geompy.MakeCircle("""+name_startpoint+",Vd2x_"+name_startpoint+","+str(radius-thickness)+""")
+    C1 = geompy.MakeCircle("""+name_startpoint+",local_x_"+name_startpoint+","+str(radius)+""")                                                    
+    C2 = geompy.MakeCircle("""+name_startpoint+",local_x_"+name_startpoint+","+str(radius-thickness)+""")
                                          
     FaceTube = geompy.MakeFaceWires([C1, C2], 1)
 
     #For the Hexahedron to work, the pipe has to be partioned
     Pipe= geompy.MakePipe( FaceTube ,"""+name_vector+""")
-    cuttingPlane = geompy.MakePlane("""+name_startpoint+",Vd1x_"+name_startpoint+","+str(tubavector.vector.magnitude()*5)+""")
-    """+name_vector+""" = geompy.MakePartition([Pipe], [cuttingPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
-    thickness = geompy.Propagate("""+name_vector+""")[1]
+    cuttingPlane = geompy.MakePlane("""+name_startpoint+",local_y_"+name_startpoint+","+str(tubavector.vector.magnitude()*5)+""")
+    """+name_vector+"""_3D = geompy.MakePartition([Pipe], [cuttingPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
+    thickness = geompy.Propagate("""+name_vector+"""_3D)[1]
 
-    """+name_vector+""".SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
+    """+name_vector+"""_3D.SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
 
-    geompy.addToStudy("""+name_vector+""",\""""+name_vector+"""\")
-    geompy.addToStudyInFather( """+name_vector+""", thickness, 'thickness' )
-    geompy.PutToFolder("""+name_vector+""", Folder_Vectors)
+    geompy.addToStudy("""+name_vector+"""_3D,\""""+name_vector+"""\")
+    geompy.addToStudyInFather( """+name_vector+"""_3D, thickness, 'thickness' )
+    geompy.PutToFolder("""+name_vector+"""_3D, Folder_Vectors)
 
-    L_Start = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.start_tubapoint.name+""",GEOM.ST_ON)
+    L_Start = geompy.GetShapesOnPlane("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.start_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_StartFace = geompy.MakeCompound(L_Start)
-    geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_StartFace,\""""+name_vector+"""_StartFace\")
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_StartFace,\""""+name_vector+"""_StartFace\")
 
-    L_End = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.end_tubapoint.name+""",GEOM.ST_ON)
+    L_End = geompy.GetShapesOnPlane("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.end_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_EndFace = geompy.MakeCompound(L_End)
-    geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
+
+    L_Inner = geompy.GetShapesOnCylinder("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],"""+name_vector+","+str(radius-thickness)+""",GEOM.ST_ON)
+    """+name_vector+"""_InnerFace = geompy.MakeCompound(L_Inner)
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_InnerFace,\""""+name_vector+"""_InnerFace\")
+
+    L_Outer = geompy.GetShapesOnCylinder("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],"""+name_vector+","+str(radius)+""",GEOM.ST_ON)
+    """+name_vector+"""_OuterFace = geompy.MakeCompound(L_Outer)
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_OuterFace,\""""+name_vector+"""_OuterFace\")
 
 
+    print(L_Outer)
     List_ParaVis_Visualization.append("""+name_vector+""")
 
     ### mesh generation for  """+ name_vector +""" ###
     #----------------------------------------------------    
-    """+name_vector+"M = smesh.Mesh("""+name_vector+""")
+    """+name_vector+"M = smesh.Mesh("""+name_vector+"""_3D)
 
     """+ name_vector+"""M.Segment().NumberOfSegments("""+str(tub.Mesh_NbElement3D)+""")
     """+ name_vector+"""M.Segment(geom=thickness).NumberOfSegments("""+str(tub.Mesh_NbElement3D_thickness)+""")
@@ -430,8 +440,10 @@ def Project():
     """+name_vector+"M.Group("+name_endpoint+""")
     """+name_vector+"M.GroupOnGeom("+name_vector+"_StartFace" """)
     """+name_vector+"M.GroupOnGeom("+name_vector+"_EndFace" """)
-    """+name_vector+"M.GroupOnGeom("+name_vector+""")
+    """+name_vector+"M.GroupOnGeom("+name_vector+"_InnerFace" """)
+    """+name_vector+"M.GroupOnGeom("+name_vector+"_OuterFace" """)
 
+    """+name_vector+"M.GroupOnGeom("+name_vector+"""_3D)
            """).split("\n")
 
 #==============================================================================
@@ -442,24 +454,24 @@ def Project():
         for force in tubapoint.force:
             force_direction=[force.normalized().x,force.normalized().y,force.normalized().z]
             logging.info("force direction at"+str(tubapoint.name)+":"+ str(force_direction))
-           
+
             self.lines=self.lines+("""
     # Visualize a forces at point """+name_point+"""
     #---------------------------------------------           
     Radius="""+str(outerRadius)+"""
-        
+
     Pna=geompy.MakeVertexWithRef("""+name_point+",Radius*"+str(force_direction[0])+",Radius*"+str(force_direction[1])+",Radius*"+str(force_direction[2])+""")
     Pnb=geompy.MakeVertexWithRef("""+name_point+",1.5*Radius*"+str(force_direction[0])+",1.5*Radius*"+str(force_direction[1])+",1.5*Radius*"+str(force_direction[2])+""")
     Pnc=geompy.MakeVertexWithRef("""+name_point+",10*Radius*"+str(force_direction[0])+",10*Radius*"+str(force_direction[1])+",10*Radius*"+str(force_direction[2])+""") 
- 
-    V_force=geompy.MakeVector(Pna,Pnb)     
 
-    Tip = geompy.MakeCone(Pnc,V_force,2*Radius,0,4*Radius)           
+    V_force=geompy.MakeVector(Pna,Pnb)
+
+    Tip = geompy.MakeCone(Pnc,V_force,2*Radius,0,4*Radius)
     Shaft = geompy.MakeCylinder("""+name_point+""", V_force,0.5*Radius, 10*Radius)
-    Arrow = geompy.MakeCompound([Tip,Shaft])  
+    Arrow = geompy.MakeCompound([Tip,Shaft])
                
     Arrow.SetColor(SALOMEDS.Color("""+tub.colors["FORCE"]+"""))
-    B_id=geompy.addToStudyInFather( """+ name_point +""", Arrow,'"""+name_point+"""_Arrow' )    
+    B_id=geompy.addToStudyInFather( """+ name_point +""", Arrow,'"""+name_point+"""_Arrow' )
 
     List_ParaVis_Visualization.append(Arrow)
     gg.createAndDisplayGO(B_id)
@@ -473,25 +485,23 @@ def Project():
         The created geometry is not part of the actual simulation"""
         outerRadius=section[0]
         name_point=tubapoint.name
-        
-    
-        
+
         if tubapoint.ddl==[0,0,0,0,0,0]:
             self.lines=self.lines+("""
     # Visualize a support(restriction DOF) at point """+name_point+"""
-    #---------------------------------------------               
+    #---------------------------------------------
     """+name_point+"""_BLOCK_xyzrxryrz=geompy.MakeBox("""+str(tubapoint.pos.x+2*outerRadius)+""","""+str(tubapoint.pos.y+2*outerRadius)+""","""+str(tubapoint.pos.z+2*outerRadius)+""","""+str(tubapoint.pos.x-2*outerRadius)+""","""+str(tubapoint.pos.y-2*outerRadius)+""","""+str(tubapoint.pos.z-2*outerRadius)+""")	
     """+name_point+"""_BLOCK_xyzrxryrz.SetColor(SALOMEDS.Color("""+tub.colors["BLOCK"]+"""))
     """+name_point+"""_BLOCK_xyzrxryrz_id=geompy.addToStudyInFather( """+ name_point +""", """+name_point+"""_BLOCK_xyzrxryrz,'"""+name_point+"""_BLOCK_xyzrxryrz' )
  #   B_id=geompy.addToStudy("""+name_point+"""_BLOCK_xyzrxryrz,'"""+name_point+"""_BLOCK_xyzrxryrz' )
-    
+
     List_ParaVis_Visualization.append("""+name_point+"""_BLOCK_xyzrxryrz)
     objId = geompy.getObjectID("""+name_point+"""_BLOCK_xyzrxryrz)    
     gg.createAndDisplayGO(objId)
     gg.setDisplayMode(objId,1)
     gg.setColor(objId,218,165,31)
-  
-    """).split("\n")  	            
+
+    """).split("\n")
 
         else:
             V1s_list=[]
@@ -501,23 +511,22 @@ def Project():
                 V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
             if not tubapoint.ddl[2]=="x" and tubapoint.ddl[2]==0:
                 V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
-    
+
             for V1s in V1s_list:
-                self.lines=self.lines+("""        
- 
+                self.lines=self.lines+("""
+
     Radius="""+str(outerRadius)+"""
 
     Pna=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[0][0])+","+str(V1s[0][1])+","+str(V1s[0][2])+""")
     Pnb=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[1][0])+","+str(V1s[1][1])+","+str(V1s[1][2])+""")  
-    Vp=geompy.MakeVector(Pna,Pnb)  
+    Vp=geompy.MakeVector(Pna,Pnb)
     Cone1 = geompy.MakeCone(Pna,Vp,Radius,0,2*Radius)
 
-   
     P2a=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[2][0])+","+str(V1s[2][1])+","+str(V1s[2][2])+""")    
     P2b=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[3][0])+","+str(V1s[3][1])+","+str(V1s[3][2])+""")    
-    Vm=geompy.MakeVector(P2a,P2b)  
+    Vm=geompy.MakeVector(P2a,P2b)
     Cone2 = geompy.MakeCone(P2a,Vm,Radius,0,2*Radius)
-    
+
     BLOCK_"""+V1s[4]+"""=geompy.MakeCompound([Cone1,Cone2])
     BLOCK_"""+V1s[4]+""".SetColor(SALOMEDS.Color("""+tub.colors["BLOCK"]+"""))
     B_id=geompy.addToStudyInFather( """+ name_point +""", BLOCK_"""+str(V1s[4])+",'"+name_point+"_BLOCK_"""+str(V1s[4])+"""' )    
@@ -525,24 +534,24 @@ def Project():
     List_ParaVis_Visualization.append(BLOCK_"""+V1s[4]+""")
     gg.createAndDisplayGO(B_id)
     gg.setDisplayMode(B_id,1)
-    """).split("\n")  
+    """).split("\n")
 
             deform = eu.Vector3(0, 0, 0) 
             if not tubapoint.ddl[0]=="x" and  not tubapoint.ddl[0]==0:
                 deform.x=tubapoint.ddl[0]
             if not tubapoint.ddl[1]=="x" and  not tubapoint.ddl[1]==0:
-                deform.y=tubapoint.ddl[1]                              
+                deform.y=tubapoint.ddl[1]
             if not tubapoint.ddl[2]=="x" and  not tubapoint.ddl[2]==0:
-                deform.z=tubapoint.ddl[2]                
+                deform.z=tubapoint.ddl[2]
 
-            logging.info("deform at "+str(tubapoint.name)+": "+str(deform))    
-#            deform=deform.normalized() 
+            logging.info("deform at "+str(tubapoint.name)+": "+str(deform))
+
             if abs(deform):
                 self.lines=self.lines+("""
 
     """+str(abs(deform))+"""
     Radius="""+str(outerRadius)+"""
-        
+
     Pna=geompy.MakeVertexWithRef("""+name_point+","+str(deform.x)+","+str(deform.y)+","+str(deform.z)+""")   
     V_def=geompy.MakeVector("""+name_point+""",Pna)
     Deform_"""+name_point+""" = geompy.MakeCone("""+name_point+""",V_def,1*Radius,0,"""+str(deform.__abs__())+""")
@@ -552,7 +561,7 @@ def Project():
     List_ParaVis_Visualization.append(Deform_"""+name_point+""")
     gg.createAndDisplayGO(B_id)
     gg.setDisplayMode(B_id,1)
-    
+
     """).split("\n")  
 
 #==============================================================================
@@ -561,16 +570,16 @@ def Project():
         outerRadius=section[0]
         name_point=tubapoint.name
 
-        V1s_list=[]        
+        V1s_list=[]
         if not tubapoint.stiffness[0]==0:
             V1s_list.append([[3*outerRadius,0,0],[2*outerRadius,0,0],[-3*outerRadius,0,0],[-2*outerRadius,0,0],"x"])
         if not tubapoint.stiffness[1]==0:
             V1s_list.append([[0,3*outerRadius,0],[0,2*outerRadius,0],[0,-3*outerRadius,0],[0,-2*outerRadius,0],"y"])          
         if not tubapoint.stiffness[2]==0:
             V1s_list.append([[0,0,3*outerRadius],[0,0,2*outerRadius],[0,0,-3*outerRadius],[0,0,-2*outerRadius],"z"])            
-  
+
         for V1s in V1s_list:
-                self.lines=self.lines+("""        
+                self.lines=self.lines+("""
     # Visualize springs/stiffness at point """+name_point+"""
     #---------------------------------------------
     Radius="""+str(outerRadius)+"""
@@ -581,27 +590,27 @@ def Project():
 
     Torus_1 = geompy.MakeTorus(Pna, Vp, Radius, Radius/2) 
     Torus_2 = geompy.MakeTorus(Pnb, Vp, Radius, Radius/2)  
- 
+
     P2a=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[2][0])+","+str(V1s[2][1])+","+str(V1s[2][2])+""")    
     P2b=geompy.MakeVertexWithRef("""+name_point+","+str(V1s[3][0])+","+str(V1s[3][1])+","+str(V1s[3][2])+""")    
     Vm=geompy.MakeVector(P2a,P2b)  
 
-    Torus_3 = geompy.MakeTorus(P2a, Vm, Radius, Radius/2) 
-    Torus_4 = geompy.MakeTorus(P2b, Vm, Radius, Radius/2)  
-    
+    Torus_3 = geompy.MakeTorus(P2a, Vm, Radius, Radius/2)
+    Torus_4 = geompy.MakeTorus(P2b, Vm, Radius, Radius/2)
+
     STIFFNESS_"""+V1s[4]+"""=geompy.MakeCompound([Torus_1,Torus_2,Torus_3,Torus_4])
     STIFFNESS_"""+V1s[4]+""".SetColor(SALOMEDS.Color("""+tub.colors["STIFFNESS"]+"""))
     S_id=geompy.addToStudyInFather( """+ name_point +""", STIFFNESS_"""+str(V1s[4])+",'"+name_point+"_STIFFNESS_"""+str(V1s[4])+"""' )    
 
-    List_ParaVis_Visualization.append(STIFFNESS_"""+V1s[4]+""")    
+    List_ParaVis_Visualization.append(STIFFNESS_"""+V1s[4]+""")
     gg.createAndDisplayGO(S_id)
     gg.setDisplayMode(S_id,1)
-        
+
     """).split("\n") 
 
 #==============================================================================
     def _visualize_mass(self,tubapoint,section):
-        """Creates a visualization element in the Code Aster GEOM-Module. 
+        """Creates a visualization element in the Code Aster GEOM-Module.
         The created geometry is not part of the actual simulation"""
         outerRadius=section[0]
         name_point=tubapoint.name
@@ -614,14 +623,14 @@ def Project():
     """+name_point+"""_MASS.SetColor(SALOMEDS.Color("""+tub.colors["STIFFNESS"]+"""))
     """+name_point+"""_MASS_id=geompy.addToStudyInFather( """+ name_point +""", """+name_point+"""_MASS,'"""+name_point+"""_MASS' )
 #   B_id=geompy.addToStudy("""+name_point+"""_MASS,'"""+name_point+"""_MASS' )
-    
+
     List_ParaVis_Visualization.append("""+name_point+"""_MASS)
     objId = geompy.getObjectID("""+name_point+"""_MASS)    
     gg.createAndDisplayGO(objId)
     gg.setDisplayMode(objId,1)
     gg.setColor(objId,218,165,31)
-  
-    """).split("\n")              
+
+    """).split("\n")
 #==============================================================================
     def _create_mesh_compound(self,dict_tubavectors,dict_tubapoints): 
         text = "["
@@ -634,7 +643,18 @@ def Project():
                 character_count=0
                 text += "           "
             text += ""+name_vector+"M.GetMesh() , "
-        text = text[:-1]
+            text = text[:-1]
+        for tubapoint in dict_tubapoints :
+            name_point = str(tubapoint.name)#+tubavector.model[:3]
+            character_count+=len(tubapoint.name)+10
+            if character_count>50:
+                text += "\n"
+                character_count=0
+                text += "           "
+            text += ""+name_point+"M.GetMesh() , "
+            
+            
+            text = text[:-1]
         logging.info("---------------")
         logging.info("Created Mesh-Compound:"+text)
         for tubapoint in dict_tubapoints :           
@@ -645,8 +665,8 @@ def Project():
                     name_point = str(tubapoint.name)
                     text += "Friction"+name_point+"M.GetMesh() , "
         text += "]"
-        
-        self.lines=self.lines+("""        
+
+        self.lines=self.lines+("""
     #Creates the final mesh compound
     #----------------------------------------------------
 
@@ -661,7 +681,7 @@ def Project():
 #==============================================================================
     def _bent_1D(self,tubavector) :
         [radius,thickness]=tubavector.section
-        name_vector=name_vector = str(tubavector.name)#+tubavector.model[:3]
+        name_vector=name_vector = str(tubavector.name)
         model=tubavector.model
         name_centerpoint=tubavector.center_tubapoint.name
         name_startpoint=tubavector.start_tubapoint.name
@@ -705,7 +725,7 @@ def Project():
 #==============================================================================
     def _bent_3D(self,tubavector) :
         [radius,thickness]=tubavector.section
-        name_vector = str(tubavector.name)#+tubavector.model[:3]
+        name_vector = str(tubavector.name)
         model=tubavector.model
         logging.debug("Bent: "+str(name_vector))
         name_centerpoint=tubavector.center_tubapoint.name
@@ -719,62 +739,73 @@ def Project():
 
     print(\"Add  """+ name_vector +""" \")
     """+name_vector+" = geompy.MakeArcCenter("+name_centerpoint+","+name_startpoint+","+name_endpoint+""")
-                  
 
-    C1 = geompy.MakeCircle("""+name_startpoint+",Vd2x_"+name_startpoint+","+str(radius)+""")                                                    
-    C2 = geompy.MakeCircle("""+name_startpoint+",Vd2x_"+name_startpoint+","+str(radius-thickness)+""")                                            
+    C1 = geompy.MakeCircle("""+name_startpoint+",local_x_"+name_startpoint+","+str(radius)+""")                                                    
+    C2 = geompy.MakeCircle("""+name_startpoint+",local_x_"+name_startpoint+","+str(radius-thickness)+""")                                            
     FaceTube = geompy.MakeFaceWires([C1, C2], 1)
-    
+
     #For the Hexahedron to work, the pipe has to be partioned
     Pipe = geompy.MakePipe( FaceTube ,"""+name_vector+""")                     
     cuttingPlane = geompy.MakePlaneThreePnt("""+name_centerpoint+","+name_startpoint+","+name_endpoint+","+str(tubavector.bending_radius*5)+""")
-    """+name_vector+""" = geompy.MakePartition([Pipe], [cuttingPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
-    thickness = geompy.Propagate("""+name_vector+""")[1]
+    """+name_vector+"""_3D= geompy.MakePartition([Pipe], [cuttingPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
+    thickness = geompy.Propagate("""+name_vector+"""_3D)[1]
 
-    """+name_vector+""".SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
+    """+name_vector+"""_3D.SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
 
-    geompy.addToStudy("""+name_vector+""",\""""+name_vector+"""\")
-    geompy.addToStudyInFather( """+name_vector+""", thickness, 'thickness' )
-    geompy.PutToFolder("""+name_vector+""", Folder_Vectors)
-    
-    L_Start = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.start_tubapoint.name+""",GEOM.ST_ON)
+    geompy.addToStudy("""+name_vector+"""_3D,\""""+name_vector+"""\")
+    geompy.addToStudyInFather( """+name_vector+"""_3D, thickness, 'thickness' )
+    geompy.PutToFolder("""+name_vector+"""_3D, Folder_Vectors)
+
+    L_Start = geompy.GetShapesOnPlane("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.start_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_StartFace = geompy.MakeCompound(L_Start)
-    geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_StartFace,\""""+name_vector+"""_StartFace\")
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_StartFace,\""""+name_vector+"""_StartFace\")
 
-    L_End = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.end_tubapoint.name+""",GEOM.ST_ON)
+    L_End = geompy.GetShapesOnPlane("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.end_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_EndFace = geompy.MakeCompound(L_End)
-    geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
+
+    all_faces = geompy.SubShapeAllSorted("""+name_vector+"""_3D, geompy.ShapeType["FACE"])
+
+    L_Inner = geompy.GetShapesOnCylinder("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],"""+name_vector+","+str(radius-thickness)+""",GEOM.ST_ON)
+    """+name_vector+"""_InnerFace = geompy.MakeCompound([all_faces[3],all_faces[5]])
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_InnerFace,\""""+name_vector+"""_InnerFace\")
+
+    L_Outer = geompy.GetShapesOnCylinder("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],"""+name_vector+","+str(radius)+""",GEOM.ST_ON)
+    """+name_vector+"""_OuterFace = geompy.MakeCompound([all_faces[4],all_faces[6]])
+    geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_OuterFace,\""""+name_vector+"""_OuterFace\")
 
     List_ParaVis_Visualization.append("""+name_vector+""")
 
     ### mesh generation for  """+ name_vector +""" ###
     #----------------------------------------------------    
 
-    """+ name_vector+"M = smesh.Mesh("""+name_vector+""")
+    """+ name_vector+"M = smesh.Mesh("""+name_vector+"""_3D)
     """+ name_vector+"""M.Segment().NumberOfSegments("""+str(tub.Mesh_NbElement3D)+""")
     """+ name_vector+"""M.Segment(geom=thickness).NumberOfSegments("""+str(tub.Mesh_NbElement3D_thickness)+""")
     """+ name_vector+"""M.Quadrangle()
     """+ name_vector+"""M.Hexahedron()
-    
+
     smesh.SetName("""+ name_vector+"M,'"+name_vector+"""')
     """+name_vector+"""M.Compute()
     """+name_vector+"M.Group("+name_startpoint+""")
     """+name_vector+"M.Group("+name_endpoint+""")
     """+name_vector+"M.GroupOnGeom("+name_vector+"_StartFace" """)
     """+name_vector+"M.GroupOnGeom("+name_vector+"_EndFace" """)
-    """+name_vector+"M.GroupOnGeom("+name_vector+""")""").split("\n")
+    """+name_vector+"M.GroupOnGeom("+name_vector+"_InnerFace" """)
+    """+name_vector+"M.GroupOnGeom("+name_vector+"_OuterFace" """)
+    """+name_vector+"M.GroupOnGeom("+name_vector+"""_3D)""").split("\n")
 
 #==============================================================================
     def _TShape_3D(self,tubavector) :
         [radius,thickness]=tubavector.section
         [incident_radius,incident_thickness]=tubavector.incident_section
         model=tubavector.model
-        name_vector= str(tubavector.name)#+tubavector.model[:3]
+        name_vector= str(tubavector.name)
         name_incidentpoint=tubavector.incident_end_tubapoint.name
         name_startpoint=tubavector.start_tubapoint.name
         name_endpoint=tubavector.end_tubapoint.name
-               
-        main_halflength=str(tubavector.vector.magnitude()/2)        
+
+        main_halflength=str(tubavector.vector.magnitude()/2)
         incident_halflength=str(tubavector.incident_vector.magnitude())
         self.lines=self.lines+("""
 
@@ -790,24 +821,49 @@ def Project():
                               incident_halflength+", True,"
                               +name_startpoint+","+ name_endpoint+
                               ","+name_incidentpoint+""")
-                              
+
     """+name_vector+""".SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
     geompy.addToStudy( """+ name_vector +""", '"""+ name_vector +"""' )
     geompy.PutToFolder("""+name_vector+""", Folder_Vectors)
 
-
-    L_Start = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.start_tubapoint.name+""",GEOM.ST_ON)
+    L_Start = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.start_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_StartFace = geompy.MakeCompound(L_Start)
     geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_StartFace,\""""+name_vector+"""_StartFace\")
 
-    L_Incident = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.incident_end_tubapoint.name+""",GEOM.ST_ON)
+    L_Incident = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.incident_end_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_IncidentFace = geompy.MakeCompound(L_Incident)
     geompy.addToStudyInFather("""+ name_vector +""","""+name_vector+"""_IncidentFace,\""""+name_vector+"""_IncidentFace\")
- 
-    
-    L_End = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],Vd2x_"""+tubavector.end_tubapoint.name+""",GEOM.ST_ON)
+
+    L_End = geompy.GetShapesOnPlane("""+name_vector+""",geompy.ShapeType[\"FACE\"],local_x_"""+tubavector.end_tubapoint.name+""",GEOM.ST_ON)
     """+name_vector+"""_EndFace = geompy.MakeCompound(L_End)
     geompy.addToStudyInFather("""+ name_vector +""","""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
+
+    all_faces = geompy.SubShapeAllSorted("""+name_vector+""", geompy.ShapeType["FACE"])
+    """+name_vector+"""_InnerFace = geompy.MakeCompound([all_faces[9],all_faces[10],
+                                all_faces[13],all_faces[14],all_faces[26],all_faces[27],
+                                all_faces[34],all_faces[35],all_faces[43],all_faces[44],
+                                all_faces[48],all_faces[49],all_faces[54],all_faces[55],
+                                all_faces[58],all_faces[59]])
+    
+    geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_InnerFace,\""""+name_vector+"""_InnerFace\")
+    """+name_vector+"""_OuterFace = geompy.MakeCompound([all_faces[4],all_faces[5],
+                                all_faces[11],all_faces[12],all_faces[24],all_faces[25],
+                                all_faces[30],all_faces[31],all_faces[38],all_faces[39],
+                                all_faces[45],all_faces[46],all_faces[56],all_faces[57],
+                                all_faces[63],all_faces[64]])
+    
+    geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_OuterFace,\""""+name_vector+"""_OuterFace\")
+
+
+
+
+#    for face in all_faces :
+#        print(face)
+#        sub_shape_id = geompy.GetSubShapeID("""+name_vector+""", face)
+#        face_name = "Free face %d"%(sub_shape_id)
+#        geompy.addToStudy(face, face_name)
+
+
 
     List_ParaVis_Visualization.append("""+name_vector+""")
 
@@ -835,11 +891,14 @@ def Project():
     """+name_vector+"M.Group("+name_startpoint+""")
     """+name_vector+"M.Group("+name_endpoint+""")
     """+name_vector+"M.Group("+name_incidentpoint+""")
-    
+
     """+name_vector+"M.GroupOnGeom("+ name_vector + """)
     """+name_vector+"M.GroupOnGeom("+name_vector+"_StartFace" """)
     """+name_vector+"M.GroupOnGeom("+name_vector+"_IncidentFace" """)
     """+name_vector+"M.GroupOnGeom("+name_vector+"_EndFace" """)
+    """+name_vector+"M.GroupOnGeom("+name_vector+"_InnerFace" """)
+    """+name_vector+"M.GroupOnGeom("+name_vector+"_OuterFace" """)
+
 
     smesh.SetName(Regular_1D.GetAlgorithm(), 'Regular_1D')
     smesh.SetName(Hexa_3D.GetAlgorithm(), 'Hexa_3D')
@@ -850,8 +909,6 @@ def Project():
     smesh.SetName(Sub_mesh_1, 'Sub-mesh_1')
 
             """).split("\n")
-
-
 
 #==============================================================================            
     def _create_paravis_geometry_compound(self): 
@@ -869,21 +926,20 @@ def Project():
     except:
         print("No compound could be created",str(List_ParaVis_Visualization))
         """).split("\n")
-            
+
 #==============================================================================
-    def _finalize(self):
+    def _finalize(self,cmd_script):
         self.lines=self.lines+("""
-                               
-##_finalize##                
+
+##_finalize##
     #exports the created mesh compound 
     try:
-        Completed_Mesh.ExportMED( r'"""+self.current_directory+"""/Completed_Mesh.mmed', 0)
+        Completed_Mesh.ExportMED( r'"""+self.current_directory+"/"+cmd_script+""".mmed', 0)
     except:
         print ('ExportPartToMED() failed')
 
-
     #exports visualizations (structural elements, forces, etc) as a grouped geometry to be used in Paravis
-    try:    
+    try:
         geompy.ExportVTK(compound_paravis, '"""+self.current_directory+"""/compound_paravis.vtk', 0.001)     
     except:
         print ('ExportVTK of the visualization compound failed')
@@ -894,13 +950,6 @@ def Project():
     dtime = time2 - time1
     print(\"------------------------\")
     print(\"Duration of construction:\"+str(round(dtime,2))+\"s\")
-
-#    import SalomePyQt
-#    sg = SalomePyQt.SalomePyQt()
-#    sg.activateModule("Geometry")
-#    if salome.sg.hasDesktop():
-#      salome.sg.updateObjBrowser(1)
-#    sg.activateModule("AsterStudy")
 
     """).split("\n")
 
