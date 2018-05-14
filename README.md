@@ -1,9 +1,9 @@
 
 
-# TUBA - Piping Script to be used with Salome-Meca
+# TUBA - FEM Piping Script to be used with Salome-Meca
 
 
-Check http://tuba-v2.readthedocs.io/en/sm2017/ for documentation and more informatios (SalomeMeca2017)
+Check **http://tuba-v2.readthedocs.io/en/sm2017/** for documentation and more informations (SalomeMeca2017)
 
 ![TUBA-EXAMPLE](docs/_static/ExampleTUBA.png "Sustainable Energy Transitions")
 
