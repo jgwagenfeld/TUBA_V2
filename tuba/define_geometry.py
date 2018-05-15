@@ -54,9 +54,14 @@ class TubaPoint:
         '''checks if the given tubapoint is a start_tubapoint and as well end_tubapoint of a vector.
         If false, this means that it's the beginning of the piping'''
 
-        same_names=[tubavectors for tubavectors in tub.dict_tubavectors
-                    if tubavectors.end_tubapoint.name == self.name]  #Points with the same name
-
+        same_names=[]
+        for tubavector in tub.dict_tubavectors:
+            if tubavector.__class__.__name__ == "TubaTShape3D":
+                if tubavector.incident_end_tubapoint.name == self.name:
+                    same_names.append(self.name)
+            
+            if tubavector.end_tubapoint.name == self.name:
+                same_names.append(self.name)
         if same_names==[]:
             return True
         else:
@@ -81,7 +86,8 @@ class TubaPoint:
                     return True
 #------------------------------------------------------------------------------
     def get_last_vector(self):
-        '''Finds the vector, where this tubapoint acts as an endpoint'''
+        '''Finds the vector, where this tubapoint acts as an endpoint or
+        incident_endpoint for TubaTShape3D'''
 
         for tubavector in tub.dict_tubavectors:
              if tubavector.end_tubapoint.name == self.name:
@@ -96,6 +102,18 @@ class TubaPoint:
         for tubavector in tub.dict_tubavectors:
              if tubavector.start_tubapoint.name == self.name:
                  return tubavector
+             
+    def is_empty_point(self):
+        """Checks if any ddls, stiffnesses, moments or forces are applied. If not
+        the point is definded as empty. This function is needed to suppress empty start and endpoints
+        for volume vectors and TJoints3D"""
+        if (self.ddl == ['x', 'x', 'x', 'x', 'x', 'x'] and self.stiffness == [0.0, 0.0, 0.0, 0.0,0.0, 0.0]
+            and self.mass == 0.0 and self.moment == [] and self.force == []):
+            return True
+        else:
+            return False
+        
+        
 #==============================================================================
 #==============================================================================
 class TubaVector:
@@ -106,7 +124,6 @@ class TubaVector:
         self.start_tubapoint = start_tubapoint
         self.end_tubapoint = end_tubapoint
         self.vector = vector
-        self.local_y=start_tubapoint.local_y
         self.model = tub.current_model
         self.section = tub.current_section
         self.section_orientation = tub.current_section_orientation
@@ -117,25 +134,28 @@ class TubaVector:
         self.sif = 1
         self.cflex = 1
 
-#        self.local_x
-#        self.local_y
-#        self.local_z
+        self.local_y=start_tubapoint.local_y
 
         tub.tubavector_counter += 1
         tub.dict_tubavectors.append(self)
+
         self._update_attached_tubapoints()
+
         self._update_global_forces()
+
+
 
     def _update_attached_tubapoints(self):
 
 #if the new vector is not colinear with the last one, both span a new reference plane and local_y can be changed
 #   new_vect.start_tubapoint.local_y=
-        if len(tub.dict_tubavectors)>1:
-            if is_colinear(self.vector,tub.dict_tubavectors[-2].vector)==False:
-                self.start_tubapoint.local_y=tub.dict_tubavectors[-2].vector.normalized()
-                self.local_y=tub.dict_tubavectors[-2].vector.normalized()
+        if not self.start_tubapoint.is_element_start :
+            print(self.start_tubapoint.name)
+            if is_colinear(self.vector,self.start_tubapoint.local_x)==False:
+                self.start_tubapoint.local_y=self.start_tubapoint.get_last_vector().vector.normalized()
+                self.local_y=self.start_tubapoint.get_last_vector().vector.normalized()
             else:
-                self.local_y=tub.dict_tubavectors[-2].local_y
+                self.local_y=self.start_tubapoint.get_last_vector().local_y
 # As start_tubapoint.local_x will always be overriden with the new vector, the case 
 # where local_y and the new vector local_x are colinear ust be take care of. If not,
 # m no referance plane would be spanned by local_y and local_x anymore
@@ -232,6 +252,7 @@ class TubaTShape3D(TubaVector):
 
         self._update_attached_tubapoints()
 
+
     def _update_attached_tubapoints(self):
         logging.debug("Update attached tubapoints")
 
@@ -295,7 +316,7 @@ def V(x,y,z,name=""):
     """Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the
     user input x,y,z.
     """
-
+    print("vector",x,",",y,z)
     if not name:
         name="P"+str(tub.tubapoint_counter)
     #Get start point of vector
@@ -313,6 +334,7 @@ def V(x,y,z,name=""):
 #------------------------------------------------------------------------------ 
     logging.debug("start_point connected?: "+str(start_tubapoint.local_x))
 
+    
 def V_3D(x,y,z,name=""):
     V(x,y,z,name)
     tub.dict_tubavectors[-1].model="VOLUME"
@@ -456,7 +478,7 @@ def Bent_3D(radius,angle_deg="",orientation="",vector="",mode="intersect",name="
 def TShape_3D(incident_radius,incident_thickness,angle_orient,
              name_incident_end="",name_main_end="",
              incident_halflength=0,main_halflength=0,
-             mode="intersect"):
+             mode="add"):
     """Creates a TShape Object. The Main Section continues with the 
     before defines Cross-Section. The branche is defined by the user-arguments
     """
@@ -505,6 +527,7 @@ def TShape_3D(incident_radius,incident_thickness,angle_orient,
 #------------------------------------------------------------------------------
     main_end_tubapoint = TubaPoint(main_end_pos.x,main_end_pos.y,main_end_pos.z,
                             name=name_main_end)
+
 #------------------------------------------------------------------------------
 
     incident_section = [incident_radius,incident_thickness]
@@ -513,6 +536,7 @@ def TShape_3D(incident_radius,incident_thickness,angle_orient,
 #------------------------------------------------------------------------------
     TubaTShape3D(start_tubapoint,main_end_tubapoint,incident_end_tubapoint,
                  vector_center_incidentend,incident_section,name)
+    
 #------------------------------------------------------------------------------
 
 #==============================================================================
@@ -532,7 +556,7 @@ def dihedral_vector(local_y,local_x,thetad3x,thetad2x):
 #==============================================================================
 def is_colinear(vector1,vector2):
     '''checks if both vector are colinear (cross-product==0) '''
-    if vector1.cross(vector2).__abs__() == 0:
+    if round(vector1.cross(vector2).__abs__(),4) == 0:
         return True
     else:
         return False

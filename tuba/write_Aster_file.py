@@ -145,7 +145,7 @@ class CodeAster:
         "         UNION=(",
         ])
 
-        text="         "
+        text="            "
         character_count=0
         for tubapoint in dict_tubapoints:
             if not "center" in tubapoint.name:
@@ -161,7 +161,7 @@ class CodeAster:
 
             if character_count > 50:
                 newlines.append(text)
-                text="    "
+                text="            "
                 character_count=0
         newlines.append(text)
 
@@ -323,8 +323,7 @@ class CodeAster:
                 "    _F(",
                 "        NOM='GTUYAU3M',",
                 "        TYPE_MAILLE = '1D',",
-                "        UNION=(",
-                ])
+                "        UNION=("])
 
                 character_count=0
                 text="            "
@@ -341,16 +340,16 @@ class CodeAster:
                 newlines.append("        ),")
                 newlines.append("    ),")
                 insert_lines_at_string(self.lines,"##CREATE_MESH_GROUP",newlines)
-    #-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
             if item[0] == "BAR":
-    
+
                 newlines=[]
                 newlines.extend([
                 "    _F(",
                 "        NOM='GBAR',",
                 "        TYPE_MAILLE = '1D',",
-                "        UNION=(",
-                ])
+                "        UNION=("])
+
                 character_count=0
                 text="            "
                 for name in item[1] :
@@ -374,8 +373,8 @@ class CodeAster:
                 "    _F(",
                 "        NOM='G_3D',",
                 "        TYPE_MAILLE = '3D',",
-                "        UNION=(",
-                ])
+                "        UNION=("])
+
                 character_count=0
                 text="            "
                 all_elements=["","_StartFace","_EndFace","_InnerFace","_OuterFace",]
@@ -390,20 +389,15 @@ class CodeAster:
                             character_count=0
 
                 newlines.append(text)
-    
                 newlines.append("        ),")
                 newlines.append("    ),")
                 insert_lines_at_string(self.lines,"##CREATE_MESH_GROUP",newlines)
-
-
-
-
 
 #-----------------------------------------------------------------------------
 ##Update mesh
 #-----------------------------------------------------------------------------
         if self.VOLUME_flag:
-            newlines=["_F(GROUP_MA=('G_3D',)),"]
+            newlines=["    _F(GROUP_MA=('G_3D',)),"]
             insert_lines_at_string(self.lines,"##LINE_QUAD",newlines)
 
 #        if self.TUBE_flag:
@@ -415,24 +409,42 @@ class CodeAster:
 #-----------------------------------------------------------------------------
         text=""
         for tubavector in dict_tubavectors:
-            if not tubavector.start_tubapoint.is_element_start(): 
-                if tubavector.start_tubapoint.get_last_vector().model=="VOLUME" and tubavector.model=="VOLUME":
+            if tubavector.model=="VOLUME":
+                if ((tubavector.start_tubapoint.is_element_start() ) or
+                    (not tubavector.start_tubapoint.is_element_start() and tubavector.start_tubapoint.get_last_vector().model=="VOLUME")): 
+                        newlines=[
+                            "    _F(",
+                            "         GROUP_NO=('" + tubavector.start_tubapoint.name + "'),",
+                            "         NOM_GROUP_MA='" + tubavector.start_tubapoint.name +"_dummy'," ,
+                            "     ),"
+                            ]
+                        text += "'" + tubavector.start_tubapoint.name +"_dummy',"
+                        insert_lines_at_string(self.lines,"##CREA_POI1",newlines)
+                if (tubavector.end_tubapoint.is_element_end()):
+                    newlines=[
+                            "    _F(",
+                            "         GROUP_NO=('" + tubavector.end_tubapoint.name + "'),",
+                            "         NOM_GROUP_MA='" + tubavector.end_tubapoint.name +"_dummy'," ,
+                            "     ),"
+                            ]
+                    text += "'" + tubavector.end_tubapoint.name +"_dummy',"
+                    insert_lines_at_string(self.lines,"##CREA_POI1",newlines) 
+                if tubavector.__class__.__name__=="TubaTShape3D" and tubavector.incident_end_tubapoint.is_element_end():
                     newlines=[
                         "    _F(",
-                        "         GROUP_NO=('" + tubavector.start_tubapoint.name + "'),",
-                        "         NOM_GROUP_MA='" + tubavector.start_tubapoint.name +"_dummy'," ,
+                        "         GROUP_NO=('" + tubavector.incident_end_tubapoint.name + "'),",
+                        "         NOM_GROUP_MA='" + tubavector.incident_end_tubapoint.name +"_dummy'," ,
                         "     ),"
                         ]
-                    text += "'" + tubavector.start_tubapoint.name +"_dummy',"
+                    text += "'" + tubavector.incident_end_tubapoint.name +"_dummy',"
                     insert_lines_at_string(self.lines,"##CREA_POI1",newlines)
-
-
+                                           
         if text!="":
             newlines=[
             "    _F( NOM='DummyPoints',",
             "        TYPE_MAILLE = 'POI1',",
-            "        UNION=(",
-            ]
+            "        UNION=("]
+
             newlines.append("       "+text)
             newlines.append("        ),")
             newlines.append("    ),")
@@ -443,8 +455,7 @@ class CodeAster:
             "       GROUP_MA=('DummyPoints'),",
             "       PHENOMENE='MECANIQUE',",
             "       MODELISATION='DIS_TR',",
-            "    ),"
-            ]
+            "    ),"]
 
             insert_lines_at_string(self.lines,"##MODELISATION",newlines)
 

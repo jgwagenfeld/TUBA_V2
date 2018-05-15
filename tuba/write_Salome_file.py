@@ -813,9 +813,9 @@ def Project():
     #----------------------------------------------------
     print(\"Add  """+ name_vector +""" \")
 
-    ["""+ name_vector +""", Junction_1, Junction_2, Junction_3, Thickness,
+    ["""+ name_vector +""",Junction_1,Junction_2,Junction_3,Thickness,
      Circular_quarter_of_pipe, Circular_quarter_of_pipe_1,Main_pipe_half_length,
-     Flange, Incident_pipe_half_length, Internal_faces] =\
+     Flange,Incident_pipe_half_length,Internal_faces] =\
         geompy.MakePipeTShape("""+str(radius-thickness)+","+str(thickness)+","+ main_halflength+","+
                               str(incident_radius-incident_thickness)+","+str(incident_thickness)+","+
                               incident_halflength+", True,"
@@ -838,32 +838,22 @@ def Project():
     """+name_vector+"""_EndFace = geompy.MakeCompound(L_End)
     geompy.addToStudyInFather("""+ name_vector +""","""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
 
-    all_faces = geompy.SubShapeAllSorted("""+name_vector+""", geompy.ShapeType["FACE"])
-    """+name_vector+"""_InnerFace = geompy.MakeCompound([all_faces[9],all_faces[10],
-                                all_faces[13],all_faces[14],all_faces[26],all_faces[27],
-                                all_faces[34],all_faces[35],all_faces[43],all_faces[44],
-                                all_faces[48],all_faces[49],all_faces[54],all_faces[55],
-                                all_faces[58],all_faces[59]])
-    
+
+    all_faces = geompy.SubShapeAll("""+name_vector+""", geompy.ShapeType["FACE"])
+    """+name_vector+"""_InnerFace = geompy.MakeCompound([all_faces[1],all_faces[7],
+                                all_faces[11],all_faces[16],all_faces[22],all_faces[28],
+                                all_faces[31],all_faces[35],all_faces[40],all_faces[45],
+                                all_faces[48],all_faces[52],all_faces[57],all_faces[62],
+                                all_faces[64],all_faces[67]])
+
     geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_InnerFace,\""""+name_vector+"""_InnerFace\")
-    """+name_vector+"""_OuterFace = geompy.MakeCompound([all_faces[4],all_faces[5],
-                                all_faces[11],all_faces[12],all_faces[24],all_faces[25],
-                                all_faces[30],all_faces[31],all_faces[38],all_faces[39],
-                                all_faces[45],all_faces[46],all_faces[56],all_faces[57],
-                                all_faces[63],all_faces[64]])
+    """+name_vector+"""_OuterFace = geompy.MakeCompound([all_faces[3],all_faces[9],
+                                all_faces[15],all_faces[20],all_faces[24],all_faces[30],
+                                all_faces[34],all_faces[38],all_faces[42],all_faces[46],
+                                all_faces[51],all_faces[55],all_faces[59],all_faces[63],
+                                all_faces[66],all_faces[69]])
     
     geompy.addToStudyInFather("""+name_vector+""","""+name_vector+"""_OuterFace,\""""+name_vector+"""_OuterFace\")
-
-
-
-
-#    for face in all_faces :
-#        print(face)
-#        sub_shape_id = geompy.GetSubShapeID("""+name_vector+""", face)
-#        face_name = "Free face %d"%(sub_shape_id)
-#        geompy.addToStudy(face, face_name)
-
-
 
     List_ParaVis_Visualization.append("""+name_vector+""")
 
@@ -883,7 +873,7 @@ def Project():
     status = """+ name_vector +"""M.AddHypothesis(Nb_Segments_2,Thickness)
     isDone = """+ name_vector +"""M.Compute()
     [ Sub_mesh_1 ] = """+ name_vector +"""M.GetMesh().GetSubMeshes()
-    Sub_mesh_1 = """+ name_vector +"""M.GetSubMesh( Thickness, 'Sub-mesh_1' )
+    Sub_mesh_1 = """+ name_vector +"""M.GetSubMesh(Thickness, 'Sub-mesh_1' )
 
     ## Set names of Mesh objects
     smesh.SetName("""+ name_vector+"M,'"+name_vector+"""')
@@ -950,6 +940,12 @@ def Project():
     dtime = time2 - time1
     print(\"------------------------\")
     print(\"Duration of construction:\"+str(round(dtime,2))+\"s\")
+
+
+
+
+
+
 
     """).split("\n")
 
