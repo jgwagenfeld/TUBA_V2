@@ -1,4 +1,12 @@
 
+
+# TUBA - FEM Piping Script to be used with Salome-Meca
+
+
+Check **http://tuba-v2.readthedocs.io/en/sm2017/** for documentation and more informations (SalomeMeca2017)
+
+![TUBA-EXAMPLE](docs/_static/ExampleTUBA.png "Sustainable Energy Transitions")
+
 TUBA is a Python module orginally created by Pascal KREZEL and now developped by Jan-Georg WAGENFELD. It allows to create and simulate piping- and rod geometries in Salome-Meca (OpenSource under LPGL license).
 
 With a simple to use set of commands even complex piping-geometries can be generated and different load cases can be simulated.
@@ -7,4 +15,3 @@ TUBA prepares the scripts for SalomeMeca, CodeAster and ParaVis which then have 
 Even without further knowledge of SalomeMeca, TUBA allows to quickly and easily create piping-geometries and effect the targeted calculation and analysis.
 
 
-Check http://tuba-v2.readthedocs.io/en/sm2017/ for more informatios (SalomeMeca2017)

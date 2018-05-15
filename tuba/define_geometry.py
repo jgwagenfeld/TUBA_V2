@@ -139,6 +139,10 @@ class TubaVector:
         tub.tubavector_counter += 1
         tub.dict_tubavectors.append(self)
 
+<<<<<<< HEAD
+=======
+#        if not self.start_tubapoint.get_last_vector().__class__.__name__=="TubaTShape3D":
+>>>>>>> origin/SM2017
         self._update_attached_tubapoints()
 
         self._update_global_forces()
@@ -149,9 +153,14 @@ class TubaVector:
 
 #if the new vector is not colinear with the last one, both span a new reference plane and local_y can be changed
 #   new_vect.start_tubapoint.local_y=
+<<<<<<< HEAD
         if not self.start_tubapoint.is_element_start :
             print(self.start_tubapoint.name)
             if is_colinear(self.vector,self.start_tubapoint.local_x)==False:
+=======
+        if len(tub.dict_tubavectors)>1 :
+            if is_colinear(self.vector,self.start_tubapoint.get_last_vector().vector)==False:
+>>>>>>> origin/SM2017
                 self.start_tubapoint.local_y=self.start_tubapoint.get_last_vector().vector.normalized()
                 self.local_y=self.start_tubapoint.get_last_vector().vector.normalized()
             else:
