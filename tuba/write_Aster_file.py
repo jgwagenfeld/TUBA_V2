@@ -571,7 +571,6 @@ class CodeAster:
         #======================================================================
             for material in library_material.dict_mat:
                 if material == item[0]:
-                    print(material)
                     [E,nu,rho,alpha,lamba,rhoCp,sh] = library_material.dict_mat[material]
                     newlines=[
                     material + "=DEFI_MATERIAU(    ",
@@ -1217,7 +1216,7 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
         if self.FRICTION_flag:
             newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CAP[-1], REPERE_LOCAL='ELNO', MODELE=MODMECA), )")
         else:
-            newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM, REPERE_LOCAL='ELNO', MODELE=MODMECA), )")
+            newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM,REPERE_LOCAL='ELNO',MODELE=MODMECA), )")
 
         insert_lines_at_string(self.lines, "##RESULTS_TO_SALOME", newlines)
 #==============================================================================

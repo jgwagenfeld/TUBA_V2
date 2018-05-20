@@ -233,9 +233,7 @@ CHA_TEMP=CREA_CHAMP(
 #                ),
 #               ##Pressure_Field
 
-#    ),
-#);
-#IMPR_RESU(FORMAT='MED',RESU=_F(CHAM_GD=CHA_PRES));
+
 
 #-------------------------------------------------------------------------------
 # Applies the defined materials to the different meshgroups
