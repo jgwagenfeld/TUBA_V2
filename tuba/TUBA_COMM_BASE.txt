@@ -89,6 +89,7 @@ MODMECA=AFFE_MODELE(
 
 ##DEF_MATERIAU
 
+##DEF_CABLE_MATERIAU
 #--------------------------------------------------------------------------------------
 #Boundary conditions
 #
@@ -204,35 +205,11 @@ LOAD=AFFE_CHAR_MECA(
 # Applies the defined Temperature fields to the different mesh groups
 #-------------------------------------------------------------------------------
 
-CHA_TEMP=CREA_CHAMP(
-     OPERATION='AFFE',
-     TYPE_CHAM='NOEU_TEMP_R',
-     MODELE=MODMECA,
-     AFFE=(
-            _F( TOUT='OUI',
-                NOM_CMP='TEMP',
-                VALE=20,
-                ),
+##TEMPERATURE_FUNCTION
 
-            ##TEMPERATURE
-    ),
-);
+##TEMPERATURE_FIELD_FUNCTION
 
-#-------------------------------------------------------------------------------
-# Creates a dummy pressure filed for TUBE-elememts
-#-------------------------------------------------------------------------------
-
-#CHA_PRES=CREA_CHAMP(
-#     OPERATION='AFFE',         #assigns a value on nodes or meshes
-#     TYPE_CHAM='NOEU_TEMP_R',
-#     MODELE=MODMECA,
-#     AFFE=(
-#            _F( TOUT='OUI',
-#                NOM_CMP='TEMP',
-#                VALE=0,
-#                ),
-#               ##Pressure_Field
-
+##TEMPERATURE_FIELD_REAL
 
 
 #-------------------------------------------------------------------------------
@@ -244,15 +221,13 @@ CH_MAT=AFFE_MATERIAU(
 
     AFFE=(
     ##ASSIGN_MATERIAL
+
+    ##ASSIGN_CABLE_MATERIAL
     ),
 
     # Applies temperature field CHA_TEMP, VALE_REF is the reference temperature where thermal dilatation is 0
     AFFE_VARC=(
-            _F( TOUT='OUI',
-                NOM_VARC='TEMP',
-                CHAM_GD=CHA_TEMP,
-                VALE_REF=20,
-           ),
+        ##APPLY_TEMP_MATERIAL
     ),
 
 );

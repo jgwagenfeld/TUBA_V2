@@ -111,11 +111,10 @@ def SectionTuyau(outer_radius,wall_thickness):
     tub.current_section=[outer_radius, wall_thickness]
 
 
-def SectionCable(radius,pretension):
+def SectionCable(radius,pretension=0):
     """Global Function:Defines the properties of a cable - radius and pretension of the cable. A cable is nonlinear, therefore the simulation
     will be nonlinear as well
     """
-
     tub.current_model="CABLE"
     tub.current_section=[radius, pretension]
 

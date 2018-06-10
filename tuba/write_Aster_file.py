@@ -9,6 +9,7 @@ import collections
 import numpy as np
 import external.euclid as eu
 import logging
+import math
 
 import tuba_vars_and_funcs as tub
 import tuba.define_geometry as tuba_geom
@@ -28,6 +29,10 @@ class CodeAster:
         self.CABLE_flag=False
         self.FRICTION_flag=False
         self.nonlinear_flag=False
+
+        self.temperature_function=False
+        self.temperature_real=False
+
 
         self.tuba_directory=tuba_directory
 
@@ -66,7 +71,6 @@ class CodeAster:
 
         elif self.FRICTION_flag:
             write_Aster_friction._Simulation_loop(self,dict_tubapoints,cmd_script)  
-
 
         self._calculate_fields()
         self._write_results_to_salome()
@@ -111,7 +115,7 @@ class CodeAster:
         for line in code :
             line = line[:-1]
             self.lines.append(line)
-
+#==============================================================================
     def _ddl(self,dict_tubapoints):
         """writes support-information"""
 
@@ -291,10 +295,10 @@ class CodeAster:
         grouped_attributes=extract_group_attributes_from_list("model","name",dict_tubavectors) 
         for item in grouped_attributes:
 #-----------------------------------------------------------------------------
-            if item[0] == "TUBE" or item[0]=="RECTANGULAR":
+            if item[0] in ["TUBE","RECTANGULAR","TUYAU","BAR","CABLE"]:
                 newlines=[]
                 newlines.extend([
-                "    _F( NOM='GTUBE_D',",
+                "    _F( NOM='G_"+item[0]+"',",
                 "        TYPE_MAILLE = '1D',",
                 "        UNION=(",
                 ])
@@ -312,56 +316,6 @@ class CodeAster:
                         character_count=0
                 newlines.append(text)
 
-                newlines.append("        ),")
-                newlines.append("    ),")
-                insert_lines_at_string(self.lines,"##CREATE_MESH_GROUP",newlines)
-
-#-----------------------------------------------------------------------------
-            if item[0] == "TUYAU":
-                newlines=[]
-                newlines.extend([
-                "    _F(",
-                "        NOM='GTUYAU3M',",
-                "        TYPE_MAILLE = '1D',",
-                "        UNION=("])
-
-                character_count=0
-                text="            "
-                for name in item[1] :
-                    character_count+=len(name)+4
-                    text += "'"+name+"', "
-
-                    if character_count > 50:
-                        newlines.append(text)
-                        text="            "
-                        character_count=0
-                newlines.append(text)
-
-                newlines.append("        ),")
-                newlines.append("    ),")
-                insert_lines_at_string(self.lines,"##CREATE_MESH_GROUP",newlines)
-#-----------------------------------------------------------------------------
-            if item[0] == "BAR":
-
-                newlines=[]
-                newlines.extend([
-                "    _F(",
-                "        NOM='GBAR',",
-                "        TYPE_MAILLE = '1D',",
-                "        UNION=("])
-
-                character_count=0
-                text="            "
-                for name in item[1] :
-                    character_count+=len(name)+4
-                    text += "'"+name+"', "
-    
-                    if character_count > 50:
-                        newlines.append(text)
-                        text="            "
-                        character_count=0
-                newlines.append(text)
-    
                 newlines.append("        ),")
                 newlines.append("    ),")
                 insert_lines_at_string(self.lines,"##CREATE_MESH_GROUP",newlines)
@@ -401,7 +355,7 @@ class CodeAster:
             insert_lines_at_string(self.lines,"##LINE_QUAD",newlines)
 
 #        if self.TUBE_flag:
-#            newlines=["_F(GROUP_MA=('GTUBE_D',)),"]
+#            newlines=["_F(GROUP_MA=('G_TUBE',)),"]
 #            insert_lines_at_string(self.lines,"##QUAD_LINE",newlines)
 
 #-----------------------------------------------------------------------------
@@ -438,7 +392,7 @@ class CodeAster:
                         ]
                     text += "'" + tubavector.incident_end_tubapoint.name +"_dummy',"
                     insert_lines_at_string(self.lines,"##CREA_POI1",newlines)
-                                           
+
         if text!="":
             newlines=[
             "    _F( NOM='DummyPoints',",
@@ -502,35 +456,146 @@ class CodeAster:
 #  Write Vector Properties
 #==============================================================================
     def _temperature(self,dict_tubavectors):
-        newlines=[]
         grouped_attributes=extract_group_attributes_from_list("temperature","name",dict_tubavectors)
 
-        for item in grouped_attributes:
-            newlines=[]
-            newlines.extend([
-            "_F(",
-            "   GROUP_MA=(",
-            ])
 
-            character_count=0
-            text="    "
-            for name in item[1] :
-                character_count+=len(name)+4
-                text += "'"+name+"', "
+        for i,item in enumerate(grouped_attributes):
+            
 
-                if character_count > 50:
-                    newlines.append(text)
-                    text="    "
-                    character_count=0
-            newlines.append(text)
+            for name in eval(str(item[0])):
+                print ("item:"+str(name))
 
-            newlines.extend([
-            "   ),",
-            "   NOM_CMP='TEMP',",
-            "   VALE="+str(item[0])+",",
-            "),",
-            ])
-            insert_lines_at_string(self.lines,"##TEMPERATURE",newlines)
+                
+            if isinstance(eval(str(item[0]))[0],str):
+                if not self.temperature_function:
+                    newlines=("""
+CHA_T_F=CREA_CHAMP(
+     OPERATION='AFFE',
+     TYPE_CHAM='NOEU_TEMP_F',
+     MODELE=MODMECA,
+     AFFE=(
+            ##T_F
+    ),
+);
+     
+RES_T_F=CREA_RESU(
+    OPERATION='AFFE',
+    TYPE_RESU='EVOL_THER',
+    NOM_CHAM='TEMP',
+    AFFE=_F(
+            CHAM_GD=CHA_T_F,
+            INST=1,
+    ),
+);
+    
+IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(_F(RESULTAT=RES_T_F)))
+
+     """).split("\n")
+    
+                    insert_lines_at_string(self.lines,"##TEMPERATURE_FIELD_FUNCTION",newlines)
+                    self.temperature_function=True
+
+                newlines=[]
+                newlines.extend([
+                "def function_T"+str(i)+"(x,y,z,t):",
+                "    return "+str(eval(str(item[0]))[0]),
+                "F_T"+str(i)+"=FORMULE(VALE='function_T"+str(i)+"(X,Y,Z,INST)',NOM_PARA=('X','Y','Z','INST',),)",
+                "",
+                ])
+                insert_lines_at_string(self.lines,"##TEMPERATURE_FUNCTION",newlines)
+
+                newlines=[]
+                newlines.extend([
+                "_F(",
+                "   GROUP_MA=(",
+                ])
+                character_count=0
+                text="    "
+                for name in item[1] :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="    "
+                        character_count=0
+                newlines.append(text)
+
+                
+                newlines_T_F=[
+                "   ),",
+                "   NOM_CMP='TEMP',",
+                "   VALE_F=F_T"+str(i),
+                "),",
+                ]
+                insert_lines_at_string(self.lines,"##T_F",newlines+newlines_T_F)
+
+                newlines_material_T_F=[
+                "   ),",
+                "   NOM_VARC='TEMP',",
+                "   EVOL=RES_T_F,",
+                "   VALE_REF="+str(eval(str(item[0]))[1]),
+                "),",
+                ]
+                insert_lines_at_string(self.lines,"##APPLY_TEMP_MATERIAL",newlines+newlines_material_T_F)
+
+
+
+
+
+            elif isinstance(eval(str(item[0]))[0],int):
+                if not self.temperature_real:
+                    newlines=("""
+CHA_T_R=CREA_CHAMP(
+     OPERATION='AFFE',
+     TYPE_CHAM='NOEU_TEMP_R',
+     MODELE=MODMECA,
+     AFFE=(
+            ##T_R
+    ),
+);
+     
+IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(_F(CHAM_GD=CHA_T_R)))
+     """).split("\n")
+                    insert_lines_at_string(self.lines,"##TEMPERATURE_FIELD_REAL",newlines)
+                    self.temperature_real=True
+
+
+                newlines=[]
+                newlines.extend([
+                "_F(",
+                "   GROUP_MA=(",
+                ])
+    
+                character_count=0
+                text="    "
+                for name in item[1] :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+    
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="    "
+                        character_count=0
+                newlines.append(text)
+    
+                newlines_T_R=[
+                "   ),",
+                "   NOM_CMP='TEMP',",
+                "   VALE="+str(eval(str(item[0]))[0]),
+                "),",
+                ]
+                    
+                insert_lines_at_string(self.lines,"##T_R",newlines+newlines_T_R)
+
+                newlines_material_T_R=[
+                "   ),",
+                "   NOM_VARC='TEMP',",
+                "   CHAM_GD=CHA_T_R,",
+                "    VALE_REF="+str(eval(str(item[0]))[1]),
+                "),",
+                ]
+                insert_lines_at_string(self.lines,"##APPLY_TEMP_MATERIAL",newlines+newlines_material_T_R)
 
 #==============================================================================
     def _material(self,dict_tubavectors):
@@ -858,6 +923,48 @@ class CodeAster:
                 ])
                 insert_lines_at_string(self.lines,"##SECTION_BAR",newlines)
 
+
+#------------------------------------------------------------------------------
+#                       CABLES 
+#------------------------------------------------------------------------------ 
+            new_item=[]
+            for name in item[1]:
+                item_tubavector=([tubavector for tubavector in dict_tubavectors
+                                            if tubavector.name == name][0])
+                if item_tubavector.model == "CABLE": 
+                    new_item.append(name)
+
+
+            
+            if new_item:
+                
+                newlines=[]
+                newlines.extend([
+                "    _F(",
+                "        GROUP_MA=(",
+                ])
+
+                character_count=0
+                text="           "
+                for name in new_item :
+                    character_count+=len(name)+4
+                    text += "'"+name+"', "
+
+                    if character_count > 50:
+                        newlines.append(text)
+                        text="           "
+                        character_count=0
+                newlines.append(text)
+                newlines.append("        ),")
+                item_0=eval(item[0])
+                [radius,pretension]=item_0
+                newlines.extend([
+                "        SECTION ="+str(radius**2*math.pi)+",",
+                "        N_INIT="+str(pretension),
+                "    ),",
+                ])
+                insert_lines_at_string(self.lines,"##SECTION_CABLE",newlines)
+
 #------------------------------------------------------------------------------
     def _section_orientation(self,dict_tubavectors):
         newlines=[]
@@ -894,7 +1001,7 @@ class CodeAster:
         if self.TUBE_flag:
             newlines=[
             "    _F(",
-            "        GROUP_MA='GTUBE_D',",
+            "        GROUP_MA='G_TUBE',",
             "        PHENOMENE='MECANIQUE',",
             "        MODELISATION='POU_D_T',",
             "    ),",
@@ -905,7 +1012,7 @@ class CodeAster:
         if self.TUYAU_flag:
             newlines=[
             "    _F(",
-            "        GROUP_MA='GTUYAU3M',",
+            "        GROUP_MA='G_TUYAU',",
             "        PHENOMENE='MECANIQUE',",
             "        MODELISATION='TUYAU_3M',",
             "    ),",
@@ -916,13 +1023,46 @@ class CodeAster:
             newlines=[]
             newlines.extend([
             "    _F(",
-            "        GROUP_MA='GBAR',",
+            "        GROUP_MA='G_BAR',",
             "        PHENOMENE = 'MECANIQUE',",
             "        MODELISATION = 'BARRE',",
             "    ),",
             ])
 
             insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
+#-----------------------------------------------------------------------------
+        if self.CABLE_flag:
+            newlines=[]
+            newlines.extend([
+            "    _F(",
+            "        GROUP_MA='G_CABLE',",
+            "        PHENOMENE = 'MECANIQUE',",
+            "        MODELISATION = 'CABLE',",
+            "    ),",
+            ])
+            insert_lines_at_string(self.lines,"##MODELISATION" ,newlines)
+
+            newlines=[
+            "M_Cable=DEFI_MATERIAU(    ",
+            "     ELAS=_F(  E= 5.E7,",
+            "               NU=   0.,",
+            "               RHO= 30.,",
+            "               ALPHA=10E-6,",
+            "           ),",
+            "     CABLE=_F(EC_SUR_E = 1.E0)",
+            ");",
+            ]
+
+            insert_lines_at_string(self.lines,"##DEF_CABLE_MATERIAU",newlines)
+
+            newlines=[]
+            newlines.extend([
+            "    _F(",
+            "        GROUP_MA=('G_CABLE'),",
+            "        MATER=M_Cable,",
+            "    ),",
+            ])
+            insert_lines_at_string(self.lines,"##ASSIGN_CABLE_MATERIAL",newlines)
 #-----------------------------------------------------------------------------
 #        if self.VOLUME_flag:
 #            newlines=[]
@@ -1042,33 +1182,44 @@ class CodeAster:
         if self.nonlinear_flag:
             newlines=("""
 
+L_INST=DEFI_LIST_REEL(  DEBUT=0.0,
+                        INTERVALLE=_F( JUSQU_A = 1., NOMBRE = 1)
+                         )
+
 # Run simulation (nonlinear)
 #------------------------------------------------------------------------------
 RESU=STAT_NON_LINE(
      MODELE=MODMECA,
      CHAM_MATER=CH_MAT,
      CARA_ELEM=CARAELEM,
-     INST=1,
      EXCIT=(
          _F(   CHARGE=BLOCAGE
           ),
          _F(   CHARGE=LOAD,
           ),
          ##CHARGEMENT
-
-     #the cables parts are allowed to deform with great dispalcement,rotations --> GROT_GDEP
-     COMP_ELAS=_F(
-             RELATION='CABLE',
-             DEFORMATION='GROT_GDEP',
-             GROUP_MA='GCABLE'
-             )
      ),
-
+     #the cables parts are allowed to deform with great dispalcement,rotations --> GROT_GDEP
+     COMPORTEMENT=(
+             _F(
+                 RELATION='CABLE',
+                 DEFORMATION='GROT_GDEP',
+                 GROUP_MA='G_CABLE',
+             ),
+     ),
+     INCREMENT= _F( LIST_INST = L_INST,
+                    NUME_INST_INIT = 0,
+                    NUME_INST_FIN  = 1),
      CONVERGENCE=_F(
              RESI_GLOB_RELA=1e-4,
-             RESI_GLOB_MAXI=300,
+             ITER_GLOB_MAXI=500,
+             ITER_GLOB_ELAS=100,
              ),
-
+     NEWTON=_F( 
+             PREDICTION='TANGENTE',
+             MATRICE='TANGENTE',
+             REAC_ITER=1,
+             ),
 );""").split("\n")
             insert_lines_at_string(self.lines, "##SIMULATION", newlines)
 
@@ -1130,7 +1281,7 @@ RESU=CALC_CHAMP(reuse =RESU,
             newlines=newlines+("""
 R_TUBE=CALC_CHAMP(
      RESULTAT=RESU,
-     GROUP_MA='GTUBE_D',
+     GROUP_MA='G_TUBE',
      CONTRAINTE=('SIPO_ELNO','SIPO_NOEU','SIPM_ELNO'),
      );
 
@@ -1153,14 +1304,14 @@ R_TUBE = CALC_CHAMP(reuse =R_TUBE,
             newlines=newlines+("""
 R_TUYAU=CALC_CHAMP(
      RESULTAT=RESU,
-     GROUP_MA='GTUYAU3M',
+     GROUP_MA='G_TUYAU',
      CRITERES='SIEQ_ELNO',);
 
 #Extract and calculate results on subpoints in the TUYAU-shell
 MAX_VMIS=POST_CHAMP(
     RESULTAT=R_TUYAU,
     TOUT_ORDRE='OUI',
-    GROUP_MA='GTUYAU3M',
+    GROUP_MA='G_TUYAU',
     MIN_MAX_SP=(
     _F( NOM_CHAM='SIEQ_ELNO',
            NOM_CMP='VMIS',
@@ -1192,12 +1343,11 @@ R_3D=CALC_CHAMP(
 #---------------------------------------------------
    
 IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
-        _F(RESULTAT=RESU),
-        _F(CHAM_GD=CHA_TEMP),""").split("\n")
+        _F(RESULTAT=RESU),""").split("\n")
 
         if self.TUBE_flag:
             newlines=newlines+("""
-        _F(RESULTAT=R_TUBE,GROUP_MA=('GTUBE_D'),NOM_CHAM='UT02_NOEU',NOM_CMP='X1',NOM_CHAM_MED='FlexibilityStress',),
+        _F(RESULTAT=R_TUBE,GROUP_MA=('G_TUBE'),NOM_CHAM='UT02_NOEU',NOM_CMP='X1',NOM_CHAM_MED='FlexibilityStress',),
 """).split("\n")
 
         if self.TUYAU_flag:
@@ -1225,25 +1375,25 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
 #Results(Deformation, Reaction Forces and Forces) at specific nodes are saved in a txt-file
 #-----------------------------------------------------------------------------------------
 Tab_DEPL=CREA_TABLE(RESU=_F(RESULTAT=RESU,
-						 GROUP_NO='GPOINTS', #'ALL'
-						 NOM_CHAM='DEPL',
-						 NOM_CMP=('DX','DY','DZ'),
-						 PRECISION=0.1,
-						 ),
+                          GROUP_NO='GPOINTS', #'ALL'
+                          NOM_CHAM='DEPL',
+                          NOM_CMP=('DX','DY','DZ'),
+                          PRECISION=0.1,
+                          ),
                 );
 Tab_REAC=CREA_TABLE(RESU=_F(RESULTAT=RESU,
-						 GROUP_NO='GPOINTS', #'ALL'
-						 NOM_CHAM='REAC_NODA',
-						 NOM_CMP=('DX','DY','DZ'),
-						 PRECISION=0.1,
-						 ),
+                          GROUP_NO='GPOINTS', #'ALL'
+                          NOM_CHAM='REAC_NODA',
+                          NOM_CMP=('DX','DY','DZ'),
+                          PRECISION=0.1,
+                          ),
                 );
 Tab_FORC=CREA_TABLE(RESU=_F(RESULTAT=RESU,
-						 GROUP_NO='GPOINTS',    #'ALL'
-						 NOM_CHAM='FORC_NODA',
-						 NOM_CMP=('DX','DY','DZ'),
-						 PRECISION=0.1,
-						 ),
+                          GROUP_NO='GPOINTS',    #'ALL'
+                          NOM_CHAM='FORC_NODA',
+                          NOM_CMP=('DX','DY','DZ'),
+                          PRECISION=0.1,
+                          ),
                 );
 
 #IMPR_TABLE(

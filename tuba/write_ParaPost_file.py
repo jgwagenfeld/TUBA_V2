@@ -21,6 +21,7 @@ class ParaPost:
         self.SPRING_flag=False
         self.FRICTION_flag=False
         self.CONTINUOUS_VOLUME_flag=False
+        self.CABLE_flag=False
 
     def write(self,dict_tubavectors,dict_tubapoints,resultfile_aster):
 
@@ -35,133 +36,30 @@ class ParaPost:
                  self.VOLUME_flag=True
             if tubavector.model in ["BAR"]:
                  self.BAR_flag=True
+            if tubavector.model in ["CABLE"]:
+                 self.CABLE_flag=True
 
-        for tubavector in dict_tubavectors:
-            if not tubavector.start_tubapoint.is_element_start(): 
-                if tubavector.start_tubapoint.get_last_vector().model=="VOLUME" and tubavector.model=="VOLUME":
-                    self.CONTINUOUS_VOLUME_flag=True
+        self._base("DEFORMATION_FORCE_REACTION","DEPL")
+        self._deformation_Warp("Deformation_Warp","DEFORMATION_FORCE_REACTION")
+        self._deformation_Vector("Deformation_Vectors","DEFORMATION_FORCE_REACTION")
+        self._force_Vector("Force_Vectors","DEFORMATION_FORCE_REACTION",'RESU____FORC_NODA_Vector')
 
-        for tubapoint in dict_tubapoints:
-            if not tubapoint.friction_coefficient==0.0:
-                 self.FRICTION_flag=True
-            if not tubapoint.stiffness == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]: 
-                 self.SPRING_flag=True
+        self._base("TEMPERATURE","_T_")
+        self._ELNO_Mesh("Temperature_function","TEMPERATURE",'RES_T_F_TEMP','Temperature [Celsius]')
+        self._ELNO_Mesh("Temperature_real","TEMPERATURE",'CHA_T_R','Temperature [Celsius]')
 
-        flags=("""
-#Flags set by TUBA
-#  BAR_flag="""+str(self.BAR_flag)+"""
-#  TUBE_flag="""+str(self.TUBE_flag)+"""
-#  TUYAU_flag="""+str(self.TUYAU_flag)+"""
-#  VOLUME_flag="""+str(self.VOLUME_flag)+"""
-#  SPRING_flag="""+str(self.SPRING_flag)+"""
-#  FRICTION_flag="""+str(self.FRICTION_flag)+"""
-""").split("\n") 
+        if self.TUBE_flag:
+            self._base("TUBE","Flexibility")
+            self._ELNO_Mesh("Stress","TUBE",'FlexibilityStress','Magnitude (MPa // N/mm**2)')
+        if self.VOLUME_flag:
+            self._base("VOLUME","R_3D____SIEQ")
+            self._ELNO_Mesh("VonMise","VOLUME",'R_3D____SIEQ_ELNO','Magnitude (MPa // N/mm**2)')
+        if self.TUYAU_flag:
+            self._base("TUYAU","MAX_VMIS")
+#            self._ELNO_Mesh_TUYAU("MaxVonMise","TUYAU",'MAX_VMISUT01_ELNO')  
+            self._ELNO_Mesh("MaxVonMise","TUYAU",'MAX_VMISUT01_ELNO','Magnitude (MPa // N/mm**2)')  
 
-        logging.info(flags)
-        self.lines=self.lines+flags
-
-        timestep=1
-        if self.TUBE_flag and not self.VOLUME_flag and not self.TUYAU_flag:
-            if self.SPRING_flag and not self.FRICTION_flag :
-                self._base("TUBE","\'ComSup1\'",timestep)
-                self._base("DEPL_FORCE_REACTION","\'ComSup3\'",timestep)
-                self._ELNO_Mesh("Stress","TUBE",'FlexibilityStress')
-                self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-                self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-                self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-            elif self.FRICTION_flag:    
-                self._base("TUBE","\'ComSup0\'",timestep)
-                self._base("DEPL_FORCE_REACTION","\'ComSup2\'",timestep)
-                self._ELNO_Mesh("Stress","TUBE",'FlexibilityStress')
-                self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-                self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-                self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-            else:
-                self._base("DEPL_FORCE_REACTION","\'ComSup0\'",timestep)
-                self._ELNO_Mesh("Stress","DEPL_FORCE_REACTION",'FlexibilityStress')
-                self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-                self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-                self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-
-        if self.TUYAU_flag and not self.VOLUME_flag and not self.TUBE_flag:
-            self._base("TUYAU","\'ComSup0\'",timestep)
-            self._base("DEPL_FORCE_REACTION","\'ComSup1\'",timestep)
-            self._ELNO_Mesh_TUYAU("MaxVonMise","TUYAU",'MAX_VMISUT01_ELNO')  
-            self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-            self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-            self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-        elif self.TUYAU_flag and not self.VOLUME_flag and self.TUBE_flag and self.SPRING_flag:
-            self._base("TUYAU","\'ComSup0\'",timestep)
-            self._base("DEPL_FORCE_REACTION","\'ComSup4\'",timestep)
-            self._base("TUBE","\'ComSup3\'",timestep)
-            self._ELNO_Mesh("Stress","TUBE",'FlexibilityStress')
-            self._ELNO_Mesh_TUYAU("MaxVonMise","TUYAU",'MAX_VMISUT01_ELNO')
-            self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-            self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-            self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-#problem  --> ComSups change if springs/masses are either on a TUYAU or TUBE element 
-        elif self.TUYAU_flag and not self.VOLUME_flag and self.TUBE_flag and not self.SPRING_flag:
-            self._base("TUYAU","\'ComSup0\'",timestep)
-            self._base("DEPL_FORCE_REACTION","\'ComSup1\'",timestep)
-            self._base("TUBE","\'ComSup2\'",timestep)
-            self._ELNO_Mesh("Stress","TUBE",'FlexibilityStress')
-            self._ELNO_Mesh_TUYAU("MaxVonMise","TUYAU",'MAX_VMISUT01_ELNO')
-            self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-            self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-            self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-
-
-        if self.BAR_flag:
-            self._base("DEPL_FORCE_REACTION","\'ComSup0\'",timestep)
-            self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-            self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-            self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-
-
-        if self.VOLUME_flag and self.TUBE_flag:
-            if self.CONTINUOUS_VOLUME_flag and self.SPRING_flag:
-                coms=["\'ComSup3\'","\'ComSup4\'","\'ComSup5\'"]
-            if not self.CONTINUOUS_VOLUME_flag and self.SPRING_flag:
-                coms=["\'ComSup2\'","\'ComSup3\'","\'ComSup4\'"]
-            if self.CONTINUOUS_VOLUME_flag and not self.SPRING_flag:
-                coms=["\'ComSup2\'","\'ComSup3\'","\'ComSup4\'"]
-            if not self.CONTINUOUS_VOLUME_flag and not self.SPRING_flag:
-                coms=["\'ComSup1\'","\'ComSup2\'","\'ComSup0\'"]
-
-            self._base("VOLUME",coms[0],timestep)
-            self._base("TUBE",coms[1],timestep)
-            self._base("DEPL_FORCE_REACTION",coms[2],timestep)
-            
-            self._ELNO_Mesh_3D("VonMise","VOLUME",'R_3D____SIEQ_ELNO')
-            self._ELNO_Mesh("Stress","TUBE",'FlexibilityStress')
-            self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-            self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-            self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-
-        elif self.VOLUME_flag and self.TUYAU_flag:
-            if self.CONTINUOUS_VOLUME_flag and self.SPRING_flag:
-                coms=["\'ComSup0\'","\'ComSup3\'","\'ComSup4\'"]
-            if not self.CONTINUOUS_VOLUME_flag and self.SPRING_flag:
-                coms=["\'ComSup0\'","\'ComSup2\'","\'ComSup1\'"]
-            if self.CONTINUOUS_VOLUME_flag and not self.SPRING_flag:
-                coms=["\'ComSup0\'","\'ComSup3\'","\'ComSup4\'"]
-            if not self.CONTINUOUS_VOLUME_flag and not self.SPRING_flag:
-                coms=["\'ComSup0\'","\'ComSup2\'","\'ComSup1\'"]
-                
-            self._base("TUYAU",coms[0],timestep)
-            self._base("VOLUME",coms[1],timestep)
-            self._base("DEPL_FORCE_REACTION",coms[2],timestep)
-
-            self._ELNO_Mesh_TUYAU("MaxVonMise","TUYAU",'MAX_VMISUT01_ELNO')
-            self._ELNO_Mesh_3D("VonMise","VOLUME",'R_3D____SIEQ_ELNO')
-            self._deformation_Warp("Deformation_Warp","DEPL_FORCE_REACTION")
-            self._deformation_Vector("Deformation_Vectors","DEPL_FORCE_REACTION")
-            self._force_Vector("Force_Vectors","DEPL_FORCE_REACTION",'RESU____FORC_NODA_Vector')
-
-
-
-        timestep=timestep+1 
-        self._visualize_local_base("LocalCoordinates",timestep)
+        self._visualize_local_base("LocalCoordinates","RepLocal")
         self._finalize()
 
 #==============================================================================
@@ -195,7 +93,7 @@ file=\""""+resultfile_aster+"""\"
 
        """).split("\n")
         
-    def _base(self,file_rmed,comsup,timestep):
+    def _base(self,file_rmed,fieldname):
         self.lines=self.lines+("""
 
 #------------------------------------------------------------------------------       
@@ -203,29 +101,28 @@ file=\""""+resultfile_aster+"""\"
 #------------------------------------------------------------------------------
 
 """+file_rmed+""" = MEDReader(FileName=file)
-
 RenameSource('"""+file_rmed+"""',"""+file_rmed+""")
+
 keys="""+file_rmed+""".GetProperty("FieldsTreeInfo")[::2]
 #Get all the fields contained in the ResultFile
 arr_name_with_dis=[elt.split("/") for elt in keys]
 
-print (arr_name_with_dis)
-#        sep = str(self.MEDfile.GetProperty("Separator")[0])
-#        self.fieldList = [elt.split(sep)[0] for elt in arrs_with_dis]
+for arr in arr_name_with_dis:
+    if \'"""+fieldname+"""\' in arr[3]:
+        comfield=arr[2]
+        timestep=arr[0]
 
+print(timestep,comfield)
 newlist=[]
-
-comfield="""+comsup+"""
-        
-for arr in arr_name_with_dis:	
-	if arr[0]=="TS"""+str(timestep)+"""\" and arr[2]==comfield :
+for arr in arr_name_with_dis:
+	if arr[0]==timestep and arr[2]==comfield :
 		newlist.append("/".join(arr)) 
-	
+
+print(newlist)
 """+file_rmed+""".AllArrays = newlist
 """+file_rmed+""".GenerateVectors = 1
 
 renderView1 = GetActiveViewOrCreate('RenderView')
-
 # Guess an absolute scale factor form the bounding box dimensions
  
        """).split("\n")
@@ -243,7 +140,6 @@ SetActiveSource("""+file_rmed+""")
 """+name_warp+"""= WarpByVector(Input="""+file_rmed+""")
 """+name_warp+""".Vectors = ['POINTS', 'RESU____DEPL_Vector']
 """+name_warp+""".ScaleFactor = 1
-
 
 """+name_warp+"""_Display = Show("""+name_warp+""", renderView1)
 """+name_warp+"""_Display.LineWidth = 4.0
@@ -280,7 +176,6 @@ SetActiveSource("""+name_glyph+""")
 """+name_glyph+""".ScaleMode = 'vector'
 """+name_glyph+""".ScaleFactor = 1
 
-
 # show data in view
 """+name_glyph+"""_Display = Show("""+name_glyph+""", renderView1)
 """+name_glyph+"""_Display.SetScalarBarVisibility(renderView1, True)
@@ -292,7 +187,6 @@ ColorBy("""+name_glyph+"""_Display, ('POINTS', 'RESU____DEPL_Vector'))
 RenameSource('Deformation_Arrows', """+name_glyph+""")
 
       """).split("\n")
-
 
     def _force_Vector(self,name_glyph,file_rmed,fieldName): 
         self.lines=self.lines+("""
@@ -322,7 +216,6 @@ ColorBy("""+name_glyph+"""_Display, ('POINTS', '"""+fieldName+"""'))
 # rename source object
 RenameSource('Reaction_Forces', """+name_glyph+""")
 
-
 Force_LUT = GetColorTransferFunction('"""+fieldName.replace('_','')+"""')
 Force_LUT.VectorMode = 'Magnitude'
 Force_LUT_ColorBar = GetScalarBar(Force_LUT, renderView1)
@@ -332,77 +225,7 @@ Force_LUT_ColorBar.ComponentTitle ='Magnitude (N)'
 Force_PWF = GetOpacityTransferFunction('"""+fieldName.replace('_','')+"""')
      """).split("\n")
 
-
-
-
-    def _ELNO_Mesh(self,name_elno,file_rmed,field):
-        self.lines=self.lines+(""" 
-#------------------------------------------------------------------------------
-# create a new 'ELNO Mesh'       
-#------------------------------------------------------------------------------ 
-SetActiveSource("""+file_rmed+""")
-"""+name_elno+""" = ELNOfieldToSurface(Input="""+file_rmed+""")        
-
-
-"""+name_elno+"""_Display = Show("""+name_elno+""", renderView1)
-
-"""+name_elno+"""_Display.RescaleTransferFunctionToDataRange(True)
-"""+name_elno+"""_Display.SetScalarBarVisibility(renderView1, True)
-"""+name_elno+"""_Display.LineWidth = 4.0
-
-ColorBy("""+name_elno+"""_Display, ('POINTS', '"""+field+"""'))
-
-RenameSource('Stress (ELNO-Field)', """+name_elno+""")  
-
-"""+field+"""_LUT = GetColorTransferFunction('"""+field+"""')
-
-"""+field+"""_LUT_ColorBar = GetScalarBar("""+field+"""_LUT, renderView1)
-"""+field+"""_LUT_ColorBar.Title = 'Stress'
-"""+field+"""_LUT_ColorBar.ComponentTitle = 'Stress(MPa // N/mm**2)'
-
-                                                 
-"""+name_elno+"""_Display.RescaleTransferFunctionToDataRange(False)                                                     
-"""+field+"""_PWF = GetOpacityTransferFunction('"""+field+"""')
-        
-       """).split("\n")
-        
-        
-        
-    def _ELNO_Mesh_TUYAU(self,name_elno,file_rmed,field): 
-            
-        self.lines=self.lines+("""    
-#------------------------------------------------------------------------------
-# create a new 'ELNO Mesh'       
-#------------------------------------------------------------------------------ 
-SetActiveSource("""+file_rmed+""")
-"""+name_elno+""" = ELNOfieldToSurface(Input="""+file_rmed+""")        
-
-
-"""+name_elno+"""_Display = Show("""+name_elno+""", renderView1)
-
-"""+name_elno+"""_Display.RescaleTransferFunctionToDataRange(True)
-"""+name_elno+"""_Display.SetScalarBarVisibility(renderView1, True)
-"""+name_elno+"""_Display.LineWidth = 4.0
-
-ColorBy("""+name_elno+"""_Display, ('POINTS', '"""+field+"""'))
-
-RenameSource('MaxVonMise (ELNO-Field)', """+name_elno+""")  
-
-"""+field+"""_LUT = GetColorTransferFunction('"""+field+"""')
-"""+field+"""_LUT.VectorMode = 'Component'
-"""+field+"""_LUT_ColorBar = GetScalarBar("""+field+"""_LUT, renderView1)
-"""+field+"""_LUT_ColorBar.Title = 'VonMise Stress Max over Crosssection'
-"""+field+"""_LUT_ColorBar.ComponentTitle = 'Magnitude (MPa // N/mm**2)'
-
-                                                 
-"""+name_elno+"""_Display.RescaleTransferFunctionToDataRange(False)                                                     
-"""+field+"""_PWF = GetOpacityTransferFunction('"""+field+"""')
-        
-     """).split("\n")
-
-
-
-    def _ELNO_Mesh_3D(self,name_elno,file_rmed,field):
+    def _ELNO_Mesh(self,name_elno,file_rmed,field,component_title):
 
         self.lines=self.lines+("""    
 #------------------------------------------------------------------------------
@@ -410,8 +233,6 @@ RenameSource('MaxVonMise (ELNO-Field)', """+name_elno+""")
 #------------------------------------------------------------------------------ 
 SetActiveSource("""+file_rmed+""")
 """+name_elno+""" = ELNOfieldToSurface(Input="""+file_rmed+""")        
-
-
 """+name_elno+"""_Display = Show("""+name_elno+""", renderView1)
 
 """+name_elno+"""_Display.RescaleTransferFunctionToDataRange(True)
@@ -420,22 +241,21 @@ SetActiveSource("""+file_rmed+""")
 
 ColorBy("""+name_elno+"""_Display, ('POINTS', '"""+field+"""'))
 
-RenameSource('VonMise (ELNO-Field)', """+name_elno+""")  
+RenameSource('"""+name_elno+"""', """+name_elno+""")  
 
 """+field+"""_LUT = GetColorTransferFunction('"""+field+"""')
 """+field+"""_LUT.VectorMode = 'Component'
 """+field+"""_LUT_ColorBar = GetScalarBar("""+field+"""_LUT, renderView1)
-"""+field+"""_LUT_ColorBar.Title = 'VonMise Stress'
-"""+field+"""_LUT_ColorBar.ComponentTitle = 'Magnitude (MPa // N/mm**2)'
+"""+field+"""_LUT_ColorBar.Title = '"""+name_elno+"""'
+"""+field+"""_LUT_ColorBar.ComponentTitle = \'"""+component_title+"""\'
 
-                                                 
 """+name_elno+"""_Display.RescaleTransferFunctionToDataRange(False)                                                     
 """+field+"""_PWF = GetOpacityTransferFunction('"""+field+"""')
         
      """).split("\n")        
         
 
-    def _visualize_local_base(self,file_rmed,timestep): 
+    def _visualize_local_base(self,file_rmed,fieldname): 
         self.lines=self.lines+("""
 #------------------------------------------------------------------------------       
 # Visualize Local Base   X,Y,Z  (red, yellow, green)
@@ -443,21 +263,30 @@ RenameSource('VonMise (ELNO-Field)', """+name_elno+""")
 print("Create Visualization of local coordinates: X,Y,Z  (red, yellow, green) ")
 
 """+file_rmed+""" = MEDReader(FileName=file)
+RenameSource('"""+file_rmed+"""',"""+file_rmed+""")
 
-RenameSource('Local Base', """+file_rmed+""")
+
+
 keys="""+file_rmed+""".GetProperty("FieldsTreeInfo")[::2]
 #Get all the fields contained in the ResultFile
 arr_name_with_dis=[elt.split("/") for elt in keys]
-newlist=[]
 
-comfield='ComSup0'
-        
-for arr in arr_name_with_dis:	
-    if arr[0]=="TS"""+str(timestep)+"""\" and arr[2]==comfield :
-        newlist.append("/".join(arr)) 
-        
-"""+file_rmed+""".AllArrays = newlist       
-"""+file_rmed+""".GenerateVectors = 1   
+
+for arr in arr_name_with_dis:
+    if \'"""+fieldname+"""\' in arr[3]:
+        comfield=arr[2]
+        timestep=arr[0]
+
+print(timestep,comfield)
+newlist=[]
+for arr in arr_name_with_dis:
+	if arr[0]==timestep and arr[2]==comfield :
+		newlist.append("/".join(arr)) 
+
+print(newlist)
+"""+file_rmed+""".AllArrays = newlist
+"""+file_rmed+""".GenerateVectors = 1
+
 
 renderView1 = GetActiveViewOrCreate('RenderView')
  
@@ -469,7 +298,7 @@ source = GetActiveSource()
 
 # Pass cell data to cell centers, since glyphs can only be applyed on points
 
-ELNOMesh1 = ELNOfieldToSurface(Input=LocalCoordinates)
+ELNOMesh1 = ELNOfieldToSurface(Input="""+file_rmed+""")
 
 # Guess an absolute scale factor form the bounding box dimensions
 bounds = source.GetDataInformation().DataInformation.GetBounds()
@@ -482,7 +311,6 @@ scale = length*scale_factor
 d_colors = {1: [1.0, 0.0, 0.0], # X: red
             2: [1.0, 1.0, 0.0], # Y: yellow
             3: [0.0, 1.0, 0.0]} # Z: green
-
 
 # For each 3 directions
 direction=["X","Y","Z"]
@@ -500,7 +328,9 @@ for i in xrange(1, 4):
             GlyphRepresentation = Show(DiffuseColor = color)
             RenameSource("LocalAxis_"+direction[i-1], Glyph1)
 
-            Render()
+            localAxis = FindSource('LocalAxis_"+direction[i-1]+"')
+            # hide data in view
+            Hide(localAxis, renderView1)
 
       """).split("\n")
 
@@ -532,9 +362,3 @@ sg = SalomePyQt.SalomePyQt()
 sg.activateModule("ParaViS")  
 
       """).split("\n")      
-      
-   
-
-            
-            
-    

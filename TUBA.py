@@ -33,7 +33,7 @@ import logging
 import time
 import pprint
 
-from subprocess import Popen,PIPE
+from subprocess import Popen,PIPE, check_output
 
 # importes the namesspace of the TUBA-Module
 import tuba
@@ -107,13 +107,13 @@ def main(argv):
         salome_run = Popen(salome_root + ' ' + outputFile_Salome, shell='True', executable="/bin/bash")
         salome_run.wait()
     elif sys.argv[2] =='-aster':  # still not working properly
+
         aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True',executable="/bin/bash")
         aster_run.wait()# -*- coding: utf-8 -*-         
-
-        print("aster_run---------------",aster_run.communicate())
-        salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
-        salome_stop.wait()
-        salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
+        
+#        salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
+#        salome_stop.wait()
+#        salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
     elif sys.argv[2] =='-all':  # still not working properly
         completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
 
@@ -128,6 +128,17 @@ def main(argv):
         salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
         salome_stop.wait()
         salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
+    elif sys.argv[2] =='-test':  # still not working properly
+        completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+
+        salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
+        salome_stop.wait()
+        salome_run = Popen(salome_root + ' -t ' + outputFile_Salome, shell='True', executable="/bin/bash")
+        salome_run.wait()
+        
+        aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True', executable="/bin/bash")
+        aster_run.wait()# -*- coding: utf-8 -*-         
+
     elif sys.argv[2] =='-print':
         completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
         printall_tuba_points_vectors(completed_dict_tubapoints,completed_dict_tubavectors)
@@ -142,6 +153,7 @@ def executetuba(inputFileTuba):
     logging.info("Input: "+inputFileTuba)
     logging.info("argv1: "+sys.argv[1])
     logging.info("argv2: "+sys.argv[2])
+    
     exec(open(inputFileTuba).read())
 
     completed_dict_tubavectors = tub.dict_tubavectors

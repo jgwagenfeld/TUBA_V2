@@ -21,6 +21,7 @@ current_insulation=[]
 
 tubapoint_counter = 0
 dict_tubapoints = []
+tubapoint_dict={}
 current_tubapoint = []
 
 tubavector_counter = 0

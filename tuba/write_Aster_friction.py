@@ -187,7 +187,7 @@ result_lines=[]
               
 RES[i]=MECA_STATIQUE(
          MODELE=MODMECA,
-         CHAM_MATER=CHMATH,
+         CHAM_MATER=CH_MAT,
          CARA_ELEM=CAP[i],
          INST=1,
          EXCIT=(
@@ -327,7 +327,7 @@ except:
 
 RESU=MECA_STATIQUE(
          MODELE=MODMECA,
-         CHAM_MATER=CHMATH,
+         CHAM_MATER=CH_MAT,
          CARA_ELEM=CAP[last],
          INST=1,
          EXCIT=(

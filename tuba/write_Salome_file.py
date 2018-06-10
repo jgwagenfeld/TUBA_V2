@@ -214,7 +214,7 @@ def Project():
             if tubavector.model in ["VOLUME"]:
                 self._vector_round_3D(tubavector)
 
-            elif tubavector.model in ["TUBE","TUYAU","BAR"]:
+            elif tubavector.model in ["TUBE","TUYAU","BAR","CABLE"]:
                 self._vector_round_1D(tubavector)
 
             elif tubavector.model in ["POUTRE_RECTANGLE", "RECTANGULAR"]:
@@ -228,8 +228,17 @@ def Project():
         """This function creates a round tube-profile with the specified wall thickness as visualization
         The actual mesh is only one-dimensional. The crosssection is later specified in the Aster-File"""
 
-        [radius,thickness]=tubavector.section
+        if tubavector.model in ["BAR"]:
+            radius=tubavector.section[0]
+            thickness=tubavector.section[1]
+        elif tubavector.model in ["CABLE"]:
+            [radius,pretension]=tubavector.section
+            thickness=0
+        else:
+            [radius,thickness]=tubavector.section
         model=tubavector.model
+
+        print("Radius:",radius)
 
         name_startpoint = tubavector.start_tubapoint.name
         name_endpoint=tubavector.end_tubapoint.name
@@ -258,6 +267,9 @@ def Project():
         if model in ["TUYAU"]:
             self.lines=self.lines+("    Quadratic_Mesh = Regular_1D.QuadraticMesh()").split("\n")
 
+
+        print("Radius2:",radius)
+        
         self.lines=self.lines+("""
     smesh.SetName("""+ name_vector+"M,'"+name_vector+"""')
     """+name_vector+"""M.Compute()

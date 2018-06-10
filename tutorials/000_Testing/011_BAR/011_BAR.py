@@ -5,8 +5,8 @@ auto_converter(mmNS)
 outerRadius=35.0   #in mm
 WallThickness=4.0   #in mm
 
-Model("BAR")   #Model("TUYAU")
-SectionTube(outerRadius,WallThickness)
+
+SectionBar(outerRadius,WallThickness)
 Material("SS304")  #Check the material library or autodoc for a complete list of available material properties.
 
 #Sets the temperature of the vector objects. T_ref denotes the temperature at which thermal dilatation is supposed to be 0.

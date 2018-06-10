@@ -47,7 +47,7 @@ To run Tuba in your terminal via bash-command add the following lines to your  `
 
 ::
 
-    TUBA=local tuba directory path
+    TUBA=/home/Jan/TUBA    #introduce here your own path to TUBA
     export PATH=$TUBA:$PATH
     export TUBA
 

@@ -49,6 +49,8 @@ class TubaPoint:
             tub.current_tubapoint=self
         logging.debug("Created Tubapoint: "+self.name)
         tub.dict_tubapoints.append(self)  #Write the object instance into the global point list
+        tub.tubapoint_dict[self.name]=self
+        
 #------------------------------------------------------------------------------
     def is_element_start(self):
         '''checks if the given tubapoint is a start_tubapoint and as well end_tubapoint of a vector.
@@ -128,7 +130,7 @@ class TubaVector:
         self.section = tub.current_section
         self.section_orientation = tub.current_section_orientation
         self.material = tub.current_material
-        self.temperature = tub.current_temperature
+        self.temperature = [tub.current_temperature,tub.current_ref_temperature]
         self.pressure = tub.current_pressure
         self.linear_force = []
         self.sif = 1

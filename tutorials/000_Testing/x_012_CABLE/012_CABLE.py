@@ -10,22 +10,13 @@ Material("SS304")  #Check the material library or autodoc for a complete list of
 
 P(0,0,0)  
 FixPoint()
-V(0,0,1000,name_point='top')
+V(0,0,4000,name='top')
+Force(x=1000)
 
+SectionCable(4,10000)
+V(1000,1000,-4000)
+Block(x=0,y=0,z=0)
 
-SectionTube(outerRadius,WallThickness)
-V(1000,1000,-1000)
-FixPoint()
 gotoP('top')
-
-V(1000,-1000,-1000)
-FixPoint()
-gotoP('top')
-
-V(-1000,1000,-1000)
-FixPoint()
-gotoP('top')
-
-V(-1000,-1000,-1000)
-FixPoint()
-
+V(1000,-1000,-4000)
+Block(x=0,y=0,z=0)

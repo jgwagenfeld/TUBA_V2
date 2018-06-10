@@ -1,9 +1,0 @@
-
-#!/bin/sh
-cd ${0%/*} || exit 1    # Run from this directory
-
-echo "--------"
-echo "Deleting all files but TUBA-script ..."
-find . -not -name "007_Pyramide.py"  -exec rm -rf {} \;
-echo "--------"
-#------------------------------------------------------------------------------
