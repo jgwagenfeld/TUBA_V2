@@ -1,0 +1,20 @@
+P actions make_etude
+P aster_root /home/jangeorg/salome_meca/appli_V2017.0.2/salome shell -- as_run
+P lang en
+P mem_aster 100.0
+P memjob 3072000
+P memory_limit 3000.0
+P mode interactif
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P ncpus 2
+P rep_trav /tmp/jangeorg-jangeorg-VirtualBox-interactif.9587
+P version 13.4
+A memjeveux 375.0
+A tpmax 9000000
+F comm /home/jangeorg/Desktop/aster-calc-section-master/SectionAuto.comm D  1
+F mmed /home/jangeorg/Desktop/aster-calc-section-master/SectionAuto.mmed D  20
+F mess /home/jangeorg/Desktop/aster-calc-section-master/SectionAuto.mess R  6
+F resu /home/jangeorg/Desktop/aster-calc-section-master/SectionAuto.resu R  8
+F rmed /home/jangeorg/Desktop/aster-calc-section-master/SectionAuto.rmed R  80
+F dat /home/jangeorg/Desktop/aster-calc-section-master/SectionAuto.txt R  26

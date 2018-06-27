@@ -49,5 +49,3 @@ V(0,0,1000)
 V(-1000,0,0)
 Force(z=10000)
 
-
-Calculate("Statique_Linear")

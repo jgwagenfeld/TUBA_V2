@@ -36,4 +36,4 @@ gotoP("EndA")
 Vc(1000)
 Spring(20,20,20)
 
-Calculate("Statique_Linear")
+

@@ -34,3 +34,7 @@ TUBA 0.1
 2018/6/5:  added CABLE section (nonlinear simulation - still not giving prope results)
 
 -----------------------------------------------
+
+2018/6/24:  added structure for custom profile calculation/usage (based on Core Engineering)
+
+2018/6/25:  added NPS/DN tables to the Section 1function (now possible to use strings "DN15" for outer_radius and "SCH-STD" for thickness)

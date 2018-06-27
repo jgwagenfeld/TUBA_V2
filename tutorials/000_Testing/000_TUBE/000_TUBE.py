@@ -14,19 +14,22 @@ Temperature(550,T_ref=20)
 #Set the internal pressure of the piping. The unit bar() is a function from UnitCalculator which translates bar to N/mm2
 #These unit functions can only be used if the UnitCalculator module is imported(first lines)
 Pressure(2*bar())
+#---------------------------------
 
-
-P(x=0,y=0,z=0,name="a") 								#equivalent to P(0,0,0,"a)
-FixPoint()     											#equivalent to Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)
+P(x=0,y=0,z=0,name="a") 										#equivalent to P(0,0,0,"a)
+FixPoint()     													#equivalent to Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)
 V(2*m(),0,0)
 Bent(radius=400,angle_deg=45,orientation=90,mode="add")
 Vc(length=500)
 
 P(x=0,y=100,z=0)
-FixPoint()     											#equivalent to Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)
+FixPoint()     													#equivalent to Block(x=0,y=0,z=0,rx=0,ry=0,rz=0)
 V(2*m(),0,0)    														
 Bent(radius=400,angle_deg=45,orientation=90,mode="intersect")
 Vc(length=500)
+
+
+SectionTube("DN150","SCH-STD")									#check TUBA/Section/tables what kind of pipes are available
 
 P(0,1000,0,name="c")  
 FixPoint()
@@ -37,8 +40,8 @@ Vc(length=500)
 Force(x=0,y=100,z=100)
 
 gotoP("c")
+SectionTube("3 1/2","SCH-STD")
 for i in range(0,5):
 	V(0,0,100)
 
 
-Calculate("Statique_Linear")

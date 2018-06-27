@@ -31,4 +31,4 @@ Vc_3D(1000)
 gotoP("a")
 Vc_3D(1000)
 Spring(20,20,20)
-Calculate("Statique_Linear")
+

@@ -32,6 +32,8 @@ General:
    --Change: included structelem in a developpermode
 
 --done--  -Run CodeAster directly with popen()
+
+-- create a TUBA manager
 --------------------------------------------------------------------------------------------
 
 Check if it is possible to make TUBA a SalomePlugin

@@ -13,6 +13,10 @@ import tuba_vars_and_funcs as tub
 from external.UnitCalculator import *
 auto_converter(mmNS)
 
+import numpy as np
+import csv
+import os
+
 #==============================================================================
 #==============================================================================
 ## Point Properties
@@ -36,7 +40,6 @@ def Block (x='x',y='x',z='x',rx='x',ry='x',rz='x',reference="global"):
 
 def Spring (x=0, y=0, z=0, rx=0, ry=0, rz=0,reference="global"):
     """appends a stiffness matrix to the current tubapoint.
-
         Multiple stiffness matrixes can be summed up.    
     """
     stiffness=[x,y,z,rx,ry,rz]
@@ -48,7 +51,6 @@ def Mass (mass):
     
 def Force(x=0,y=0,z=0,reference="global"):
     """appends a force-vector to the current tubapoint
-
        Multiple force vectors can be summed up. 
     """
     force=eu.Vector3(x,y,z)
@@ -56,7 +58,6 @@ def Force(x=0,y=0,z=0,reference="global"):
 
 def Moment(rx=0,ry=0,rz=0,reference="local"):
     """appends a moment to the current tubapoint
-
        Multiple moments can be summed up. 
     """
     moment = eu.Vector3(rx,ry,rz)
@@ -72,10 +73,8 @@ def Friction(mu=0):
 ## Line Properties
 #==============================================================================
 #==============================================================================
-        
 def Temperature(T=20,T_ref=20):    
     '''Global Function:Applies the Temperature T to the following constructed Sections. T_ref is used to simulate cold springs.
-      
        At T=T_ref the thermal dilation is set to 0. So if you want to pretension a piping part so that at f.ex. T=300°C 
        the thermal dilation is zero, T_ref has to be set to 300°C'''
     tub.current_temperature=T
@@ -84,47 +83,78 @@ def Temperature(T=20,T_ref=20):
 def SectionBar(outer_radius,wall_thickness):
     """Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n
        Additional cross-sections will be added later on"""
-    if (outer_radius)==str:
-          a="NPS" 
-          b="DN"
-
     tub.current_model="BAR"
-    tub.current_section=[outer_radius, wall_thickness]
+    
+    if isinstance(outer_radius,str) and isinstance(wall_thickness,str):
+        with open(os.environ["TUBA"]+'/external/Section/tables/Pipe_'+wall_thickness+'.csv') as csvfile:
+            reader = csv.DictReader(csvfile,delimiter=';')
+            
+            for row in reader:
+                if row['PSize'] == outer_radius:
+                    tub.current_section={"outer_radius":float(row['OD']),"wall_thickness":float(row['thk'])}
+    else:
+        tub.current_section={"outer_radius":outer_radius,"wall_thickness":wall_thickness}
 
 def SectionTube(outer_radius,wall_thickness):
     """Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n
        Additional cross-sections will be added later on"""
-    if (outer_radius)==str:
-          a="NPS" 
-          b="DN"
 
     tub.current_model="TUBE"
-    tub.current_section=[outer_radius, wall_thickness]
+
+    if isinstance(outer_radius,str) and isinstance(wall_thickness,str):
+        with open(os.environ["TUBA"]+'/external/Section/tables/Pipe_'+wall_thickness+'.csv') as csvfile:
+            reader = csv.DictReader(csvfile,delimiter=';')
+            
+            for row in reader:
+                if row['PSize'] == outer_radius:
+                    tub.current_section={"outer_radius":float(row['OD']),"wall_thickness":float(row['thk'])}
+    else:
+        tub.current_section={"outer_radius":outer_radius,"wall_thickness":wall_thickness}
 
 def SectionTuyau(outer_radius,wall_thickness):
     """Global Function:Defines the cross-section of the piping,beam. In this case, outer Radius and thickness of the piping can be defined.\n
        Additional cross-sections will be added later on"""
-    if (outer_radius)==str:
-          a="NPS" 
-          b="DN"
-    tub.current_model="TUYAU"
-    tub.current_section=[outer_radius, wall_thickness]
 
+    tub.current_model="TUYAU"
+
+    if isinstance(outer_radius,str) and isinstance(wall_thickness,str):
+        with open(os.environ["TUBA"]+'/external/Section/tables/Pipe_'+wall_thickness+'.csv') as csvfile:
+            reader = csv.DictReader(csvfile,delimiter=';')
+            
+            for row in reader:
+                if row['PSize'] == outer_radius:
+                    tub.current_section={"outer_radius":float(row['OD']),"wall_thickness":float(row['thk'])}
+    else:
+        tub.current_section={"outer_radius":outer_radius,"wall_thickness":wall_thickness}
 
 def SectionCable(radius,pretension=0):
     """Global Function:Defines the properties of a cable - radius and pretension of the cable. A cable is nonlinear, therefore the simulation
     will be nonlinear as well
     """
     tub.current_model="CABLE"
-    tub.current_section=[radius, pretension]
-
+    tub.current_section={"radius":radius,"pretension":pretension}
 
 def SectionRectangular(height_y,height_z=0,thickness_y=0,thickness_z=0):
     """Global Function: Defines the cross-section of the beam with rectangular crosssection.
        height_y and height_z are the dimensions in the local coordinate system."""   
 
     tub.current_model="RECTANGULAR"
-    tub.current_section=[height_y,height_z,thickness_y,thickness_z]
+    tub.current_section={"height_y":height_y,"height_z":height_z,
+                         "thickness_y":thickness_y,"thickness_z":thickness_z}
+
+def SectionIBeam(profile_name):
+    with open(os.environ["TUBA"]+'/external/Section/IBeam.input') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['NAME'] == profile_name:
+                tub.current_section=row
+
+    with open(os.environ["TUBA"]+'/external/Section/IBeam.output') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            tub.current_section['alpha'] = row['ALPHA']
+
+    tub.current_model="IBeam"
 
 def SectionOrientation(degree):
     """Global Function: Lets you define an rotationangle (in degree) for your section
@@ -137,7 +167,6 @@ def Pressure(pressure):
        results.             
     """
     tub.current_pressure=pressure
-
 
 def Material(material):
     """Global Function: Appends the choosen material to the following vector elements. The material 
@@ -170,7 +199,6 @@ def RhoFluid(density_fluid):
     """allows to take into account the weight of the fluid in the pipe. """
     tub.current_rho_fluid=density_fluid
 
-
 def Insulation(insulation_thickness, insulation_density):
     """by providing insulation thickness and density, this function
     allows to take into account the weight of the pipe insulation. """
@@ -178,7 +206,6 @@ def Insulation(insulation_thickness, insulation_density):
 
 def Windload(x,y,z):
     pass
-
 
 def SIF_and_FLEX(SIF='',FLEX=''):
     if FLEX:

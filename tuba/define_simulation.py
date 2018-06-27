@@ -9,26 +9,30 @@ import logging
 import math
 import tuba_vars_and_funcs as tub
 
-#class Simulation:
-#
-#    def __init__(self):
-#        self.calculation = name_vector
-#        self.table=False
+class TubaBuilder:
+
+    def __init__(self):
+        self.current_temperature = 20
+        self.current_ref_temperature = 20
+        self.current_pressure = ""
+        self.current_model = "TUBE"
+        self.current_section = []
+        self.current_section_orientation = 0
+        self.current_material = "SS316"
+        
+        self.current_rho_fluid=0
+        self.current_insulation=[]
+        
+        self.tubapoint_counter = 0
+        self.dict_tubapoints = []
+        self.current_tubapoint = []
+        
+        self.tubavector_counter = 0
+        self.dict_tubavectors = []
+        self.current_tubavector = []
 
 
-
-def Mesh(Elements_per_vector):
-    """Parameter for mesh refinement
-    """ 
-
-def Calculate(calculation):
-    """Generates the simulation and PostProcessing-Object. 
-    \n
-    Possible Entries: \n
-    "StaticLinear"        
-    """ 
-    pass
-    #sim=Calculate(calculation)    
-    
-def writeTables():
-     pass
+    def getVector(name):
+        
+        vector=[]
+        return vector

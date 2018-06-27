@@ -145,14 +145,11 @@ class TubaVector:
 
         self._update_global_forces()
 
-
-
     def _update_attached_tubapoints(self):
 
 #if the new vector is not colinear with the last one, both span a new reference plane and local_y can be changed
 #   new_vect.start_tubapoint.local_y=
         if not self.start_tubapoint.is_element_start :
-            print(self.start_tubapoint.name)
             if is_colinear(self.vector,self.start_tubapoint.local_x)==False:
                 self.start_tubapoint.local_y=self.start_tubapoint.get_last_vector().vector.normalized()
                 self.local_y=self.start_tubapoint.get_last_vector().vector.normalized()
@@ -176,8 +173,8 @@ class TubaVector:
         if self.model in ["TUBE","TUYAU"]:
             if tub.current_rho_fluid:
                 density_fluid=tub.current_rho_fluid
-                outer_radius=self.section[0]
-                wall_thickness=self.section[1]
+                outer_radius==float(self.section["outer_radius"])
+                wall_thickness=float(self.section["wall_thickness"])
                 force_grav_fluid= math.pi*(outer_radius-wall_thickness)**2*density_fluid*tub.G
                 logging.info("Fluid_Weight N/mm "+ force_grav_fluid)
                 self.linear_force.append(eu.Vector3(0,0,-force_grav_fluid))
@@ -188,7 +185,7 @@ class TubaVector:
         if self.model in ["TUBE","TUYAU"]:
             if tub.current_insulation:
                 [insulation_thickness, insulation_density]=tub.current_insulation
-                outer_radius=self.section[0]
+                outer_radius=self.section["outer_radius"]
 
                 force_grav_insulation= math.pi*((outer_radius+insulation_thickness)**2-outer_radius**2)*insulation_density*9.81
                 logging.info("Insulation_Weight N/mm"+ force_grav_insulation)
@@ -214,8 +211,8 @@ class TubaBent(TubaVector):
 
     def _calculate_SIF_and_Cflex(self):
         """calculate Stress intensification and flexibility factor"""
-        thickness=self.section[1]
-        outerRadius=self.section[0]
+        thickness=self.section["wall_thickness"]
+        outerRadius=self.section["outer_radius"]
 
         h=(thickness*self.bending_radius)/math.pow((outerRadius-thickness/2),2)
         sif=0.9/(h**0.666666)
@@ -318,7 +315,6 @@ def V(x,y,z,name=""):
     """Creates a vector and an end point starting from the specified tubapoint. If no tubapoint-name is specified, the vector will be created starting from the last created point. The direction is defined by the
     user input x,y,z.
     """
-    print("vector",x,",",y,z)
     if not name:
         name="P"+str(tub.tubapoint_counter)
     #Get start point of vector
@@ -455,7 +451,6 @@ intersection point of the current and new vector of the piping
         bent_tubavector = TubaBent(start_tubapoint,end_tubapoint,center_tubapoint
                            ,radius,rotation_axis,angle_deg*math.pi/180.0, name_vect)
         #------------------------------------------------------------------------------
-    
         logging.debug("===================================")
         logging.debug("                                   ")
         logging.debug("           tubabent                ")
@@ -474,7 +469,6 @@ intersection point of the current and new vector of the piping
 def Bent_3D(radius,angle_deg="",orientation="",vector="",mode="intersect",name=""):
     Bent(radius=radius,angle_deg=angle_deg,orientation=orientation,vector=vector,mode=mode,name=name)
     tub.dict_tubavectors[-1].model="VOLUME"
-    
 #==============================================================================
 #==============================================================================        
 def TShape_3D(incident_radius,incident_thickness,angle_orient,
@@ -497,7 +491,7 @@ def TShape_3D(incident_radius,incident_thickness,angle_orient,
         raise RuntimeError("Only \"intersect\" or \"add\" is a valid argument for mode")
 
     if incident_halflength == 0: incident_halflength=4*incident_radius
-    if main_halflength == 0: main_halflength=4*tub.current_section[0]   #current_section[0]=Radius Main
+    if main_halflength == 0: main_halflength=4*float(tub.current_section["outer_radius"])
 
     center_pos = tub.current_tubapoint.pos + \
                                      tub.current_tubapoint.local_x*main_halflength 
@@ -532,7 +526,7 @@ def TShape_3D(incident_radius,incident_thickness,angle_orient,
 
 #------------------------------------------------------------------------------
 
-    incident_section = [incident_radius,incident_thickness]
+    incident_section = {"outer_radius":incident_radius,"wall_thickness":incident_thickness}
     
     name = "V"+str(tub.tubavector_counter)+"_TShape"
 #------------------------------------------------------------------------------
@@ -540,7 +534,6 @@ def TShape_3D(incident_radius,incident_thickness,angle_orient,
                  vector_center_incidentend,incident_section,name)
     
 #------------------------------------------------------------------------------
-
 #==============================================================================
 def dihedral_vector(local_y,local_x,thetad3x,thetad2x):
     '''calculates the dihedral vector. For more information check

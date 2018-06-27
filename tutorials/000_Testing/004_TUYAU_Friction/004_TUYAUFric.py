@@ -55,5 +55,3 @@ Friction(mu=1)
 Spring(3,3,3)
 
 
-
-Calculate("Statique_Linear")

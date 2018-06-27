@@ -1,0 +1,666 @@
+# ------------------------------------------------------------------------------------------
+# Impression du contenu du fichier de commandes à exécuter :
+# ------------------------------------------------------------------------------------------
+DEBUT(PAR_LOT='NON'); # Setting to use python
+
+import numpy as np
+import os
+WORKING_DIR='/home/jangeorg/Desktop/aster-calc-section-master/' # Working directory
+OUTPUT_FILE='SectionAuto.output' # Filename of the output file
+fileOutput = WORKING_DIR + OUTPUT_FILE # Define output file
+
+mesh=LIRE_MAILLAGE(UNITE=20,
+                   INFO_MED=1,
+                   INFO=1,
+                   FORMAT='MED',);
+
+section=MACR_CARA_POUTRE(MAILLAGE=mesh,
+                         GROUP_MA_BORD='MyBorder',
+                         GROUP_NO='MyPoint',
+                         INFO=1,
+                         ORIG_INER=(0,0),
+                         );
+
+
+IMPR_TABLE(TABLE=section,
+           FORMAT='TABLEAU',
+           UNITE=26, 
+           SEPARATEUR=' * ',
+           TITRE='xsection of L-beam');
+
+f = open(fileOutput,"a") # Open output file
+sect = section.EXTR_TABLE() # Extract aster object
+
+
+# Processing of the results
+output='%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f'
+nameOutput=[('A_M',float),('CDG_Y_M',float),('CDG_Z_M',float),('IY_G_M',float),('IZ_G_M',float),('IYZ_G_M',float),('A',float),('CDG_Y',float),('CDG_Z',float),('IY_G',float),('IZ_G',float),('IYZ_G',float),('IY',float),('IZ',float),('ALPHA',float),('Y_MAX',float),('Y_MIN',float),('Z_MAX',float),('Z_MIN',float),('R_MAX',float),('RY',float),('RZ',float),('Y_P',float),('Z_P',float),('IY_P',float),('IZ_P',float),('IYZ_P',float),('IYR2_G',float),('IZR2_G',float),('IYR2',float),('IZR2',float),('IYR2_P',float),('IZR2_P',float),('JX',float),('RT',float),('PCTY',float),('PCTZ',float),('EY',float),('EZ',float),('JG',float),('AY',float),('AZ',float)]
+n=len(sect.values()[nameOutput[0][0]])
+dataOutput = np.zeros(n,dtype=nameOutput)
+for str in [y[0] for y in nameOutput]:
+    dataOutput[str] = sect.values()[str]
+np.savetxt(f,dataOutput,fmt=output,comments='') # Write results in output file
+f.close() # Close output file
+
+
+#A_M=section['A_M']
+#CDG_Y_M=section['CDG_Y_M']
+#CDG_Z_M=section['CDG_Z_M']
+#IY_G_M=section['IY_G_M']
+#IZ_G_M=section['IZ_G_M']
+#IYZ_G_M=section['IYZ_G_M']
+#A=section['A']
+#CDG_Y=section['CDG_Y']
+#CDG_Z=section['CDG_Z']
+#IY_G=section['IY_G']
+#IZ_G=section['IZ_G']
+#IYZ_G=section['IYZ_G']
+#IY=section['IY']
+#IZ=section['IZ']
+#ALPHA=section['ALPHA']
+#Y_MAX=section['Y_MAX']
+#Y_MIN=section['Y_MIN']
+#Z_MAX=section['Z_MAX']
+#Z_MIN=section['Z_MIN']
+#R_MAX=section['R_MAX']
+#RY=section['RY']
+#RZ=section['RZ']
+#Y_P=section['Y_P']
+#Z_P=section['Z_P']
+#IY_P=section['IY_P']
+#IZ_P=section['IZ_P']
+#IYZ_P=section['IYZ_P']
+#IYR2_G=section['A']
+#IZR2_G=section['A']
+#IYR2=section['A']
+#IZR2=section['A']
+#IXR2_P=section['A']
+#IYR2_P=section['A']
+#JX=section['JX']
+#RT=section['RT']
+#PCTY=section['PCTY']
+#PCTZ=section['PCTZ']
+#EY=section['EY']
+#EZ=section['EZ']
+#JG=section['JG']
+#AY=section['AY']
+#AZ=section['AZ']
+
+#dataOutput=[A_M,CDG_Y_M,CDG_Z_M,IY_G_M,IZ_G_M,IYZ_G_M,A,CDG_Y,CDG_Z,IY_G,IZ_G,IYZ_G,IY,IZ,ALPHA,Y_MAX,Y_MIN,Z_MAX,Z_MIN,R_MAX,RY,RZ,Y_P,Z_P,IY_P,IZ_P,IYZ_P,,,,,,,,
+#np.savetxt(f,dataOutput,fmt=output,comments='') # Write results in output file
+#f.close() # Close output file
+
+FIN();
+
+# ------------------------------------------------------------------------------------------
+
+  Ouverture en écriture du fichier ./vola.1
+                                                                                
+                                                                                
+              -- CODE_ASTER -- VERSION : EXPLOITATION (stable) --               
+                                                                                
+                     Version 13.4.0 modifiée le 24/10/2017                      
+                     révision d3b9d70df6c4 - branche 'v13'                      
+                         Copyright EDF R&D 1991 - 2018                          
+                                                                                
+                    Exécution du : Sun Jun 24 17:06:16 2018                     
+                    Nom de la machine : jangeorg-VirtualBox                     
+                              Architecture : 64bit                              
+                          Type de processeur : x86_64                           
+      Système d'exploitation : Linux debian stretch/sid  4.4.0-127-generic      
+                        Langue des messages : en (UTF-8)                        
+                                                                                
+                           Version de Python : 2.7.10                           
+                            Version de NumPy : 1.9.2                            
+                           Parallélisme MPI : inactif                           
+                          Parallélisme OpenMP : actif                           
+                        Nombre de processus utilisés : 2                        
+                     Version de la librairie HDF5 : 1.8.14                      
+                      Version de la librairie MED : 3.2.1                       
+                     Version de la librairie MFront : 3.0.0                     
+                     Version de la librairie MUMPS : 5.1.1                      
+                        Librairie PETSc : non disponible                        
+                     Version de la librairie SCOTCH : 6.0.4                     
+
+                  Mémoire limite pour l'exécution : 3000.00 Mo                  
+                   consommée par l'initialisation : 549.43 Mo                   
+                  par les objets du jeu de commandes : 0.00 Mo                  
+                 reste pour l'allocation dynamique : 2448.84 Mo                 
+                Taille limite des fichiers d'échange : 12.00 Go                 
+                                                                                
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0001            Concept de type : -
+  # ------------------------------------------------------------------------------------------
+  DEBUT(PAR_LOT='NON',
+        INFO=1,
+        IMPR_MACRO='NON',
+        DEBUG=_F(JEVEUX='NON',
+                 JXVERI='NON',
+                 HIST_ETAPE='NON',
+                 SDVERI='NON',),
+        MEMOIRE=_F(TAILLE_BLOC=800.0,
+                   TAILLE_GROUP_ELEM=1000,),
+        RESERVE_CPU=_F(BORNE=900,),
+        MESURE_TEMPS=_F(MOYENNE='NON',
+                        NIVE_DETAIL=1,),
+        )
+
+   
+   !------------------------------------------------------------------------------------!
+   ! <A> <SUPERVIS_1>                                                                   !
+   !                                                                                    !
+   !  L'utilisation du mot-clé PAR_LOT='NON' permet d'accéder en lecture et en écriture !
+   !  au contenu des concepts Aster. De ce fait, votre étude est exclue du périmètre    !
+   !  qualifié de Code_Aster puisque toutes ses étapes ne peuvent être certifiées.      !
+   !                                                                                    !
+   !  Conseils :                                                                        !
+   !    - Il n'y a pas particulièrement de risque de résultat faux... sauf si votre     !
+   !      programmation l'introduit.                                                    !
+   !    - Distinguez le calcul lui-même (qui doit sans doute passer en PAR_LOT='OUI')   !
+   !      des post-traitements (qui nécessiteraient le mode PAR_LOT='NON') qui peuvent  !
+   !      être réalisés en POURSUITE.                                                   !
+   !                                                                                    !
+   !                                                                                    !
+   ! Ceci est une alarme. Si vous ne comprenez pas le sens de cette                     !
+   ! alarme, vous pouvez obtenir des résultats inattendus !                             !
+   !------------------------------------------------------------------------------------!
+   
+
+  Valeur initiale du temps CPU maximum =   9000000 secondes
+  Valeur du temps CPU maximum passé aux commandes =   8999100 secondes
+  Réserve CPU prévue = 900 secondes
+
+  Ouverture en écriture du fichier ./glob.1
+
+  Ouverture en écriture du fichier ./vola.1
+
+  Ouverture en lecture du fichier /home/jangeorg/salome_meca/V2017.0.2/tools/Code_aster_stable-v134_smeca/lib/aster/elem.1
+
+     Nom de la base                          :  ELEMBASE
+     Créée avec la version                   :  13.04.00
+     Nombre d'enregistrements utilisés       :  44
+     Nombre d'enregistrements maximum        :  512
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre d'identificateurs utilisés       :  123
+     Taille maximum du répertoire            :  300
+     Pourcentage d'utilisation du répertoire :  41 %
+
+  Ouverture en lecture du fichier /home/jangeorg/salome_meca/V2017.0.2/tools/Code_aster_stable-v134_smeca/lib/aster/elem.1
+
+
+     Nom de la base                          :  ELEMBASE
+     Nombre d'enregistrements utilisés       :  44
+     Nombre d'enregistrements maximum        :  512
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès en lecture         :  62
+     Volume des accès en lecture             :         48.44 Mo.
+     Nombre total d'accès en écriture        :  0
+     Volume des accès en écriture            :          0.00 Mo.
+     Nombre d'identificateurs utilisés       :  123
+     Taille maximum du répertoire            :  300
+     Pourcentage d'utilisation du répertoire :  41 %
+
+  Relecture des catalogues des éléments faite.
+
+  Fin de lecture (durée  0.034405  s.) 
+  # Mémoire (Mo) :   596.21 /   588.52 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0001   user+syst:        0.06s (syst:        0.05s, elaps:        0.07s)
+  # ------------------------------------------------------------------------------------------
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0002            Concept de type : maillage_sdaster
+  # ------------------------------------------------------------------------------------------
+  mesh = LIRE_MAILLAGE(INFO=1,
+                       UNITE=20,
+                       FORMAT='MED',
+                       INFO_MED=1,
+                       VERI_MAIL=_F(APLAT=1.E-3,
+                                    VERIF='OUI',),
+                       )
+
+Vérification du maillage.
+
+------------ MAILLAGE mesh     - IMPRESSIONS NIVEAU  1 ------------
+
+DI-24-JUIN-2018 17:06:16                                                        
+
+NOMBRE DE NOEUDS                        2472
+
+NOMBRE DE MAILLES                       4942
+                              SEG2                  540
+                              TRIA3                4402
+
+NOMBRE DE GROUPES DE NOEUDS                3
+                              MyPoint                              1
+                              MySect                            2472
+                              MyBorder                           540
+
+NOMBRE DE GROUPES DE MAILLES               2
+                              MyBorder                           540
+                              MySect                            4402
+
+--------------------------------------------------------------------------------
+
+  # Mémoire (Mo) :   596.21 /   589.98 /    44.66 /    23.16 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0002   user+syst:        0.05s (syst:        0.01s, elaps:        0.04s)
+  # ------------------------------------------------------------------------------------------
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0003            Concept de type : table_sdaster
+  # ------------------------------------------------------------------------------------------
+  section = MACR_CARA_POUTRE(INFO=1,
+                             GROUP_MA_BORD=('MyBorder', ),
+                             ORIG_INER=(0, 0),
+                             MAILLAGE=mesh,
+                             GROUP_NO=('MyPoint', ),
+                             TABLE_CARA='NON',)
+
+
+Sur les 4942 mailles du maillage .9000000, on a demandé l'affectation de 4942, on a pu en affecter 4942
+ Modélisation     Type maille  Élément fini     Nombre
+ D_PLAN           TRIA3        MEDPTR3          4402
+                  SEG2         MEPLSE2          540
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.00
+
+ MATERIAU : .9000002
+ RELATION DE COMPORTEMENT: ELAS                            
+
+
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.03      0.01      0.02
+   
+   !----------------------------------------------------------------!
+   ! <A> <MODELISA7_9>                                              !
+   !                                                                !
+   !  le GROUP_NO :  MyBorder  existe déjà, on ne le crée donc pas. !
+   !                                                                !
+   !                                                                !
+   ! Ceci est une alarme. Si vous ne comprenez pas le sens de cette !
+   ! alarme, vous pouvez obtenir des résultats inattendus !         !
+   !----------------------------------------------------------------!
+   
+
+------------ MAILLAGE .9000005 - IMPRESSIONS NIVEAU  1 ------------
+
+ASTER 13.04.00 CONCEPT .9000005 CALCULE LE 24/06/2018 A 17:06:16 DE TYPE        
+MAILLAGE_SDASTER                                                                
+
+NOMBRE DE NOEUDS                        2472
+
+NOMBRE DE MAILLES                       4942
+                              SEG2                  540
+                              TRIA3                4402
+
+NOMBRE DE GROUPES DE NOEUDS                3
+                              MyPoint                              1
+                              MySect                            2472
+                              MyBorder                           540
+
+NOMBRE DE GROUPES DE MAILLES               2
+                              MyBorder                           540
+                              MySect                            4402
+
+--------------------------------------------------------------------------------
+
+
+Sur les 4942 mailles du maillage .9000005, on a demandé l'affectation de 4942, on a pu en affecter 4942
+ Modélisation     Type maille  Élément fini     Nombre
+ PLAN             SEG2         THPLSE2          540
+ PLAN             TRIA3        THPLTR3          4402
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.01      0.01      0.01
+
+ MATERIAU : .9000007
+ RELATION DE COMPORTEMENT: THER                            
+
+
+
+Le système linéaire à résoudre a 3552 degrés de liberté:
+   - 2472 sont des degrés de liberté physiques
+     (ils sont portés par 2472 noeuds du maillage)
+   - 1080 sont les couples de paramètres de Lagrange associés
+     aux 540 relations linéaires dualisées.
+
+La matrice est de taille 3552 équations.
+Elle contient 12045 termes non nuls si elle est symétrique et 20538 termes non nuls si elle n'est pas symétrique.
+Soit un taux de remplissage de   0.163 %.
+
+ Il n'y a pas d'état initial défini. On prend un état initial nul.
+
+  Archivage des champs
+    Champ stocké <TEMP> à l'instant  0.000000000000e+00 pour le numéro d'ordre 0
+NUMERO D'ORDRE:      0 INSTANT:   0.000E+00 DUREE MOYENNE:   7.836E-02
+#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      0.06      0.01      0.06
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.02      0.00      0.03
+
+Le système linéaire à résoudre a 2474 degrés de liberté:
+   - 2472 sont des degrés de liberté physiques
+     (ils sont portés par 2472 noeuds du maillage)
+   - 2 sont les couples de paramètres de Lagrange associés
+     aux 1 relations linéaires dualisées.
+
+La matrice est de taille 2474 équations.
+Elle contient 9350 termes non nuls si elle est symétrique et 16226 termes non nuls si elle n'est pas symétrique.
+Soit un taux de remplissage de   0.265 %.
+
+ Il n'y a pas d'état initial défini. On prend un état initial nul.
+
+  Archivage des champs
+    Champ stocké <TEMP> à l'instant  0.000000000000e+00 pour le numéro d'ordre 0
+NUMERO D'ORDRE:      0 INSTANT:   0.000E+00 DUREE MOYENNE:   7.189E-02
+#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      0.04      0.01      0.05
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.04      0.00      0.03
+
+Le système linéaire à résoudre a 2474 degrés de liberté:
+   - 2472 sont des degrés de liberté physiques
+     (ils sont portés par 2472 noeuds du maillage)
+   - 2 sont les couples de paramètres de Lagrange associés
+     aux 1 relations linéaires dualisées.
+
+La matrice est de taille 2474 équations.
+Elle contient 9350 termes non nuls si elle est symétrique et 16226 termes non nuls si elle n'est pas symétrique.
+Soit un taux de remplissage de   0.265 %.
+
+ Il n'y a pas d'état initial défini. On prend un état initial nul.
+
+  Archivage des champs
+    Champ stocké <TEMP> à l'instant  0.000000000000e+00 pour le numéro d'ordre 0
+NUMERO D'ORDRE:      0 INSTANT:   0.000E+00 DUREE MOYENNE:   9.094E-02
+#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      0.05      0.00      0.04
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.04      0.00      0.05
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.04      0.02      0.02
+
+ GROUP_NO orienté : noeud origine =  N20
+
+
+NOMBRE  DE GROUPES DE NOEUDS CREES :      1
+=======================================
+
+               ------------------------------------------------------
+               !         NOM DU GROUPE         ! NBRE DE NOEUDS DU  !
+               !            NOEUDS             !      GROUPE_NO     !
+               ------------------------------------------------------
+               !  MyBorder                     !       541          !
+               ------------------------------------------------------
+
+Vérification du maillage.
+
+------------ MAILLAGE .9000021 - IMPRESSIONS NIVEAU  1 ------------
+
+DI-24-JUIN-2018 17:06:17                                                        
+
+NOMBRE DE NOEUDS                         541
+
+NOMBRE DE MAILLES                        540
+                              SEG2                  540
+
+NOMBRE DE GROUPES DE MAILLES               1
+                              MyBorder                           540
+
+--------------------------------------------------------------------------------
+
+
+
+NOMBRE  DE GROUPES DE NOEUDS CREES :      1
+=======================================
+
+               ------------------------------------------------------
+               !         NOM DU GROUPE         ! NBRE DE NOEUDS DU  !
+               !            NOEUDS             !      GROUPE_NO     !
+               ------------------------------------------------------
+               !  MyBorder                     !       541          !
+               ------------------------------------------------------
+
+
+Sur les 540 mailles du maillage .9000021, on a demandé l'affectation de 540, on a pu en affecter 540
+ Modélisation     Type maille  Élément fini     Nombre
+ PLAN             SEG2         THPLSE2          540
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.00
+La colonne 'TR_NOR_1' est vide.
+La colonne 'TR_NOR_2' est vide.
+
+La colonne 'TR_NOR_3' est vide.
+
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.01      0.00      0.00
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.01      0.00      0.01
+
+------------ MAILLAGE .9000027 - IMPRESSIONS NIVEAU  1 ------------
+
+ASTER 13.04.00 CONCEPT .9000027 CALCULE LE 24/06/2018 A 17:06:17 DE TYPE        
+MAILLAGE_SDASTER                                                                
+
+NOMBRE DE NOEUDS                        2472
+
+NOMBRE DE MAILLES                       4942
+                              SEG2                  540
+                              TRIA3                4402
+
+NOMBRE DE GROUPES DE NOEUDS                2
+                              MyPoint                              1
+                              MySect                            2472
+
+NOMBRE DE GROUPES DE MAILLES               2
+                              MyBorder                           540
+                              MySect                            4402
+
+--------------------------------------------------------------------------------
+
+
+Sur les 4942 mailles du maillage .9000027, on a demandé l'affectation de 4942, on a pu en affecter 4942
+ Modélisation     Type maille  Élément fini     Nombre
+ PLAN             SEG2         THPLSE2          540
+ PLAN             TRIA3        THPLTR3          4402
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.01      0.00      0.00
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.03      0.02      0.02
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.03      0.01      0.02
+
+Le système linéaire à résoudre a 2472 degrés de liberté:
+   - 2472 sont des degrés de liberté physiques
+     (ils sont portés par 2472 noeuds du maillage)
+   - 0 sont les couples de paramètres de Lagrange associés
+     aux 0 relations linéaires dualisées.
+
+La matrice est de taille 2472 équations.
+Elle contient 9345 termes non nuls si elle est symétrique et 16218 termes non nuls si elle n'est pas symétrique.
+Soit un taux de remplissage de   0.265 %.
+#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      0.01      0.01      0.00
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.00      0.00      0.00
+
+Le système linéaire à résoudre a 2474 degrés de liberté:
+   - 2472 sont des degrés de liberté physiques
+     (ils sont portés par 2472 noeuds du maillage)
+   - 2 sont les couples de paramètres de Lagrange associés
+     aux 1 relations linéaires dualisées.
+
+La matrice est de taille 2474 équations.
+Elle contient 14292 termes non nuls si elle est symétrique et 26110 termes non nuls si elle n'est pas symétrique.
+Soit un taux de remplissage de   0.427 %.
+
+ Il n'y a pas d'état initial défini. On prend un état initial nul.
+ --- RENUMEROTATION DES NOEUDS DU MODELE (RCMK) :
+    --- NOMBRE DE COMPOSANTES CONNEXES DU MODELE :                    1
+    --- HAUTEUR DE COLONNE MOYENNE (EN NOEUDS)
+         (EN NE TENANT COMPTE QUE DES NOEUDS PHYSIQUES)
+         AVANT RENUMEROTATION: 3.774D+02
+         APRES RENUMEROTATION: 8.148D+02
+    --- LA NOUVELLE NUMEROTATION OBTENUE PAR L ALGORITHME "RCMK" NE SEMBLE PAS
+        MEILLEURE QUE L ORIGINALE. ELLE L'EST PEUT ETRE QUAND MEME DU FAIT DE LA 
+        PRISE EN COMPTE DES RELATIONS LINEAIRES ENTRE NOEUDS.
+
+Le système linéaire à résoudre a 2474 degrés de liberté:
+   - 2472 sont des degrés de liberté physiques
+     (ils sont portés par 2472 noeuds du maillage)
+   - 2 sont les couples de paramètres de Lagrange associés
+     aux 1 relations linéaires dualisées.
+
+  Archivage des champs
+    Champ stocké <TEMP> à l'instant  0.000000000000e+00 pour le numéro d'ordre 0
+NUMERO D'ORDRE:      0 INSTANT:   0.000E+00 DUREE MOYENNE:   5.522E+00
+#1      Resolution des systemes lineaires                 CPU (USER+SYST/SYST/ELAPS):      5.56      0.12      5.48
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.10      0.04      0.06
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.01      0.01      0.01
+  # Mémoire (Mo) :   669.52 /   643.89 /    69.33 /    35.04 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0003   user+syst:        7.69s (syst:        0.84s, elaps:        6.83s)
+  # ------------------------------------------------------------------------------------------
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0062            Concept de type : -
+  # ------------------------------------------------------------------------------------------
+  IMPR_TABLE(FORMAT='TABLEAU',
+             TITRE='xsection of L-beam',
+             TABLE=section,
+             UNITE=26,
+             SEPARATEUR=' * ',
+             COMM_PARA='',
+             COMMENTAIRE='#',
+             DEBUT_LIGNE='',
+             FIN_LIGNE='\n',
+             FIN_TABLE='',
+             INFO=1,
+             IMPR_FONCTION='NON',
+             FORMAT_R='E12.5',)
+
+  # Mémoire (Mo) :   669.52 /   643.89 /    69.33 /    35.04 (VmPeak / VmSize / Optimum / Minimum)
+  # Fin commande No : 0062   user+syst:        0.05s (syst:        0.02s, elaps:        0.05s)
+  # ------------------------------------------------------------------------------------------
+
+  # ------------------------------------------------------------------------------------------
+  # Commande No :  0065            Concept de type : -
+  # ------------------------------------------------------------------------------------------
+  FIN(INFO_RESU='OUI',
+      RETASSAGE='NON',
+      FORMAT_HDF='NON',
+      PROC0='OUI',)
+
+   
+   !-------------------------------------------------------------------------!
+   ! <I> <CATAMESS_89>                                                       !
+   !                                                                         !
+   !     Liste des alarmes émises lors de l'exécution du calcul.             !
+   !                                                                         !
+   !     Les alarmes que vous avez choisies d'ignorer sont précédées de (*). !
+   !     Nombre d'occurrences pour chacune des alarmes :                     !
+   !            MODELISA7_9          émise    1 fois                         !
+   !            SUPERVIS_1           émise    1 fois                         !
+   !-------------------------------------------------------------------------!
+   
+ ---------------------------------------------------------------------------
+ Concepts de la base: G
+    Nom       Type                 Taille (Mo)         Nombre      Nombre de
+                                                     d'objets       segments
+    TOTAL                                28.15            178            265
+  
+    mesh       MAILLAGE_SDASTER           0.52             36             62
+    section    TABLE_SDASTER              0.01             97             97
+    &FOZERO                               0.00              2              2
+    &&_NUM_C                              0.00              1              1
+    &CATA.AC                              0.00              2              4
+    &CATA.CL                              0.86              1              3
+    &CATA.GD                              0.14              4             11
+    &CATA.ME                              0.20              2              4
+    &CATA.OP                              0.32              4             19
+    &CATA.PH                              0.00              1              1
+    &CATA.PR                              0.00              2              4
+    &CATA.TE                             26.07             17             42
+    &CATA.TH                              0.01              2              4
+    &CATA.TM                              0.01              7             11
+ ---------------------------------------------------------------------------
+
+
+     Nom de la base                          :  GLOBALE
+     Nombre d'enregistrements utilisés       :  47
+     Nombre d'enregistrements maximum        :  62914
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès en lecture         :  7
+     Volume des accès en lecture             :          5.47 Mo.
+     Nombre total d'accès en écriture        :  61
+     Volume des accès en écriture            :         47.66 Mo.
+     Nombre d'identificateurs utilisés       :  1449
+     Taille maximum du répertoire            :  2000
+     Pourcentage d'utilisation du répertoire :  72 %
+
+
+     Nom de la base                          :  VOLATILE
+     Nombre d'enregistrements utilisés       :  3
+     Nombre d'enregistrements maximum        :  62914
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès en lecture         :  0
+     Volume des accès en lecture             :          0.00 Mo.
+     Nombre total d'accès en écriture        :  4
+     Volume des accès en écriture            :          3.12 Mo.
+     Nombre d'identificateurs utilisés       :  1076
+     Taille maximum du répertoire            :  2000
+     Pourcentage d'utilisation du répertoire :  53 %
+
+ <FIN> Arrêt normal dans "FIN".
+
+ La mémoire demandée au lancement est surestimée, elle est de 3000.00 Mo.
+ Le pic mémoire utilisée est de 669.52 Mo.
+
+
+
+     Nom de la base                          :  ELEMBASE
+     Nombre d'enregistrements utilisés       :  44
+     Nombre d'enregistrements maximum        :  512
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès en lecture         :  62
+     Volume des accès en lecture             :         48.44 Mo.
+     Nombre total d'accès en écriture        :  0
+     Volume des accès en écriture            :          0.00 Mo.
+     Nombre d'identificateurs utilisés       :  123
+     Taille maximum du répertoire            :  300
+     Pourcentage d'utilisation du répertoire :  41 %
+  
+ <I>       FERMETURE DES BASES EFFECTUEE
+  
+   STATISTIQUES CONCERNANT L'ALLOCATION DYNAMIQUE :
+     TAILLE CUMULEE MAXIMUM            :                   69  Mo.
+     TAILLE CUMULEE LIBEREE            :                   23  Mo.
+     NOMBRE TOTAL D'ALLOCATIONS        :               101643
+     NOMBRE TOTAL DE LIBERATIONS       :               101623
+     APPELS AU MECANISME DE LIBERATION :                    0
+     TAILLE MEMOIRE CUMULEE RECUPEREE  :                    0  Mo.
+     VOLUME DES LECTURES               :                    0  Mo.
+     VOLUME DES ECRITURES              :                    0  Mo.
+  
+   MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :      35.04 Mo
+     - IMPOSE DE NOMBREUX ACCES DISQUE
+     - RALENTIT LA VITESSE D'EXECUTION
+   MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :      69.33 Mo
+     - LIMITE LES ACCES DISQUE
+     - AMELIORE LA VITESSE D'EXECUTION
+   MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS     :     669.52 Mo
+     - COMPREND LA MEMOIRE CONSOMMEE PAR  JEVEUX, 
+       LE SUPERVISEUR PYTHON, LES LIBRAIRIES EXTERNES
+  
+ <I>       FIN D'EXECUTION LE : DI-24-JUIN-2018 17:06:23
+
+
+  <I> Informations sur les temps d'exécution
+      Temps cpu user total                    7.58 s
+      Temps cpu systeme total                 1.04 s
+      Temps elapsed total                     7.76 s
+      Temps restant                     8999092.24 s
+
+
+  La signature de la base sauvegardée est (à l'adresse 0) :
+    215e5a0b5bb54b221247ed543708783474059ed9
+
+ ********************************************************************************
+ * COMMAND                  :       USER :     SYSTEM :   USER+SYS :    ELAPSED *
+ ********************************************************************************
+ * init (jdc)               :       7.58 :       1.04 :       8.62 :       7.76 *
+ *  . compile               :       0.00 :       0.00 :       0.00 :       0.00 *
+ *  . exec_compile          :       7.02 :       0.98 :       8.00 :       7.13 *
+ * DEBUT                    :       0.01 :       0.05 :       0.06 :       0.07 *
+ * LIRE_MAILLAGE            :       0.04 :       0.01 :       0.05 :       0.04 *
+ * MACR_CARA_POUTRE         :       6.85 :       0.84 :       7.69 :       6.83 *
+ * IMPR_TABLE               :       0.03 :       0.02 :       0.05 :       0.05 *
+ * FIN                      :       0.02 :       0.06 :       0.08 :       0.07 *
+ *  . part Superviseur      :       1.03 :       0.31 :       1.34 :       1.15 *
+ *  . part Fortran          :       6.54 :       0.73 :       7.27 :       6.61 *
+ ********************************************************************************
+ * TOTAL_JOB                :       7.58 :       1.04 :       8.62 :       7.76 *
+ ********************************************************************************
+
+--- Fin de l'exécution
+EXECUTION_CODE_ASTER_EXIT_13216=0

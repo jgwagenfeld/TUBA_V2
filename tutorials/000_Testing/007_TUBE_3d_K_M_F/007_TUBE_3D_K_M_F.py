@@ -32,4 +32,3 @@ Block(x=-100)
 gotoP("a")
 Vc(1000)
 
-Calculate("Statique_Linear")

@@ -1,0 +1,95 @@
+                                                                                
+                                                                                
+              -- CODE_ASTER -- VERSION : EXPLOITATION (stable) --               
+                                                                                
+                     Version 13.4.0 modifiée le 24/10/2017                      
+                     révision d3b9d70df6c4 - branche 'v13'                      
+                         Copyright EDF R&D 1991 - 2018                          
+                                                                                
+                    Exécution du : Sun Jun 24 17:06:16 2018                     
+                    Nom de la machine : jangeorg-VirtualBox                     
+                              Architecture : 64bit                              
+                          Type de processeur : x86_64                           
+      Système d'exploitation : Linux debian stretch/sid  4.4.0-127-generic      
+                        Langue des messages : en (UTF-8)                        
+                                                                                
+                           Version de Python : 2.7.10                           
+                            Version de NumPy : 1.9.2                            
+                           Parallélisme MPI : inactif                           
+                          Parallélisme OpenMP : actif                           
+                        Nombre de processus utilisés : 2                        
+                     Version de la librairie HDF5 : 1.8.14                      
+                      Version de la librairie MED : 3.2.1                       
+                     Version de la librairie MFront : 3.0.0                     
+                     Version de la librairie MUMPS : 5.1.1                      
+                        Librairie PETSc : non disponible                        
+                     Version de la librairie SCOTCH : 6.0.4                     
+                  Mémoire limite pour l'exécution : 3000.00 Mo                  
+                   consommée par l'initialisation : 549.43 Mo                   
+                  par les objets du jeu de commandes : 0.00 Mo                  
+                 reste pour l'allocation dynamique : 2448.84 Mo                 
+                Taille limite des fichiers d'échange : 12.00 Go                 
+                                                                                
+   
+   !------------------------------------------------------------------------------------!
+   ! <A> <SUPERVIS_1>                                                                   !
+   !                                                                                    !
+   !  L'utilisation du mot-clé PAR_LOT='NON' permet d'accéder en lecture et en écriture !
+   !  au contenu des concepts Aster. De ce fait, votre étude est exclue du périmètre    !
+   !  qualifié de Code_Aster puisque toutes ses étapes ne peuvent être certifiées.      !
+   !                                                                                    !
+   !  Conseils :                                                                        !
+   !    - Il n'y a pas particulièrement de risque de résultat faux... sauf si votre     !
+   !      programmation l'introduit.                                                    !
+   !    - Distinguez le calcul lui-même (qui doit sans doute passer en PAR_LOT='OUI')   !
+   !      des post-traitements (qui nécessiteraient le mode PAR_LOT='NON') qui peuvent  !
+   !      être réalisés en POURSUITE.                                                   !
+   !                                                                                    !
+   !                                                                                    !
+   ! Ceci est une alarme. Si vous ne comprenez pas le sens de cette                     !
+   ! alarme, vous pouvez obtenir des résultats inattendus !                             !
+   !------------------------------------------------------------------------------------!
+   
+   
+   !----------------------------------------------------------------!
+   ! <A> <MODELISA7_9>                                              !
+   !                                                                !
+   !  le GROUP_NO :  MyBorder  existe déjà, on ne le crée donc pas. !
+   !                                                                !
+   !                                                                !
+   ! Ceci est une alarme. Si vous ne comprenez pas le sens de cette !
+   ! alarme, vous pouvez obtenir des résultats inattendus !         !
+   !----------------------------------------------------------------!
+   
+#
+#--------------------------------------------------------------------------------
+##ASTER 13.04.00 CONCEPT section CALCULE LE 24/06/2018 A 17:06:23 DE TYPE         
+LIEU                     ENTITE   A_M          CDG_Y_M      CDG_Z_M      IY_G_M       IZ_G_M       IYZ_G_M      Y_MAX        Z_MAX        Y_MIN        Z_MIN        R_MAX        A            CDG_Y        CDG_Z        IY_G         IZ_G         IYZ_G        IY           IZ           ALPHA        Y_P          Z_P          IY_P         IZ_P         IYZ_P        JX           AY           AZ           EY           EZ           PCTY         PCTZ         JG           KY           KZ           IYR2_G       IZR2_G       IYR2         IZR2         IYR2_P       IZR2_P       RY           RZ           RT          
+.9000000                 TOUT      7.43907E+04 -8.03902E-16 -3.17874E-16  1.24644E+10  3.34351E+08 -1.09894E-07  5.28000E+02  1.57000E+02 -5.28000E+02 -1.57000E+02  5.50848E+02  7.43907E+04 -8.03902E-16 -3.17874E-16  1.24644E+10  3.34351E+08 -1.09894E-07  3.34351E+08  1.24644E+10  9.00000E+01  0.00000E+00  0.00000E+00  1.24644E+10  3.34351E+08 -1.09894E-07  7.06136E+07  2.05124E+00  2.04179E+00 -9.47470E-04  9.24394E-04 -9.24394E-04 -9.47470E-04  8.04407E+13  0.00000E+00  0.00000E+00  2.37239E+01 -4.77725E+01  4.77725E+01  2.37239E+01  2.37239E+01 -4.77725E+01  5.28000E+02  1.57000E+02  7.80804E+01
+
+ <I> <FIN> FERMETURE DE LA BASE "GLOBALE" EFFECTUEE.
+
+ <FIN> Arrêt normal dans "FIN".
+ <I> <FIN> ARRET NORMAL DANS "FIN" PAR APPEL A "JEFINI".
+  
+ <I> <FIN> MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :                      35.04 Mo
+ <I> <FIN> MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :                      69.33 Mo
+ <I> <FIN> MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS LORS DE L'EXECUTION :     669.52 Mo
+
+ ********************************************************************************
+ * COMMAND                  :       USER :     SYSTEM :   USER+SYS :    ELAPSED *
+ ********************************************************************************
+ * init (jdc)               :       7.58 :       1.04 :       8.62 :       7.76 *
+ *  . compile               :       0.00 :       0.00 :       0.00 :       0.00 *
+ *  . exec_compile          :       7.02 :       0.98 :       8.00 :       7.13 *
+ * DEBUT                    :       0.01 :       0.05 :       0.06 :       0.07 *
+ * LIRE_MAILLAGE            :       0.04 :       0.01 :       0.05 :       0.04 *
+ * MACR_CARA_POUTRE         :       6.85 :       0.84 :       7.69 :       6.83 *
+ * IMPR_TABLE               :       0.03 :       0.02 :       0.05 :       0.05 *
+ * FIN                      :       0.02 :       0.06 :       0.08 :       0.07 *
+ *  . part Superviseur      :       1.03 :       0.31 :       1.34 :       1.15 *
+ *  . part Fortran          :       6.54 :       0.73 :       7.27 :       6.61 *
+ ********************************************************************************
+ * TOTAL_JOB                :       7.58 :       1.04 :       8.62 :       7.76 *
+ ********************************************************************************
+

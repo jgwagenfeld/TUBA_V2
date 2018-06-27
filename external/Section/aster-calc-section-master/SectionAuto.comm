@@ -1,0 +1,90 @@
+DEBUT(PAR_LOT='NON'); # Setting to use python
+
+import numpy as np
+import os
+WORKING_DIR='/home/jangeorg/Desktop/aster-calc-section-master/' # Working directory
+OUTPUT_FILE='SectionAuto.output' # Filename of the output file
+fileOutput = WORKING_DIR + OUTPUT_FILE # Define output file
+
+mesh=LIRE_MAILLAGE(UNITE=20,
+                   INFO_MED=1,
+                   INFO=1,
+                   FORMAT='MED',);
+
+section=MACR_CARA_POUTRE(MAILLAGE=mesh,
+                         GROUP_MA_BORD='MyBorder',
+                         GROUP_NO='MyPoint',
+                         INFO=1,
+                         ORIG_INER=(0,0),
+                         );
+
+
+IMPR_TABLE(TABLE=section,
+           FORMAT='TABLEAU',
+           UNITE=26, 
+           SEPARATEUR=' * ',
+           TITRE='xsection of L-beam');
+
+f = open(fileOutput,"a") # Open output file
+sect = section.EXTR_TABLE() # Extract aster object
+
+
+# Processing of the results
+output='%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f'
+nameOutput=[('A_M',float),('CDG_Y_M',float),('CDG_Z_M',float),('IY_G_M',float),('IZ_G_M',float),('IYZ_G_M',float),('A',float),('CDG_Y',float),('CDG_Z',float),('IY_G',float),('IZ_G',float),('IYZ_G',float),('IY',float),('IZ',float),('ALPHA',float),('Y_MAX',float),('Y_MIN',float),('Z_MAX',float),('Z_MIN',float),('R_MAX',float),('RY',float),('RZ',float),('Y_P',float),('Z_P',float),('IY_P',float),('IZ_P',float),('IYZ_P',float),('IYR2_G',float),('IZR2_G',float),('IYR2',float),('IZR2',float),('IYR2_P',float),('IZR2_P',float),('JX',float),('RT',float),('PCTY',float),('PCTZ',float),('EY',float),('EZ',float),('JG',float),('AY',float),('AZ',float)]
+n=len(sect.values()[nameOutput[0][0]])
+dataOutput = np.zeros(n,dtype=nameOutput)
+for str in [y[0] for y in nameOutput]:
+    dataOutput[str] = sect.values()[str]
+np.savetxt(f,dataOutput,fmt=output,comments='') # Write results in output file
+f.close() # Close output file
+
+
+#A_M=section['A_M']
+#CDG_Y_M=section['CDG_Y_M']
+#CDG_Z_M=section['CDG_Z_M']
+#IY_G_M=section['IY_G_M']
+#IZ_G_M=section['IZ_G_M']
+#IYZ_G_M=section['IYZ_G_M']
+#A=section['A']
+#CDG_Y=section['CDG_Y']
+#CDG_Z=section['CDG_Z']
+#IY_G=section['IY_G']
+#IZ_G=section['IZ_G']
+#IYZ_G=section['IYZ_G']
+#IY=section['IY']
+#IZ=section['IZ']
+#ALPHA=section['ALPHA']
+#Y_MAX=section['Y_MAX']
+#Y_MIN=section['Y_MIN']
+#Z_MAX=section['Z_MAX']
+#Z_MIN=section['Z_MIN']
+#R_MAX=section['R_MAX']
+#RY=section['RY']
+#RZ=section['RZ']
+#Y_P=section['Y_P']
+#Z_P=section['Z_P']
+#IY_P=section['IY_P']
+#IZ_P=section['IZ_P']
+#IYZ_P=section['IYZ_P']
+#IYR2_G=section['A']
+#IZR2_G=section['A']
+#IYR2=section['A']
+#IZR2=section['A']
+#IXR2_P=section['A']
+#IYR2_P=section['A']
+#JX=section['JX']
+#RT=section['RT']
+#PCTY=section['PCTY']
+#PCTZ=section['PCTZ']
+#EY=section['EY']
+#EZ=section['EZ']
+#JG=section['JG']
+#AY=section['AY']
+#AZ=section['AZ']
+
+#dataOutput=[A_M,CDG_Y_M,CDG_Z_M,IY_G_M,IZ_G_M,IYZ_G_M,A,CDG_Y,CDG_Z,IY_G,IZ_G,IYZ_G,IY,IZ,ALPHA,Y_MAX,Y_MIN,Z_MAX,Z_MIN,R_MAX,RY,RZ,Y_P,Z_P,IY_P,IZ_P,IYZ_P,,,,,,,,
+#np.savetxt(f,dataOutput,fmt=output,comments='') # Write results in output file
+#f.close() # Close output file
+
+FIN();

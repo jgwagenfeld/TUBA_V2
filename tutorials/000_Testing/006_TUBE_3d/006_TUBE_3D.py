@@ -31,5 +31,3 @@ gotoP("c")
 Force(x=1000)
 
 
-
-Calculate("Statique_Linear")

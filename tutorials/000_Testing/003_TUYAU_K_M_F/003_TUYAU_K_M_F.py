@@ -26,9 +26,12 @@ Block(z=0)
 V(1000,0,0)
 Spring(10,10,10)
 Bent(150,90,90)
+
+SectionTuyau("DN15","SCH-STD") #Model("TUYAU")
+
 Vc(1000)
 Block(y=0)
 Vc(1000)
 Block(x=-100)
 
-Calculate("Statique_Linear")
+
