@@ -689,6 +689,9 @@ def Project():
     """+name_vector+"""_3D= geompy.MakePartition([Pipe], [cuttingPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
     thickness = geompy.Propagate("""+name_vector+"""_3D)[1]
 
+    #Union unwanted faces
+    """+name_vector+"""_3D = geompy.UnionFaces("""+name_vector+"""_3D)  
+
     """+name_vector+"""_3D.SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
 
     geompy.addToStudy("""+name_vector+"""_3D,\""""+name_vector+"""\")
@@ -704,13 +707,14 @@ def Project():
     geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_EndFace,\""""+name_vector+"""_EndFace\")
 
     all_faces = geompy.SubShapeAllSorted("""+name_vector+"""_3D, geompy.ShapeType["FACE"])
+    index=SortFacesByAreas(all_faces) 
 
     L_Inner = geompy.GetShapesOnCylinder("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],"""+name_vector+","+str(radius-thickness)+""",GEOM.ST_ON)
-    """+name_vector+"""_InnerFace = geompy.MakeCompound([all_faces[3],all_faces[5]])
+    """+name_vector+"""_InnerFace = geompy.MakeCompound([all_faces[index[6]],all_faces[index[7]]])
     geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_InnerFace,\""""+name_vector+"""_InnerFace\")
 
     L_Outer = geompy.GetShapesOnCylinder("""+name_vector+"""_3D,geompy.ShapeType[\"FACE\"],"""+name_vector+","+str(radius)+""",GEOM.ST_ON)
-    """+name_vector+"""_OuterFace = geompy.MakeCompound([all_faces[4],all_faces[6]])
+    """+name_vector+"""_OuterFace = geompy.MakeCompound([all_faces[index[8]],all_faces[index[9]]])
     geompy.addToStudyInFather("""+name_vector+"""_3D,"""+name_vector+"""_OuterFace,\""""+name_vector+"""_OuterFace\")
 
     List_ParaVis_Visualization.append("""+name_vector+""")
