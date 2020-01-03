@@ -1,4 +1,3 @@
-#!#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import external.euclid as eu
 import logging
@@ -18,6 +17,8 @@ current_material = "SS316"
 
 current_rho_fluid=0
 current_insulation=[]
+current_windload=""
+air_density=1.1*kg()/m()**3
 
 tubapoint_counter = 0
 dict_tubapoints = []
@@ -32,6 +33,7 @@ local_x0 = eu.Vector3(1, 0, 0)
 local_y0 = eu.Vector3(0, 1, 0)              # default dihedral vector 1
 
 
+#
 Mesh_NbElement1D = 10
 Mesh_NbElement3D = 10
 Mesh_NbElement3D_thickness = 3

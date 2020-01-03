@@ -1,0 +1,9 @@
+
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+echo "--------"
+echo "Deleting all files but TUBA-script ..."
+find . -not -name "008_TUYAU_3D_K_M_F.py"  -exec rm -rf {} \;
+echo "--------"
+#------------------------------------------------------------------------------

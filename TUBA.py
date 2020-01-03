@@ -1,6 +1,5 @@
-#! /usr/bin/env python2
+#! /home/cae/anaconda3/bin/python
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 """
 Based on Code by Pascal KREZEL (pascal.krezel@gmail.com) Janvier 2012
 Further developpment by Jan-Georg WAGENFELD (jangeorgwagenfeld@gmail.com) 2016
@@ -32,6 +31,7 @@ import os
 import logging
 import time
 import pprint
+import readchar 
 
 from subprocess import Popen,PIPE, check_output
 
@@ -46,6 +46,9 @@ from tuba.define_geometry import *
 from tuba.define_properties import *
 from tuba.define_simulation import *
 from tuba.define_macros import *
+from tuba.define_additional import *
+
+
 
 from external.UnitCalculator import *
 # -----------------------------------------------------------------------------
@@ -58,14 +61,23 @@ import tuba.write_ExportAster_file
 import tuba.tuba_vars_and_funcs as tub
 
 #logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 time_start = time.time() # Track duration of the script
 # -----------------------------------------------------------------------------
 # Definition where to read and write the input/output-files
 # -----------------------------------------------------------------------------
-salome_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome' # Salome directory
-aster_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome shell -- as_run' # Aster directory
+
+salome_root=os.getenv('HOME')+'/salome_meca/appli_V2019_univ/salome' # Salome directory
+aster_root=os.getenv('HOME')+'/salome_meca/appli_V2019_univ/salome shell -- as_run' # Aster directory
+#aster_root=os.getenv('HOME')+'salome_meca/V2019_univ/tools/Code_aster_frontend-20190/etc/codeaster/asrun' # Aster directory
+
+
+# salome_root=os.getenv('HOME')+'/salome_meca/appli_V2018.0.1_public/salome' # Salome directory
+# aster_root=os.getenv('HOME')+'/salome_meca/appli_V2018.0.1_public/salome shell -- as_run' # Aster directory
+
+#salome_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome' # Salome directory
+#aster_root=os.getenv('HOME')+'/salome_meca/appli_V2017.0.2/salome shell -- as_run' # Aster directory
 
 #salome_root=os.getenv('HOME')+'/salome_meca/appli_V2016/salome' # Salome directory
 #aster_root=os.getenv('HOME')+'/salome_meca/V2016/tools/Code_aster_testing-1320/bin/aster' # Aster directory
@@ -95,6 +107,7 @@ outputFile_PrintAll=current_directory +"/" + cmd_script+ "_PrintAll.txt"
 
 def main(argv):
     write_AllClean(cmd_script)
+#    print(sys.argv)
     if sys.argv[2] =='-plot':
         completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
 
@@ -107,7 +120,13 @@ def main(argv):
         salome_run = Popen(salome_root + ' ' + outputFile_Salome, shell='True', executable="/bin/bash")
         salome_run.wait()
     elif sys.argv[2] =='-aster':  # still not working properly
-
+        print("Aster with ",aster_root," ",outputFile_ExportAster)
+        print("press a key ",inputFileTuba)
+        c = readchar.readchar()
+        #create files here as well ?
+        #completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
+        #print("press a key")
+        #c = readchar.readchar()
         aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True',executable="/bin/bash")
         aster_run.wait()# -*- coding: utf-8 -*-         
         
@@ -121,13 +140,22 @@ def main(argv):
         salome_stop.wait()
         salome_run = Popen(salome_root + ' -t ' + outputFile_Salome, shell='True', executable="/bin/bash")
         salome_run.wait()
-        
+        print("Aster ",aster_root," ",outputFile_ExportAster)
+        #print("press any key to run aster")
+        #c = readchar.readchar()
         aster_run = Popen(aster_root+ " " + outputFile_ExportAster, shell='True', executable="/bin/bash")
         aster_run.wait()# -*- coding: utf-8 -*-         
 
         salome_stop = Popen(salome_root + ' killall',shell='True', executable="/bin/bash")
         salome_stop.wait()
+        #c = readchar.readchar()
+        if len(sys.argv[1:])>2 and sys.argv[3] =='-nogui':
+            print("check resu.txt")
+            return
+        #Paraviѕ
+        print("ParaVis ",salome_root," ",outputFile_ParaPost)
         salome_run = Popen(salome_root + ' ' + outputFile_ParaPost, shell='True', executable="/bin/bash")
+ 
     elif sys.argv[2] =='-test':  # still not working properly
         completed_dict_tubapoints,completed_dict_tubavectors=executetuba(inputFileTuba)
 
@@ -154,7 +182,12 @@ def executetuba(inputFileTuba):
     logging.info("argv1: "+sys.argv[1])
     logging.info("argv2: "+sys.argv[2])
     
+    #print("executetuba press a key")
+    #c = readchar.readchar() 
+
     exec(open(inputFileTuba).read())
+
+    create_reducer(tub.dict_tubavectors)
 
     completed_dict_tubavectors = tub.dict_tubavectors
     completed_dict_tubapoints = tub.dict_tubapoints

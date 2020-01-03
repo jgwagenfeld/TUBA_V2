@@ -25,7 +25,7 @@ TUBA 0.1
 2018/4/29:  Restructering TUBA-Mainfunction, cleaning of scripts
 -----------------------------------------------
 
-2018/4/29:  Replace  vd2x, vd1x vd3x  with   local_x,local_y and local_z 
+2018/4/29:  Replace  vd2x, vd1x vd3x  with   local_x,local_y and local_z
 
 2018/5/18:  Included contious 3D-elements with possible 1D-supports
 
@@ -38,3 +38,9 @@ TUBA 0.1
 2018/6/24:  added structure for custom profile calculation/usage (based on Core Engineering)
 
 2018/6/25:  added NPS/DN tables to the Section 1function (now possible to use strings "DN15" for outer_radius and "SCH-STD" for thickness)
+
+-----------------------------------------------
+
+2020/1/3:  Updated to SalomeMeca2019
+2020/1/3:  Added WindFunction(preliminary)
+2020/1/3:  Added V_Reducer (VARI_SECT-element)

@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 30 02:34:03 2016
@@ -9,7 +8,7 @@ import external.euclid as eu
 import logging
 import os
 
-import tuba_vars_and_funcs as tub
+import tuba.tuba_vars_and_funcs as tub
 import tuba.define_geometry as tuba_geom
 #import library_material
 
@@ -75,18 +74,18 @@ import NETGENPlugin
 
 salome.salome_init()
 study   = salome.myStudy
-studyId = salome.myStudyId
+
 
 from salome.geom import geomBuilder
-geompy = geomBuilder.New(salome.myStudy)
+geompy = geomBuilder.New()
 
-smesh = smeshBuilder.New(salome.myStudy)
+smesh = smeshBuilder.New()
 
 from salome.geom import geomtools
-geompy = geomtools.getGeompy(studyId)
+geompy = geomtools.getGeompy()
 
 from salome.kernel.studyedit import getStudyEditor
-studyEditor = getStudyEditor(studyId)
+studyEditor = getStudyEditor()
 
 #from  salome.geom.structelem import StructuralElementManager
 from Section.structelem import StructuralElementManager
@@ -96,6 +95,30 @@ structElemList=[]
 
 gst = geomtools.GeomStudyTools(studyEditor)
 gg = salome.ImportComponentGUI("GEOM")
+
+#from max
+def takeSecond(elem):
+    return elem[1]
+
+def SortFacesByAreas(all_faces):
+    print("SortFacesByAreas from max ",len(all_faces))
+    alist=[]
+    index = []
+
+    for idx,face in enumerate(all_faces) :
+        l,a,v = geompy.BasicProperties( face )
+        alist.append((idx,a))
+        #print(idx," Area ",a)
+
+    #print("alist ",alist)
+    alist.sort(key=takeSecond,reverse=False)
+    #print("sorted ",alist)
+    for a in alist:
+        index.append(a[0])
+
+    #print("index ",index)
+    return index
+##
 
 def Project():
 
@@ -123,7 +146,7 @@ def Project():
 
         pos = str(tubapoint.pos.xyz).strip('()')
         name_point =tubapoint.name
-
+        #print("point ",name_point);
         self.lines=self.lines+("""
 
 ##_points##  
@@ -243,9 +266,15 @@ def Project():
             radius=tubavector.section["radius"]
             thickness=0
         else:
-            radius=tubavector.section["outer_radius"]
-            thickness=tubavector.section["wall_thickness"]
-
+            if len(tubavector.section)==2:
+                radius=tubavector.section["outer_radius"]
+                thickness=tubavector.section["wall_thickness"]
+            elif len(tubavector.section)==4:
+                radius_start=tubavector.section["outer_radius_start"]
+                thickness_start=tubavector.section["wall_thickness_start"]
+                radius_end=tubavector.section["outer_radius_end"]
+                thickness_end=tubavector.section["wall_thickness_end"]
+                
         model=tubavector.model
 
         name_startpoint = tubavector.start_tubapoint.name
@@ -281,10 +310,20 @@ def Project():
     """+name_vector+"M.Group("+name_startpoint+""")
     """+name_vector+"M.Group("+name_endpoint+""")
     """+name_vector+"M.GroupOnGeom("+name_vector+""")
+        """).split("\n")
 
+        if len(tubavector.section)==4:        
+            self.lines=self.lines+("""        
+    structElemList.append(('CircularBeam', {'R1': """+str(radius_start)+""",'R2': """+str(radius_end)+""", 'Group_Maille': '"""+name_vector+"""', 'EP1': """+str(thickness_start)+""", 'EP2': """+str(thickness_end)+"""}))    
+    List_ParaVis_Visualization.append(\"Beam_"""+name_vector+"""\")
+        """).split("\n")
+
+        elif len(tubavector.section)==2:          
+            self.lines=self.lines+("""        
     structElemList.append(('CircularBeam', {'R': """+str(radius)+""", 'Group_Maille': '"""+name_vector+"""', 'EP': """+str(thickness)+"""}))    
     List_ParaVis_Visualization.append(\"Beam_"""+name_vector+"""\")
         """).split("\n")
+               
 #==============================================================================
     def _vector_round_3D(self,tubavector):
         """This function creates a round tube-profile with the specified wall thickness as visualization
@@ -687,10 +726,12 @@ def Project():
     Pipe = geompy.MakePipe( FaceTube ,"""+name_vector+""")                     
     cuttingPlane = geompy.MakePlaneThreePnt("""+name_centerpoint+","+name_startpoint+","+name_endpoint+","+str(tubavector.bending_radius*5)+""")
     """+name_vector+"""_3D= geompy.MakePartition([Pipe], [cuttingPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)
-    thickness = geompy.Propagate("""+name_vector+"""_3D)[1]
 
-    #Union unwanted faces
-    """+name_vector+"""_3D = geompy.UnionFaces("""+name_vector+"""_3D)  
+    # max
+    #Union unwanted all_faces and remove Edges
+    """+name_vector+"""_3D = geompy.RemoveExtraEdges("""+name_vector+"""_3D,True)
+    # max change [1] to [0]
+    thickness = geompy.Propagate("""+name_vector+"""_3D)[0]
 
     """+name_vector+"""_3D.SetColor(SALOMEDS.Color("""+tub.colors[model]+"""))
 
@@ -894,7 +935,8 @@ def Project():
             outerRadius=float(section["outer_radius"])
         elif "height_y" in section:
             outerRadius=float(section["height_y"])
-
+        elif "outer_radius_start" in section:
+            outerRadius=float(section["outer_radius_start"])        
         name_point=tubapoint.name
 
 
@@ -1140,7 +1182,7 @@ def Project():
         print ('ExportVTK of the visualization compound failed')
 
     if salome.sg.hasDesktop():
-       salome.sg.updateObjBrowser(0)
+       salome.sg.updateObjBrowser()
     time2=time.time()
     dtime = time2 - time1
     print(\"------------------------\")

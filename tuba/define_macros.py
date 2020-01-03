@@ -1,12 +1,11 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar 28 21:31:36 2016
 
 """
-from define_geometry import *
-from define_properties import *
-import tuba_vars_and_funcs as tub
+from tuba.define_geometry import *
+from tuba.define_properties import *
+import tuba.tuba_vars_and_funcs as tub
 
 def FixPoint():
     """Creates a fixed Point"""

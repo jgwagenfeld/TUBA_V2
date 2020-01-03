@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /home/cae/anaconda3/bin/python
 # -*- coding: utf-8 -*-
 """
 Created on Sun Mar 27 22:06:23 2016
@@ -7,7 +7,7 @@ Created on Sun Mar 27 22:06:23 2016
 import external.euclid as eu
 import logging
 import math
-import tuba_vars_and_funcs as tub
+import tuba.tuba_vars_and_funcs as tub
 
 class TubaBuilder:
 

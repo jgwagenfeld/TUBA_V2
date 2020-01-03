@@ -2,7 +2,7 @@ import psutil
 import logging
 logging.info(psutil.virtual_memory())
 # Code Aster Version
-CdAver=13.4
+CdAver="v14.4_smeca"
 # Memory for Job
 JOBmem=3000000
 #90% of available meomry in MB
@@ -17,8 +17,8 @@ def writeExport(cmd_script,outputFile_ExportAster,
                 outputFile_Comm, aster_root,resultfile_aster,current_directory):
     lines=[]
 
-    lines=("""
-P aster_root """+aster_root+"""
+    lines=(
+"""P aster_root """+aster_root+"""
 P version """+str(CdAver)+"""
 P lang en 
 P ncpus """+str(OpenMPIcpu)+"""

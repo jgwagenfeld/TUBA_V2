@@ -1,0 +1,19 @@
+P actions make_etude
+P aster_root /home/cae/salome_meca/appli_V2019_univ/salome shell -- as_run
+P lang en
+P mem_aster 100.0
+P memjob 3072000
+P memory_limit 3000.0
+P mode interactif
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P ncpus 1
+P rep_trav /tmp/cae-cae-VirtualBox-interactif_4394
+P version v14.4_smeca
+A memjeveux 375.0
+A tpmax 9000000
+F mmed /home/cae/TUBA_2019/tutorials/000_Testing/000_TUBE/001_TUBE.mmed D  20
+F comm /home/cae/TUBA_2019/tutorials/000_Testing/000_TUBE/001_TUBE_aster.comm D  1
+F resu /home/cae/TUBA_2019/tutorials/000_Testing/000_TUBE/001_TUBE.resu.txt R  8
+F mess /home/cae/TUBA_2019/tutorials/000_Testing/000_TUBE/001_TUBE.mess R  6
+F rmed /home/cae/TUBA_2019/tutorials/000_Testing/000_TUBE/001_TUBE-RESULTS_salome.rmed R  80

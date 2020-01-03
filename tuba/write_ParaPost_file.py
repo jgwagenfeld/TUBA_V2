@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 
@@ -7,7 +6,7 @@ import numpy as np
 import external.euclid as eu
 import logging
 
-import tuba_vars_and_funcs as tub
+import tuba.tuba_vars_and_funcs as tub
 import tuba.define_geometry as tuba_geom
 
 class ParaPost:
@@ -69,10 +68,12 @@ class ParaPost:
         self.lines=self.lines+("""
         
 # ======== Select a file for opening:
-import Tkinter,tkFileDialog
+import tkinter
+from tkinter import filedialog
 
-#root = Tkinter.Tk()
-#file = tkFileDialog.askopenfilename(parent=root,
+# the name of the file is already clear?
+#root = tkinter.Tk()
+#file = filedialog.askopenfilename(parent=root,
 #                                    initialdir='"""+self.my_directory+ """',
 #                                    filetypes=[("Result Files","*.rmed")])
 #root.destroy()
@@ -139,7 +140,7 @@ SetActiveSource("""+file_rmed+""")
 
 """+name_warp+"""= WarpByVector(Input="""+file_rmed+""")
 """+name_warp+""".Vectors = ['POINTS', 'RESU____DEPL_Vector']
-"""+name_warp+""".ScaleFactor = 1
+#"""+name_warp+""".ScaleFactor = 1
 
 """+name_warp+"""_Display = Show("""+name_warp+""", renderView1)
 """+name_warp+"""_Display.LineWidth = 4.0
@@ -167,14 +168,15 @@ RESUDEPLVector_PWF = GetOpacityTransferFunction('RESUDEPLVector')
 # set active source
 SetActiveSource("""+file_rmed+""")
 
+# max 
 """+name_glyph+"""= Glyph(Input="""+file_rmed+""",GlyphType='Arrow')
 SetActiveSource("""+name_glyph+""")     
 # Properties modified on glyph1
-"""+name_glyph+""".Scalars = ['POINTS', 'None']
-"""+name_glyph+""".Vectors = ['POINTS', 'RESU____DEPL_Vector']
+# """+name_glyph+""".Scalars = ['POINTS', 'None']
+#"""+name_glyph+""".Vectors = ['POINTS', 'RESU____DEPL_Vector']
 """+name_glyph+""".GlyphMode = 'All Points'
-"""+name_glyph+""".ScaleMode = 'vector'
-"""+name_glyph+""".ScaleFactor = 1
+#"""+name_glyph+""".ScaleMode = 'vector'
+#"""+name_glyph+""".ScaleFactor = 1
 
 # show data in view
 """+name_glyph+"""_Display = Show("""+name_glyph+""", renderView1)
@@ -198,10 +200,13 @@ SetActiveSource("""+file_rmed+""")
 """+name_glyph+""" = Glyph(Input="""+file_rmed+""",GlyphType='Arrow')
 SetActiveSource("""+name_glyph+""")   
 # Properties modified on """+name_glyph+"""
-"""+name_glyph+""".Scalars = ['POINTS', 'None']
-"""+name_glyph+""".Vectors = ['POINTS','"""+fieldName+"""']
-"""+name_glyph+""".ScaleMode = 'vector'
-"""+name_glyph+""".ScaleFactor = 1
+#"""+name_glyph+""".Scalars = ['POINTS', 'None']
+#"""+name_glyph+""".Vectors = ['POINTS','"""+fieldName+"""']
+"""+name_glyph+""".ScaleArray = ['POINTS','"""+fieldName+"""']                  
+"""+name_glyph+""".OrientationArray = ['POINTS','"""+fieldName+"""'] 
+
+#"""+name_glyph+""".ScaleMode = 'vector'
+#"""+name_glyph+""".ScaleFactor = 1
 """+name_glyph+""".GlyphMode = 'All Points'
 
 # show data in view
@@ -321,7 +326,7 @@ for i in xrange(1, 4):
             # Create glyphs (that are vectors) and set their scale factor
             Glyph1 = Glyph(Input=ELNOMesh1, Vectors = ['POINTS', name], ScaleMode = 'off')    
             SetActiveSource(Glyph1)   
-            Glyph1.Scalars = ['POINTS', 'None']
+            #Glyph1.Scalars = ['POINTS', 'None']
             Glyph1.GlyphMode = 'All Points'
             # Show the glyphs with the right colors
             color = d_colors[i]

@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Created on Sun Mar 27 22:05:19 2016
 """
@@ -8,8 +6,9 @@ Created on Sun Mar 27 22:05:19 2016
 import external.euclid as eu
 import logging
 import math
+import readchar
 
-import tuba_vars_and_funcs as tub
+import tuba.tuba_vars_and_funcs as tub
 
 #==============================================================================
 #==============================================================================
@@ -138,11 +137,7 @@ class TubaVector:
 
         self.local_y=start_tubapoint.local_y
 
-        tub.tubavector_counter += 1
-        tub.dict_tubavectors.append(self)
-
         self._update_attached_tubapoints()
-
         self._update_global_forces()
 
     def _update_attached_tubapoints(self):
@@ -173,12 +168,14 @@ class TubaVector:
         if self.model in ["TUBE","TUYAU"]:
             if tub.current_rho_fluid:
                 density_fluid=tub.current_rho_fluid
-                outer_radius==float(self.section["outer_radius"])
-                wall_thickness=float(self.section["wall_thickness"])
+                outer_radius=self.section["outer_radius"]
+                wall_thickness=self.section["wall_thickness"]
                 force_grav_fluid= math.pi*(outer_radius-wall_thickness)**2*density_fluid*tub.G
-                logging.info("Fluid_Weight N/mm "+ force_grav_fluid)
+                print("force_grav_fluid ",force_grav_fluid);
+                logging.info("Fluid_Weight N/mm "+str(force_grav_fluid))
                 self.linear_force.append(eu.Vector3(0,0,-force_grav_fluid))
-                logging.info("Fluid_Weight N/mm "+ eu.Vector3(0,0,-force_grav_fluid))
+                print("fluid ",force_grav_fluid);
+                logging.info("Fluid_Weight N/mm "+ str(eu.Vector3(0,0,-force_grav_fluid)))
 
 # Insulation of the Pipe
 #--------------------------------------------
@@ -188,10 +185,38 @@ class TubaVector:
                 outer_radius=self.section["outer_radius"]
 
                 force_grav_insulation= math.pi*((outer_radius+insulation_thickness)**2-outer_radius**2)*insulation_density*9.81
-                logging.info("Insulation_Weight N/mm"+ force_grav_insulation)
+                logging.info("Insulation_Weight N/mm"+ str(force_grav_insulation))
                 self.linear_force.append(eu.Vector3(0,0,-force_grav_insulation))
  
 # Wind Load
+#--------------------------------------------                
+        if self.model in ["TUBE","TUYAU"]:
+            if tub.current_windload:
+                [insulation_thickness, insulation_density]=tub.current_insulation
+                outer_radius=self.section["outer_radius"]
+                print("Do ",outer_radius," thickness ",insulation_thickness)
+                #1/2 ρ v2 A
+                tubavector=self.end_tubapoint.pos-self.start_tubapoint.pos
+                tubavector.normalize()
+                print("tubavector ",tubavector);
+                wnorm=tub.current_windload.normalized()
+                f=wnorm-(wnorm.dot(tubavector))*tubavector
+                insulation_rad=2*(outer_radius+insulation_thickness) 
+                cw=0.5*tub.current_windload.magnitude_squared()*insulation_rad*tub.air_density
+                windload=cw*f
+                print("wn ",wnorm," tn ",tubavector," f ",f," wload ",windload," mag ",windload.magnitude())
+                logging.info("Windload N/mm"+ str(windload))
+                self.linear_force.append(windload)
+                #print("test")
+                #w=eu.Vector3(0,1,0).normalize()
+                #t=eu.Vector3(0,1,0).normalize()
+                #f=w-(w.dot(t))*t
+                #print("t ",t," w ",w," f",f)
+
+                #print("press a key ")
+                #c = readchar.readchar()
+                #exit()
+
 #--------------------------------------------        
 
 # ==============================================================================
@@ -233,9 +258,9 @@ class TubaBent(TubaVector):
 
         self.end_tubapoint.local_x=self.start_tubapoint.local_x.rotate_around(
                                         self.rotation_axis, self.angle_bent)
-
-        self.end_tubapoint.local_y=self.start_tubapoint.local_x
-
+        #max self.end_tubapoint.local_y=self.start_tubapoint.local_x
+        self.end_tubapoint.local_y=self.start_tubapoint.local_y.rotate_around(  
+                                        self.rotation_axis, self.angle_bent)
 
 #==============================================================================
 #==============================================================================
@@ -328,14 +353,17 @@ def V(x,y,z,name=""):
     name_vector="V"+str(tub.tubavector_counter)
     #Create the TubaVector object containing all the informations of the line element (Material, Temperature, Pressure etc)
 #------------------------------------------------------------------------------
-    TubaVector(start_tubapoint, end_tubapoint, vector, name_vector)
+    vect=TubaVector(start_tubapoint, end_tubapoint, vector, name_vector)
+    
+    tub.tubavector_counter += 1
+    tub.dict_tubavectors.append(vect)
 #------------------------------------------------------------------------------ 
     logging.debug("start_point connected?: "+str(start_tubapoint.local_x))
-
+    return vect
     
 def V_3D(x,y,z,name=""):
-    V(x,y,z,name)
-    tub.dict_tubavectors[-1].model="VOLUME"
+    vect=V(x,y,z,name)
+    vect.model="VOLUME"
 #==============================================================================
 #==============================================================================
 def Vc(length,name=""):
@@ -345,11 +373,13 @@ def Vc(length,name=""):
     x=length*tub.current_tubapoint.local_x.x
     y=length*tub.current_tubapoint.local_x.y
     z=length*tub.current_tubapoint.local_x.z
-    V(x,y,z,name)
+    vect=V(x,y,z,name)
+    return vect
 
 def Vc_3D(length,name=""):
-    Vc(length,name)
-    tub.dict_tubavectors[-1].model="VOLUME"
+    vect=Vc(length,name)
+    vect.model="VOLUME"
+    return vect
 #==============================================================================
 def Vp(endpoint_name, startpoint_name=""):
     """Creates a vector from start_tubapoint to end_tubapoint. If no start_tubapoint is specified, the 
@@ -368,15 +398,28 @@ def Vp(endpoint_name, startpoint_name=""):
     vector=end_tubapoint.pos-start_tubapoint.pos
     name_vector="V"+str(tub.tubavector_counter)
 
-    TubaVector(start_tubapoint, end_tubapoint, vector, name_vector)
+    vect=TubaVector(start_tubapoint, end_tubapoint, vector, name_vector)
+    tub.tubavector_counter += 1
+    tub.dict_tubavectors.append(vect)
+    return vect
 
 def Vp_3D(endpoint_name, startpoint_name=""):
-    Vp(endpoint_name, startpoint_name)
-    tub.dict_tubavectors[-1].model="VOLUME"
+    vect=Vp(endpoint_name, startpoint_name)
+    vect.model="VOLUME"
+    return vect
 
+def V_Reducer(length,name=""):
+    vect=Vc(length,name)
+    new_section=tub.dict_tubavectors[-2].section
+    old_section=tub.current_section
+    print("Reducer",old_section,new_section)
+    vect.section={"outer_radius_start":new_section["outer_radius"],"wall_thickness_start":new_section["wall_thickness"],
+                  "outer_radius_end":old_section["outer_radius"],"wall_thickness_end":old_section["wall_thickness"]}
+    
+    
 #==============================================================================
 #==============================================================================
-def Bent(radius,angle_deg="",orientation="",vector="",mode="intersect",name=""):
+def Bent(radius,angle_deg=0.0,orientation="",vector="",mode="intersect",name=""):
     """There are 2 general ways to create a pipe bent:
     
 #.  Bent(bending_radius,vector=Vector3): \n
@@ -398,7 +441,7 @@ intersection point of the current and new vector of the piping
         logging.debug("Spezial case angle=180")
         Bent(radius=radius,angle_deg=angle_deg/2,orientation=orientation,mode=mode,name=name)
         Bent(radius=radius,angle_deg=angle_deg/2,orientation=180.0,mode="add",name=name)
-    elif angle_deg<0 or angle_deg>180.0 and vector=="":
+    elif angle_deg<0.0 or angle_deg>180.0 and vector=="":
         raise RuntimeError("Angle_deg has to be in between 0 and 180 degree.")
     else:
         if  vector!="": #2. version of bentfunction Bent(bending_radius,arg1=Vector3)
@@ -450,6 +493,11 @@ intersection point of the current and new vector of the piping
         #------------------------------------------------------------------------------
         bent_tubavector = TubaBent(start_tubapoint,end_tubapoint,center_tubapoint
                            ,radius,rotation_axis,angle_deg*math.pi/180.0, name_vect)
+        
+        tub.tubavector_counter += 1
+        tub.dict_tubavectors.append(bent_tubavector)       
+
+        return bent_tubavector            
         #------------------------------------------------------------------------------
         logging.debug("===================================")
         logging.debug("                                   ")
@@ -467,8 +515,8 @@ intersection point of the current and new vector of the piping
         logging.debug("===================================")
  
 def Bent_3D(radius,angle_deg="",orientation="",vector="",mode="intersect",name=""):
-    Bent(radius=radius,angle_deg=angle_deg,orientation=orientation,vector=vector,mode=mode,name=name)
-    tub.dict_tubavectors[-1].model="VOLUME"
+    bent=Bent(radius=radius,angle_deg=angle_deg,orientation=orientation,vector=vector,mode=mode,name=name)
+    bent.model="VOLUME"
 #==============================================================================
 #==============================================================================        
 def TShape_3D(incident_radius,incident_thickness,angle_orient,
@@ -530,8 +578,10 @@ def TShape_3D(incident_radius,incident_thickness,angle_orient,
     
     name = "V"+str(tub.tubavector_counter)+"_TShape"
 #------------------------------------------------------------------------------
-    TubaTShape3D(start_tubapoint,main_end_tubapoint,incident_end_tubapoint,
+    vect=TubaTShape3D(start_tubapoint,main_end_tubapoint,incident_end_tubapoint,
                  vector_center_incidentend,incident_section,name)
+    tub.tubavector_counter += 1
+    tub.dict_tubavectors.append(vect)
     
 #------------------------------------------------------------------------------
 #==============================================================================

@@ -1,0 +1,18 @@
+P aster_root /home/max/salome_meca/appli_V2019_univ/salome shell -- as_run
+P version v14.4_smeca
+P lang en 
+P ncpus 8
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+A memjeveux 763.013671875
+P mem_aster 100.0 
+A tpmax 9000000 
+P memjob 3000000
+P memory_limit 3000
+P actions make_etude 
+
+F mmed /home/max/salome_meca/TUBA_2019/tutorials/000_Testing/x_008_TUYAU_3d/008_TUYAU_3D_K_M_F.mmed D 20
+F comm 008_TUYAU_3D_K_M_F_aster.comm D 1 
+F resu /home/max/salome_meca/TUBA_2019/tutorials/000_Testing/x_008_TUYAU_3d/008_TUYAU_3D_K_M_F.resu.txt R 8 
+F mess /home/max/salome_meca/TUBA_2019/tutorials/000_Testing/x_008_TUYAU_3d/008_TUYAU_3D_K_M_F.mess R 6 
+F rmed /home/max/salome_meca/TUBA_2019/tutorials/000_Testing/x_008_TUYAU_3d/008_TUYAU_3D_K_M_F-RESULTS_salome.rmed R 80 

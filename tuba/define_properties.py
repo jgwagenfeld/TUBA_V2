@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr  5 01:20:46 2016
@@ -8,7 +8,7 @@ import external.euclid as eu
 import logging
 import math
 
-import tuba_vars_and_funcs as tub
+import tuba.tuba_vars_and_funcs as tub
 
 from external.UnitCalculator import *
 auto_converter(mmNS)
@@ -205,7 +205,7 @@ def Insulation(insulation_thickness, insulation_density):
     tub.current_insulation=[insulation_thickness, insulation_density]
 
 def Windload(x,y,z):
-    pass
+    tub.current_windload=eu.Vector3(x,y,z)
 
 def SIF_and_FLEX(SIF='',FLEX=''):
     if FLEX:

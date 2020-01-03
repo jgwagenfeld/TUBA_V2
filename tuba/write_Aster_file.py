@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -12,11 +11,11 @@ import logging
 import math
 import csv
 
-import tuba_vars_and_funcs as tub
+import tuba.tuba_vars_and_funcs as tub
 import tuba.define_geometry as tuba_geom
-import library_material
+import tuba.library_material
 
-import write_Aster_friction
+import tuba.write_Aster_friction
 
 class CodeAster:
 
@@ -641,9 +640,9 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(_F(CHAM_GD=CHA_T_R)))
         #======================================================================
         #   Define the used material
         #======================================================================
-            for material in library_material.dict_mat:
+            for material in tuba.library_material.dict_mat:
                 if material == item[0]:
-                    [E,nu,rho,alpha,lamba,rhoCp,sh] = library_material.dict_mat[material]
+                    [E,nu,rho,alpha,lamba,rhoCp,sh] = tuba.library_material.dict_mat[material]
                     newlines=[
                     material + "=DEFI_MATERIAU(    ",
                     "     ELAS=_F(  E=" + str(E*1e3)+",",
@@ -655,9 +654,9 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(_F(CHAM_GD=CHA_T_R)))
                     ]
                     insert_lines_at_string(self.lines,"##DEF_MATERIAU",newlines)
 
-            for material in library_material.dict_mat_F:
+            for material in tuba.library_material.dict_mat_F:
                 if material == item[0]:
-                    F_Mat_Prop= library_material.dict_mat_F[material]
+                    F_Mat_Prop= tuba.library_material.dict_mat_F[material]
 
                     newlines=[
                     "E_"+material+"=DEFI_FONCTION(NOM_PARA='TEMP',",
@@ -813,6 +812,7 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(_F(CHAM_GD=CHA_T_R)))
 
         for item in grouped_attributes:
             new_item=[]
+            
 #------------------------------------------------------------------------------
             for name in item[1]:
                 item_tubavector=([tubavector for tubavector in dict_tubavectors
@@ -839,16 +839,32 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(_F(CHAM_GD=CHA_T_R)))
                         character_count=0
                 newlines.append(text)
                 newlines.append("        ),")
-
+                print(item[0])
                 item_0=eval(item[0])
-
-                newlines.extend([
-                "        SECTION ='CERCLE',",
-                "        CARA=('R','EP',),",
-                "        VALE=("+str(item_0["outer_radius"])+","+str(item_0["wall_thickness"])+"),",
-                "    ),",
-                ])
-                insert_lines_at_string(self.lines,"##SECTION_TUBE",newlines)
+                print("Aster",len(item_0))
+                
+                if len(item_0)==2:
+                    newlines.extend([
+                    "        SECTION ='CERCLE',",
+                    "        CARA=('R','EP',),",
+                    "        VALE=("+str(item_0["outer_radius"])+","+str(item_0["wall_thickness"])+"),",
+                    "    ),",
+                    ])
+                    insert_lines_at_string(self.lines,"##SECTION_TUBE",newlines)
+                                           
+                                       
+                elif len(item_0)==4:                                      
+                    newlines.extend([
+                    "        SECTION ='CERCLE',",
+                    "        VARI_SECT ='HOMOTHETIQUE',",
+                    "        CARA=('R_DEBUT','R_FIN','EP_DEBUT','EP_FIN'),",
+                    "        VALE=("+str(item_0["outer_radius_start"])+","+str(item_0["outer_radius_end"])+","+str(item_0["wall_thickness_start"])+","+str(item_0["wall_thickness_end"])+"),",
+                    
+                    "    ),",
+                    ])
+                    insert_lines_at_string(self.lines,"##SECTION_TUBE",newlines)                                       
+                                           
+                                       
 #------------------------------------------------------------------------------
             new_item=[]
 
@@ -1342,6 +1358,9 @@ RESU=MECA_STATIQUE(
 
          ##CHARGEMENT
      ),
+     SOLVEUR=_F(
+       RESI_RELA=0.003
+     )
 );""").split("\n")
             insert_lines_at_string(self.lines, "##SIMULATION", newlines)
 #==============================================================================
@@ -1462,10 +1481,35 @@ IMPR_RESU(UNITE=80,FORMAT='MED',RESU=(
 
         newlines.append("));")
 
+# only for TUYAU for the moment
+        if self.TUYAU_flag:
+            newlines=newlines+("""
+# ASCII   .resu.txt
+IMPR_RESU(FORMAT='RESULTAT',RESU=(
+        _F(RESULTAT=RESU),""").split("\n")
+
+            if self.TUBE_flag:
+                newlines=newlines+("""
+        _F(RESULTAT=R_TUBE,GROUP_MA=('G_TUBE'),NOM_CHAM='UT02_NOEU',NOM_CMP='X1',NOM_CHAM_MED='FlexibilityStress',),
+        """).split("\n")
+
+            if self.TUYAU_flag:
+                newlines=newlines+("""
+        _F(RESULTAT=MAX_VMIS),
+        """).split("\n")
+
+            if self.VOLUME_flag:
+                newlines=newlines+("""
+        _F(RESULTAT=R_3D,GROUP_MA=('G_3D')),
+        """).split("\n")
+            newlines.append("));")
+
+#
+
         if self.FRICTION_flag:
-            newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CAP[-1], REPERE_LOCAL='ELNO', MODELE=MODMECA), )")
+            newlines.append("#IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CAP[-1], REPERE_LOCAL='ELNO', MODELE=MODMECA), )")
         else:
-            newlines.append("IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM,REPERE_LOCAL='ELNO',MODELE=MODMECA), )")
+            newlines.append("#IMPR_RESU(UNITE=80, FORMAT='MED', CONCEPT=_F(CARA_ELEM=CARAELEM,REPERE_LOCAL='ELNO',MODELE=MODMECA), )")
 
         insert_lines_at_string(self.lines, "##RESULTS_TO_SALOME", newlines)
 #==============================================================================
@@ -1548,6 +1592,14 @@ f.close()
         write the Aster Code are removed"""
         cleaned_lines = [line for line in self.lines if not line.lstrip().startswith('##')]
         self.lines=cleaned_lines
+#==============================================================================
+    def _clean_for_ASTERSTUDY(self):  
+        """All the markers ## which come from the Base-Comm Textfile used to
+        write the Aster Code are removed"""
+        cleaned_lines = [line for line in self.lines if not line.lstrip().startswith('##')]
+        self.lines=cleaned_lines        
+        
+        
 #==============================================================================
 def insert_lines_at_string(lines,substring,newlines):
     """In a list of strings, find the substring, and append the newlines before
